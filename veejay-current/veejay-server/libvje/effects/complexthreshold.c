@@ -40,7 +40,7 @@ vj_effect *complexthreshold_init(int w, int h)
     ve->defaults[2] = 0;	/* g */
     ve->defaults[3] = 255;	/* b */
     ve->defaults[4] = 1;	/* smoothen level */
-    ve->defaults[5] = 255;	/* threshold */
+    ve->defaults[5] = 127;	/* threshold */
     ve->limits[0][0] = 1;
     ve->limits[1][0] = 9000;
 
