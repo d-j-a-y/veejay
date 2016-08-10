@@ -20,6 +20,9 @@
 #include <veejay/vj-msg.h>
 #include <gtktimeselection.h>
 #include <veejay/vims.h>
+#include <sys/time.h>
+#include <sys/timeb.h>
+
 static int config_file_status = 0;
 static gchar *config_file = NULL;
 static int srt_locked_ = 0;
@@ -2559,6 +2562,35 @@ int	on_curve_buttontime_clicked()
 	return 1;
 }
 
+static struct timeb tap_time;
+static int firsttap;
+void on_button_tap_clicked (GtkWidget *widget , gpointer user_data)
+{
+	struct timeb current_time;
+	ftime(&current_time);
+
+	GtkLabel *label = GTK_LABEL(glade_xml_get_widget_( info->main_window, "label_tap" ));
+
+	if(firsttap == 0)
+	{
+		firsttap = 1;
+		veejay_memcpy( &tap_time, &current_time, sizeof(struct timeb ));
+
+		if (label)
+		{
+			gtk_label_set_text (label, "TAP TAP TAP");
+		}
+	}
+	else
+	{
+		double diff_time = difftime(current_time.time, tap_time.time) + ((current_time.millitm - tap_time.millitm)/1000.0);
+
+		veejay_memcpy( &tap_time, &current_time, sizeof(struct timeb ));
+
+		vj_msg(VEEJAY_MSG_INFO, "%lf", 60/diff_time);
+		gtk_label_set_text (label, "");
+	}
+}
 
 void	on_framerate_inc_clicked( GtkWidget *w, gpointer data )
 {
