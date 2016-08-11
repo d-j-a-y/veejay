@@ -7655,7 +7655,7 @@ void vj_gui_init(char *glade_file,
 	{
 		GtkWidget *ww = glade_xml_get_widget_(info->main_window,
 		                                      crappy_design[ui_skin_].name );
-		GtkWidget *srtpad = gtk_notebook_get_nth_page(GTK_NOTEBOOK(ww),4);
+		GtkWidget *srtpad = gtk_notebook_get_nth_page(GTK_NOTEBOOK(ww),5);
 		gtk_widget_hide(srtpad);
 	}
 
