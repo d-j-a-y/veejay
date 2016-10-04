@@ -99,6 +99,7 @@
 #include "./effects/greyselect.h"
 #include "./effects/iris.h"
 #include "./effects/isolate.h"
+#include "./effects/kaleidoscope.h"
 #include "./effects/keyselect.h"
 #include "./effects/killchroma.h"
 #include "./effects/levelcorrection.h"
@@ -196,7 +197,7 @@
 #include "./transitions/vbar.h"
 #include "./transitions/wipe.h"
 
-#define VJ_IMAGE_EFFECT_MIN 91
+#define VJ_IMAGE_EFFECT_MIN 90
 #define VJ_IMAGE_EFFECT_MAX 199
 
 #define VJ_VIDEO_EFFECT_MIN 200
@@ -425,6 +426,7 @@ enum {
 	VJ_IMAGE_EFFECT_BWOTSU = 93,
 	VJ_IMAGE_EFFECT_MEANFILTER = 92,
 	VJ_IMAGE_EFFECT_BGPUSH = 91,
+	VJ_IMAGE_EFFECT_KALEIDOSCOPE = 90,
 	VJ_IMAGE_EFFECT_DUMMY=0,
 };
 
