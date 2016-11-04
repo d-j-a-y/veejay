@@ -87,6 +87,7 @@
 #include "./effects/dupmagic.h"
 #include "./effects/emboss.h"
 #include "./effects/enhancemask.h"
+#include "./effects/escherdroste.h"
 #include "./effects/feathermask.h"
 #include "./effects/fibdownscale.h"
 #include "./effects/fisheye.h"
@@ -196,7 +197,7 @@
 #include "./transitions/vbar.h"
 #include "./transitions/wipe.h"
 
-#define VJ_IMAGE_EFFECT_MIN 91
+#define VJ_IMAGE_EFFECT_MIN 89
 #define VJ_IMAGE_EFFECT_MAX 199
 
 #define VJ_VIDEO_EFFECT_MIN 200
@@ -425,6 +426,7 @@ enum {
 	VJ_IMAGE_EFFECT_BWOTSU = 93,
 	VJ_IMAGE_EFFECT_MEANFILTER = 92,
 	VJ_IMAGE_EFFECT_BGPUSH = 91,
+	VJ_IMAGE_EFFECT_ESCHERDROSTE = 89,
 	VJ_IMAGE_EFFECT_DUMMY=0,
 };
 

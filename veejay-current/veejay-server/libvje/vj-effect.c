@@ -124,6 +124,7 @@ static struct
 {	meanfilter_malloc,meanfilter_free,NULL,VJ_IMAGE_EFFECT_MEANFILTER},
 {	bgpush_malloc,bgpush_free,NULL,VJ_IMAGE_EFFECT_BGPUSH},
 {	distortion_malloc,distortion_free, NULL, VJ_IMAGE_EFFECT_DISTORTION },
+{	escherdroste_malloc,escherdroste_free, NULL, VJ_IMAGE_EFFECT_ESCHERDROSTE },
 {	NULL,NULL,NULL,0},
 };
 
@@ -548,6 +549,7 @@ void vj_effect_initialize(int width, int height, int full_range)
 	vj_effects[VJ_IMAGE_EFFECT_RANDNOISE]			= randnoise_init(width,height);
 	vj_effects[VJ_IMAGE_EFFECT_MEANFILTER]			= meanfilter_init(width,height);
 	vj_effects[VJ_IMAGE_EFFECT_BGPUSH]			= bgpush_init(width,height);
+	vj_effects[VJ_IMAGE_EFFECT_ESCHERDROSTE]		= escherdroste_init(width,height);
 
 	max_width = width;
 	max_height = height;

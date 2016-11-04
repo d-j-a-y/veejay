@@ -425,6 +425,9 @@ static void vj_effman_apply_image_effect(
 	case VJ_IMAGE_EFFECT_BGPUSH:
 		bgpush_apply(frames[0]);
 		break;
+	case VJ_IMAGE_EFFECT_ESCHERDROSTE:
+		escherdroste_apply(frames[0], arg[0]);
+		break;
    }
 }
 
