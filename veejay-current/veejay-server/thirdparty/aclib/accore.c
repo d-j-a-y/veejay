@@ -78,7 +78,12 @@ const char *ac_flagstotext(int accel)
     static char retbuf[1000];
     if (!accel)
         return "none";
-    snprintf(retbuf, sizeof(retbuf), "%s%s%s%s%s%s%s%s%s",
+    snprintf(retbuf, sizeof(retbuf), "%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+             accel & AC_SSE5                  ? " sse5"     : "",
+             accel & AC_SSE4A                 ? " sse4a"    : "",
+             accel & AC_SSE42                 ? " sse42"    : "",
+             accel & AC_SSE41                 ? " sse41"    : "",
+             accel & AC_SSSE3                 ? " ssse3"    : "",
              accel & AC_SSE3                  ? " sse3"     : "",
              accel & AC_SSE2                  ? " sse2"     : "",
              accel & AC_SSE                   ? " sse"      : "",
@@ -90,6 +95,78 @@ const char *ac_flagstotext(int accel)
              accel & (AC_IA32ASM|AC_AMD64ASM) ? " asm"      : "");
     return *retbuf ? retbuf+1 : retbuf;  /* skip initial space */
 }
+
+/* Utility routine to parse a comma-separate descriptive string to the
+   corrisponding flag. The reverse of ac_flagstotext.
+   Returns 1 on success, 0 on failure */
+
+#define AC_FLAG_LEN     16
+
+int ac_parseflags(const char *text, int *accel)
+{
+    int parsed = 1, done = 0;
+    if (!text || !accel)
+        return 0;
+#if defined(ARCH_X86) || defined(ARCH_X86_64)
+    *accel = 0;
+
+    while (parsed && !done) {
+        char buf[AC_FLAG_LEN + 1] = { '\0' };
+        const char *comma = strchr(text, ',');
+        if (!comma) {
+            strncpy(buf, text, AC_FLAG_LEN);
+            done = 1;
+        } else {
+            /* parse the remaining and exit*/
+            size_t len = (comma - text);
+            if (len > AC_FLAG_LEN)
+                len = AC_FLAG_LEN;
+            strncpy(buf, text, len);
+        }
+//fprintf(stderr, "(%s) buf=[%s]\n", __func__, buf);
+        if (strcasecmp(buf, "C") == 0)  // dummy for "no accel"
+            *accel |= 0;
+#ifdef ARCH_X86
+        else if (strcasecmp(buf, "asm"     ) == 0)
+            *accel |= AC_IA32ASM;
+#endif
+#ifdef ARCH_X86_64
+        else if (strcasecmp(buf, "asm"     ) == 0)
+            *accel |= AC_AMD64ASM;
+#endif
+        else if (strcasecmp(buf, "mmx"     ) == 0)
+            *accel |= AC_MMX;
+        else if (strcasecmp(buf, "mmxext"  ) == 0)
+            *accel |= AC_MMXEXT;
+        else if (strcasecmp(buf, "3dnow"   ) == 0)
+            *accel |= AC_3DNOW;
+        else if (strcasecmp(buf, "3dnowext") == 0)
+            *accel |= AC_3DNOWEXT;
+        else if (strcasecmp(buf, "sse"     ) == 0)
+            *accel |= AC_SSE;
+        else if (strcasecmp(buf, "sse2"    ) == 0)
+            *accel |= AC_SSE2;
+        else if (strcasecmp(buf, "sse3"    ) == 0)
+            *accel |= AC_SSE3;
+        else if (strcasecmp(buf, "ssse3"   ) == 0)
+            *accel |= AC_SSSE3;
+        else if (strcasecmp(buf, "sse41"   ) == 0)
+            *accel |= AC_SSE41;
+        else if (strcasecmp(buf, "sse42"   ) == 0)
+            *accel |= AC_SSE42;
+        else if (strcasecmp(buf, "sse4a"   ) == 0)
+            *accel |= AC_SSE4A;
+        else if (strcasecmp(buf, "sse5"    ) == 0)
+            *accel |= AC_SSE5;
+        else
+            parsed = 0;
+        text = comma + 1;
+    }
+#endif
+    return parsed;
+}
+
+#undef AC_FLAG_LEN
 
 /*************************************************************************/
 /*************************************************************************/
@@ -132,17 +209,25 @@ const char *ac_flagstotext(int accel)
 #define CPUID_1D_SSE            (1UL<<25)
 #define CPUID_1D_SSE2           (1UL<<26)
 #define CPUID_1C_SSE3           (1UL<< 0)
+#define CPUID_1C_SSSE3          (1UL<< 9)
+#define CPUID_1C_SSE41          (1UL<<19)
+#define CPUID_1C_SSE42          (1UL<<20)
 #define CPUID_X1D_AMD_MMXEXT    (1UL<<22)  /* AMD only */
 #define CPUID_X1D_AMD_3DNOW     (1UL<<31)  /* AMD only */
 #define CPUID_X1D_AMD_3DNOWEXT  (1UL<<30)  /* AMD only */
 #define CPUID_X1D_CYRIX_MMXEXT  (1UL<<24)  /* Cyrix only */
+#define CPUID_X1C_AMD_SSE4A     (1UL<< 6)  /* AMD only */
+#define CPUID_X1C_AMD_SSE5      (1UL<<11)  /* AMD only */
 
 static int cpuinfo_x86(void)
 {
     uint32_t eax, ebx, ecx, edx;
     uint32_t cpuid_max, cpuid_ext_max;  /* Maximum CPUID function numbers */
-    char cpu_vendor[13];  /* 12-byte CPU vendor string + trailing null */
-    uint32_t cpuid_1D, cpuid_1C, cpuid_X1D;
+    union {
+        char string[13];
+        struct { uint32_t ebx, edx, ecx; } regs;
+    } cpu_vendor;  /* 12-byte CPU vendor string + trailing null */
+    uint32_t cpuid_1D, cpuid_1C, cpuid_X1C, cpuid_X1D;
     int accel;
 
     /* First see if the CPUID instruction is even available.  We try to
@@ -164,19 +249,19 @@ static int cpuinfo_x86(void)
     /* Determine the maximum function number available, and save the vendor
      * string */
     CPUID(0, cpuid_max, ebx, ecx, edx);
-    *((uint32_t *)(cpu_vendor  )) = ebx;
-    *((uint32_t *)(cpu_vendor+4)) = edx;
-    *((uint32_t *)(cpu_vendor+8)) = ecx;
-    cpu_vendor[12] = 0;
+    cpu_vendor.regs.ebx = ebx;
+    cpu_vendor.regs.ecx = ecx;
+    cpu_vendor.regs.edx = edx;
+    cpu_vendor.string[12] = 0;
     cpuid_ext_max = 0;  /* FIXME: how do early CPUs respond to 0x80000000? */
     CPUID(0x80000000, cpuid_ext_max, ebx, ecx, edx);
 
     /* Read available features */
-    cpuid_1D = cpuid_1C = cpuid_X1D = 0;
+    cpuid_1D = cpuid_1C = cpuid_X1C = cpuid_X1D = 0;
     if (cpuid_max >= 1)
         CPUID(1, eax, ebx, cpuid_1C, cpuid_1D);
     if (cpuid_ext_max >= 0x80000001)
-        CPUID(0x80000001, eax, ebx, ecx, cpuid_X1D);
+        CPUID(0x80000001, eax, ebx, cpuid_X1C, cpuid_X1D);
 
     /* Convert to acceleration flags */
 #ifdef ARCH_X86_64
@@ -194,14 +279,24 @@ static int cpuinfo_x86(void)
         accel |= AC_SSE2;
     if (cpuid_1C & CPUID_1C_SSE3)
         accel |= AC_SSE3;
-    if (strcmp(cpu_vendor, "AuthenticAMD") == 0) {
+    if (cpuid_1C & CPUID_1C_SSSE3)
+        accel |= AC_SSSE3;
+    if (cpuid_1C & CPUID_1C_SSE41)
+        accel |= AC_SSE41;
+    if (cpuid_1C & CPUID_1C_SSE42)
+        accel |= AC_SSE42;
+    if (strcmp(cpu_vendor.string, "AuthenticAMD") == 0) {
         if (cpuid_X1D & CPUID_X1D_AMD_MMXEXT)
             accel |= AC_MMXEXT;
         if (cpuid_X1D & CPUID_X1D_AMD_3DNOW)
             accel |= AC_3DNOW;
         if (cpuid_X1D & CPUID_X1D_AMD_3DNOWEXT)
             accel |= AC_3DNOWEXT;
-    } else if (strcmp(cpu_vendor, "CyrixInstead") == 0) {
+        if (cpuid_X1C & CPUID_X1C_AMD_SSE4A)
+            accel |= AC_SSE4A;
+        if (cpuid_X1C & CPUID_X1C_AMD_SSE5)
+            accel |= AC_SSE5;
+    } else if (strcmp(cpu_vendor.string, "CyrixInstead") == 0) {
         if (cpuid_X1D & CPUID_X1D_CYRIX_MMXEXT)
             accel |= AC_MMXEXT;
     }

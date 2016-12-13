@@ -34,6 +34,26 @@
 # define EDI "%%edi"
 #endif
 
+/* Macros to push and pop one or two registers within an assembly block.
+ * The x86-64 ABI allows leaf functions to write to 128 bytes BELOW
+ * (yes, below) the stack pointer, so we can't just push our own stuff
+ * there.  Argh. */
+#ifdef ARCH_X86_64
+# define FAKE_PUSH_REG "r12"
+# define FAKE_PUSH_REG_2 "r13"
+# define COMMA_FAKE_PUSH_REG ,FAKE_PUSH_REG
+# define PUSH(reg) "mov " reg ", %%" FAKE_PUSH_REG
+# define POP(reg)  "mov %%" FAKE_PUSH_REG ", " reg
+# define PUSH2(reg1,reg2) PUSH(reg1) "; mov " reg2 ", %%" FAKE_PUSH_REG_2
+# define POP2(reg2,reg1)  "mov %%" FAKE_PUSH_REG_2 ", " reg2 "; " POP(reg1)
+#else
+# define COMMA_FAKE_PUSH_REG /*nothing*/
+# define PUSH(reg) "push " reg
+# define POP(reg)  "pop "  reg
+# define PUSH2(reg1,reg2) "push " reg1 "; push " reg2
+# define POP2(reg2,reg1)  "pop "  reg2 "; pop "  reg1
+#endif
+
 /* Data for isolating particular bytes.  Used by the SWAP32 macros; if you
  * use them, make sure to define DEFINE_MASK_DATA before including this
  * file! */
@@ -204,8 +224,6 @@ static const struct { uint32_t n[64]; } __attribute__((aligned(16))) mask_data =
  */
 
 #define SIMD_LOOP_WRAPPER(blocksize,push_regs,pop_regs,small_loop,main_loop,emms) \
-        /* Always save ECX--GCC may rely on it being unmodified */      \
-        "push "ECX"; "                                                  \
         /* Check whether the count is a multiple of the blocksize (this \
          * can cause branch mispredicts but seems to be faster overall) */ \
         "testl $(("#blocksize")-1), %%ecx; "                            \
@@ -228,9 +246,8 @@ static const struct { uint32_t n[64]; } __attribute__((aligned(16))) mask_data =
         "jnz 1b; "                                                      \
         /* Clear MMX state and/or SFENCE, as needed */                  \
         emms"; "                                                        \
-        /* Restore ECX and finish */                                    \
-        "2: "                                                           \
-        "pop "ECX";"
+        /* Done */                                                      \
+        "2: "
 
 /*************************************************************************/
 

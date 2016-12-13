@@ -736,7 +736,7 @@ static int bgra32_rgb24_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
 
 #define ASM_RGB24_GRAY(ofsR,ofsG,ofsB,load) \
     asm(INIT_GRAY8                                                      \
-        "push "EBX"                                                     \n\
+        PUSH(EBX)"                                                      \n\
         lea ("ECX","ECX",2),"EBX"                                       \n"\
         SIMD_LOOP_WRAPPER(                                              \
         /* blocksize  */ 8,                                             \
@@ -745,11 +745,12 @@ static int bgra32_rgb24_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
         /* small_loop */ SINGLE_GRAY8(EBX, ofsR,ofsG,ofsB) "subl $3, %%ebx;",\
         /* main_loop  */ load(4) STORE_GRAY8 "subl $24, %%ebx;",        \
         /* emms */ "emms")                                              \
-        "pop "EBX                                                       \
+        POP(EBX)                                                        \
         : /* no outputs */                                              \
         : "S" (src[0]), "D" (dest[0]), "c" (width*height),              \
           "i" (R_GRAY), "i" (G_GRAY), "i" (B_GRAY)                      \
-        : "eax", "edx")
+        : "eax", "edx" COMMA_FAKE_PUSH_REG                              \
+    )
 
 #define ASM_RGB32_GRAY(ofsR,ofsG,ofsB,load) \
     asm(INIT_GRAY8                                                      \

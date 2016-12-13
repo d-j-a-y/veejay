@@ -319,8 +319,10 @@ static int y8_yuv444p(uint8_t **src, uint8_t **dest, int width, int height)
 #include "img_x86_common.h"
 
 /* Average 2 bytes horizontally (e.g. 422P->411P) (unit: 2 source bytes) */
-#define AVG_2H(src,dest,count) \
-    asm("pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;" /* XMM7: 0x00FF*8 */ \
+#define AVG_2H(src,dest,count)  do { \
+    int dummy;                                                          \
+    asm volatile(                                                       \
+        "pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;" /* XMM7: 0x00FF*8 */ \
         SIMD_LOOP_WRAPPER(                                              \
         /* blocksize */ 8,                                              \
         /* push_regs */ "",                                             \
@@ -340,13 +342,16 @@ static int y8_yuv444p(uint8_t **src, uint8_t **dest, int width, int height)
         packuswb %%xmm0, %%xmm0         # XMM0: wvutsrqpwvutsrqp        \n\
         movq %%xmm0, -8("EDI","ECX")",                                  \
         /* emms */ "emms")                                              \
-        : /* no outputs */                                              \
-        : "S" (src), "D" (dest), "c" (count)                            \
-        : "eax", "edx")
+        : "=c" (dummy)                                                  \
+        : "S" (src), "D" (dest), "0" (count)                            \
+        : "eax", "edx");                                                \
+} while (0)
 
 /* Average 4 bytes horizontally (e.g. 444P->411P) (unit: 4 source bytes) */
-#define AVG_4H(src,dest,count) \
-    asm("pcmpeqd %%xmm7, %%xmm7; psrld $24, %%xmm7;" /* XMM7: 0x000000FF*4 */ \
+#define AVG_4H(src,dest,count)  do { \
+    int dummy;                                                          \
+    asm volatile(                                                       \
+        "pcmpeqd %%xmm7, %%xmm7; psrld $24, %%xmm7;" /* XMM7: 0x000000FF*4 */ \
         SIMD_LOOP_WRAPPER(                                              \
         /* blocksize */ 4,                                              \
         /* push_regs */ "",                                             \
@@ -379,13 +384,15 @@ static int y8_yuv444p(uint8_t **src, uint8_t **dest, int width, int height)
         packuswb %%xmm0, %%xmm0         # XMM0: srqpsrqpsrqpsrqp        \n\
         movd %%xmm0, -4("EDI","ECX")",                                  \
         /* emms */ "emms")                                              \
-        : /* no outputs */                                              \
-        : "S" (src), "D" (dest), "c" (count)                            \
-        : "eax", "edx")
+        : "=c" (dummy)                                                  \
+        : "S" (src), "D" (dest), "0" (count)                            \
+        : "eax", "edx");                                                \
+} while (0)
 
 /* Repeat 2 bytes horizontally (e.g. 422P->444P) (unit: 1 source byte) */
-#define REP_2H(src,dest,count) \
-    asm(SIMD_LOOP_WRAPPER(                                              \
+#define REP_2H(src,dest,count)  do { \
+    int dummy;                                                          \
+    asm volatile(SIMD_LOOP_WRAPPER(                                     \
         /* blocksize */ 8,                                              \
         /* push_regs */ "",                                             \
         /* pop_regs  */ "",                                             \
@@ -398,13 +405,15 @@ static int y8_yuv444p(uint8_t **src, uint8_t **dest, int width, int height)
         punpcklbw %%xmm0, %%xmm0        # XMM0: 7766554433221100        \n\
         movdqu %%xmm0, -16("EDI","ECX",2)",                             \
         /* emms */ "emms")                                              \
-        : /* no outputs */                                              \
-        : "S" (src), "D" (dest), "c" (count)                            \
-        : "eax")
+        : "=c" (dummy)                                                  \
+        : "S" (src), "D" (dest), "0" (count)                            \
+        : "eax");                                                       \
+} while (0)
 
 /* Repeat 4 bytes horizontally (e.g. 411P->444P) (unit: 1 source byte) */
-#define REP_4H(src,dest,count) \
-    asm(SIMD_LOOP_WRAPPER(                                              \
+#define REP_4H(src,dest,count)  do { \
+    int dummy;                                                          \
+    asm volatile(SIMD_LOOP_WRAPPER(                                     \
         /* blocksize */ 4,                                              \
         /* push_regs */ "",                                             \
         /* pop_regs  */ "",                                             \
@@ -421,14 +430,16 @@ static int y8_yuv444p(uint8_t **src, uint8_t **dest, int width, int height)
         punpcklwd %%xmm0, %%xmm0        # XMM0: 3333222211110000        \n\
         movdqu %%xmm0, -16("EDI","ECX",4)",                             \
         /* emms */ "emms")                                              \
-        : /* no outputs */                                              \
-        : "S" (src), "D" (dest), "c" (count)                            \
-        : "eax", "edx")
+        : "=c" (dummy)                                                  \
+        : "S" (src), "D" (dest), "0" (count)                            \
+        : "eax", "edx");                                                \
+} while (0)
 
 /* Average 2 bytes vertically and double horizontally (411P->420P)
  * (unit: 1 source byte) */
-#define AVG_411_420(src1,src2,dest,count) \
-    asm(SIMD_LOOP_WRAPPER(                                              \
+#define AVG_411_420(src1,src2,dest,count)  do { \
+    int dummy;                                                          \
+    asm volatile(SIMD_LOOP_WRAPPER(                                     \
         /* blocksize */ 8,                                              \
         /* push_regs */ "push "EBX,                                     \
         /* pop_regs  */ "pop "EBX,                                      \
@@ -446,13 +457,15 @@ static int y8_yuv444p(uint8_t **src, uint8_t **dest, int width, int height)
         punpcklbw %%xmm0, %%xmm0                                        \n\
         movdqu %%xmm0, -16("EDI","ECX",2)",                             \
         /* emms */ "emms")                                              \
-        : /* no outputs */                                              \
-        : "S" (src1), "d" (src2), "D" (dest), "c" (count)               \
-        : "eax")
+        : "=c" (dummy)                                                  \
+        : "S" (src1), "d" (src2), "D" (dest), "0" (count)               \
+        : "eax");                                                       \
+} while (0)
 
 /* Average 2 bytes vertically (422P->420P) (unit: 1 source byte) */
-#define AVG_422_420(src1,src2,dest,count) \
-    asm(SIMD_LOOP_WRAPPER(                                              \
+#define AVG_422_420(src1,src2,dest,count)  do { \
+    int dummy;                                                          \
+    asm volatile(SIMD_LOOP_WRAPPER(                                     \
         /* blocksize */ 16,                                             \
         /* push_regs */ "push "EBX,                                     \
         /* pop_regs  */ "pop "EBX,                                      \
@@ -468,14 +481,17 @@ static int y8_yuv444p(uint8_t **src, uint8_t **dest, int width, int height)
         pavgb %%xmm1, %%xmm0                                            \n\
         movdqu %%xmm0, -16("EDI","ECX")",                               \
         /* emms */ "emms")                                              \
-        : /* no outputs */                                              \
-        : "S" (src1), "d" (src2), "D" (dest), "c" (count)               \
-        : "eax")
+        : "=c" (dummy)                                                  \
+        : "S" (src1), "d" (src2), "D" (dest), "0" (count)               \
+        : "eax");                                                       \
+} while (0)
 
 /* Average 4 bytes, 2 horizontally and 2 vertically (444P->420P)
  * (unit: 2 source bytes) */
-#define AVG_444_420(src1,src2,dest,count) \
-    asm("pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;" /* XMM7: 0x00FF*8 */ \
+#define AVG_444_420(src1,src2,dest,count)  do { \
+    int dummy;                                                          \
+    asm volatile(                                                       \
+        "pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;" /* XMM7: 0x00FF*8 */ \
         SIMD_LOOP_WRAPPER(                                              \
         /* blocksize */ 8,                                              \
         /* push_regs */ "push "EBX,                                     \
@@ -505,8 +521,9 @@ static int y8_yuv444p(uint8_t **src, uint8_t **dest, int width, int height)
         packuswb %%xmm0, %%xmm0                                         \n\
         movq %%xmm0, -8("EDI","ECX")",                                  \
         /* emms */ "emms")                                              \
-        : /* no outputs */                                              \
-        : "S" (src1), "d" (src2), "D" (dest), "c" (count))
+        : "=c" (dummy)                                                  \
+        : "S" (src1), "d" (src2), "D" (dest), "c" (count));             \
+} while (0)
 
 /*************************************************************************/
 

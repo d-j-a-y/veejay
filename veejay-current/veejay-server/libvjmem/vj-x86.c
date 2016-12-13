@@ -145,9 +145,10 @@ int	mem_align_size()
 
 void vj_mem_init(void)
 {
-	ac_init( AC_ALL );
-
-	ac_imgconvert_init(AC_ALL);
+	int accel = ac_cpuinfo();
+	veejay_msg( VEEJAY_MSG_INFO, "CPU flags: %s", ac_flagstotext(accel));
+	ac_init( accel ); // return 0 if not success
+	//ac_imgconvert_init(AC_ALL); //(already called by ac_init)
 
 #ifdef ARCH_X86 
 	CACHE_LINE_SIZE = get_cache_line_size();
@@ -169,7 +170,7 @@ void vj_mem_init(void)
 
 void	vj_mem_destroy()
 {
-	ac_destroy();
+	//ac_destroy(); //(API updated)
 }
 
 int	vj_mem_threaded_init(int w, int h)

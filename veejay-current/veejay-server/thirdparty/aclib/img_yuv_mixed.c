@@ -260,8 +260,8 @@ static int uyvy_y8(uint8_t **src, uint8_t **dest, int width, int height)
 #define YUV42XP_YUY2 \
     SIMD_LOOP_WRAPPER(                                                  \
         /* blocksize */ 8,                                              \
-        /* push_regs */ "push "EBX,                                     \
-        /* pop_regs  */ "pop "EBX,                                      \
+        /* push_regs */ PUSH(EBX),                                      \
+        /* pop_regs  */ POP(EBX),                                       \
         /* small_loop */                                                \
         "movb -1("EDX","ECX"), %%bh                                     \n\
         movb -1("ESI","ECX",2), %%bl                                    \n\
@@ -285,8 +285,8 @@ static int uyvy_y8(uint8_t **src, uint8_t **dest, int width, int height)
 #define YUV411P_YUY2 \
     SIMD_LOOP_WRAPPER(                                                  \
         /* blocksize */ 4,                                              \
-        /* push_regs */ "push "EBX,                                     \
-        /* pop_regs  */ "pop "EBX,                                      \
+        /* push_regs */ PUSH(EBX),                                      \
+        /* pop_regs  */ POP(EBX),                                       \
         /* small_loop */                                                \
         "movb -1("EDX","ECX"), %%bh                                     \n\
         movb -1("ESI","ECX",4), %%bl                                    \n\
@@ -320,8 +320,8 @@ static int uyvy_y8(uint8_t **src, uint8_t **dest, int width, int height)
     "pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;"                         \
     SIMD_LOOP_WRAPPER(                                                  \
         /* blocksize */ 8,                                              \
-        /* push_regs */ "push "EBX"; push "EBP,                         \
-        /* pop_regs  */ "pop "EBP"; pop "EBX,                           \
+        /* push_regs */ PUSH2(EBX,EBP),                                 \
+        /* pop_regs  */ POP2(EBP,EBX),                                  \
         /* small_loop */                                                \
         "movzbl -1("EDX","ECX",2), %%ebx                                \n\
         movzbl -2("EDX","ECX",2), %%ebp                                 \n\
@@ -364,8 +364,8 @@ static int uyvy_y8(uint8_t **src, uint8_t **dest, int width, int height)
     "pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;"                         \
     SIMD_LOOP_WRAPPER(                                                  \
         /* blocksize */ 4,                                              \
-        /* push_regs */ "push "EBX"; push "EBP,                         \
-        /* pop_regs  */ "pop "EBP"; pop "EBX,                           \
+        /* push_regs */ PUSH2(EBX,EBP),                                 \
+        /* pop_regs  */ POP2(EBP,EBX),                                  \
         /* small_loop */                                                \
         "movb -4("ESI","ECX",4), %%bl                                   \n\
         movb %%bl, -2("EDI","ECX",2)                                    \n\
@@ -398,8 +398,8 @@ static int uyvy_y8(uint8_t **src, uint8_t **dest, int width, int height)
     "pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;"                         \
     SIMD_LOOP_WRAPPER(                                                  \
         /* blocksize */ 4,                                              \
-        /* push_regs */ "push "EBX"; push "EBP,                         \
-        /* pop_regs  */ "pop "EBP"; pop "EBX,                           \
+        /* push_regs */ PUSH2(EBX,EBP),                                 \
+        /* pop_regs  */ POP2(EBP,EBX),                                  \
         /* small_loop */                                                \
         "movb -4("ESI","ECX",4), %%bl                                   \n\
         movb %%bl, -2("EDI","ECX",2)                                    \n\
@@ -433,8 +433,8 @@ static int uyvy_y8(uint8_t **src, uint8_t **dest, int width, int height)
     "pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;"                         \
     SIMD_LOOP_WRAPPER(                                                  \
         /* blocksize */ 2,                                              \
-        /* push_regs */ "push "EBX"; push "EBP,                         \
-        /* pop_regs  */ "pop "EBP"; pop "EBX,                           \
+        /* push_regs */ PUSH2(EBX,EBP),                                 \
+        /* pop_regs  */ POP2(EBP,EBX),                                  \
         /* small_loop */                                                \
         "movb -8("ESI","ECX",8), %%bl                                   \n\
         movb %%bl, -4("EDI","ECX",4)                                    \n\
@@ -487,8 +487,8 @@ static int uyvy_y8(uint8_t **src, uint8_t **dest, int width, int height)
     "pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;"                         \
     SIMD_LOOP_WRAPPER(                                                  \
         /* blocksize */ 4,                                              \
-        /* push_regs */ "push "EBX,                                     \
-        /* pop_regs  */ "pop "EBX,                                      \
+        /* push_regs */ PUSH(EBX),                                      \
+        /* pop_regs  */ POP(EBX),                                       \
         /* small_loop */                                                \
         "movb -4("ESI","ECX",4), %%bl                                   \n\
         movb %%bl, -2("EDI","ECX",2)                                    \n\
@@ -521,8 +521,8 @@ static int uyvy_y8(uint8_t **src, uint8_t **dest, int width, int height)
     "pcmpeqd %%xmm7, %%xmm7; psrlw $8, %%xmm7;"                         \
     SIMD_LOOP_WRAPPER(                                                  \
         /* blocksize */ 4,                                              \
-        /* push_regs */ "push "EBX,                                     \
-        /* pop_regs  */ "pop "EBX,                                      \
+        /* push_regs */ PUSH(EBX),                                      \
+        /* pop_regs  */ POP(EBX),                                       \
         /* small_loop */                                                \
         "movb -4("ESI","ECX",4), %%bl                                   \n\
         movb %%bl, -2("EDI","ECX",2)                                    \n\
@@ -562,8 +562,8 @@ static int uyvy_y8(uint8_t **src, uint8_t **dest, int width, int height)
     "pcmpeqd %%xmm7, %%xmm7; psllw $7, %%xmm7; packsswb %%xmm7, %%xmm7;"\
     SIMD_LOOP_WRAPPER(                                                  \
         /* blocksize */ 16,                                             \
-        /* push_regs */ "",                                             \
-        /* pop_regs  */ "",                                             \
+        /* push_regs */ PUSH(EBX),                                      \
+        /* pop_regs  */ POP(EBX),                                       \
         /* small_loop */                                                \
         "movb -1("ESI","ECX"), %%al                                     \n\
         movb %%al, -2("EDI","ECX",2)                                    \n\
@@ -639,11 +639,16 @@ static int yuv420p_yuy2_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
 {
     int y;
     for (y = 0; y < (height & ~1); y++) {
-        asm(YUV42XP_YUY2
-            : /* no outputs */
+        int dummy;
+        asm volatile(YUV42XP_YUY2
+            : "=c" (dummy)  // Ensure GCC reloads ECX each time through
             : "S" (src[0]+y*width), "a" (src[1]+(y/2)*(width/2)),
               "d" (src[2]+(y/2)*(width/2)), "D" (dest[0]+y*width*2),
-              "c" (width/2));
+              "0" (width/2)
+#ifdef ARCH_X86_64
+            : FAKE_PUSH_REG
+#endif
+        );
     }
     return 1;
 }
@@ -654,15 +659,24 @@ static int yuv411p_yuy2_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
         asm(YUV411P_YUY2
             : /* no outputs */
             : "S" (src[0]), "a" (src[1]), "d" (src[2]), "D" (dest[0]),
-              "c" ((width/4)*height));
+              "c" ((width/4)*height)
+#ifdef ARCH_X86_64
+            : FAKE_PUSH_REG
+#endif
+        );
     } else {
         int y;
         for (y = 0; y < height; y++) {
-            asm(YUV411P_YUY2
-                : /* no outputs */
+            int dummy;
+            asm volatile(YUV411P_YUY2
+                : "=c" (dummy)
                 : "S" (src[0]+y*width), "a" (src[1]+y*(width/4)),
                   "d" (src[2]+y*(width/4)), "D" (dest[0]+y*width*2),
-                  "c" (width/4));
+                  "0" (width/4)
+#ifdef ARCH_X86_64
+                : FAKE_PUSH_REG
+#endif
+            );
         }
     }
     return 1;
@@ -674,15 +688,24 @@ static int yuv422p_yuy2_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
         asm(YUV42XP_YUY2
             : /* no outputs */
             : "S" (src[0]), "a" (src[1]), "d" (src[2]), "D" (dest[0]),
-              "c" ((width/2)*height));
+              "c" ((width/2)*height)
+#ifdef ARCH_X86_64
+            : FAKE_PUSH_REG
+#endif
+        );
     } else {
         int y;
         for (y = 0; y < height; y++) {
-            asm(YUV42XP_YUY2
-                : /* no outputs */
+            int dummy;
+            asm volatile(YUV42XP_YUY2
+                : "=c" (dummy)
                 : "S" (src[0]+y*width), "a" (src[1]+y*(width/2)),
                   "d" (src[2]+y*(width/2)), "D" (dest[0]+y*width*2),
-                  "c" (width/2));
+                  "0" (width/2)
+#ifdef ARCH_X86_64
+                : FAKE_PUSH_REG
+#endif
+            );
         }
     }
     return 1;
@@ -694,15 +717,24 @@ static int yuv444p_yuy2_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
         asm(YUV444P_YUY2
             : /* no outputs */
             : "S" (src[0]), "a" (src[1]), "d" (src[2]), "D" (dest[0]),
-              "c" ((width/2)*height));
+              "c" ((width/2)*height)
+#ifdef ARCH_X86_64
+            : FAKE_PUSH_REG, FAKE_PUSH_REG_2
+#endif
+        );
     } else {
         int y;
         for (y = 0; y < height; y++) {
-            asm(YUV444P_YUY2
-                : /* no outputs */
+            int dummy;
+            asm volatile(YUV444P_YUY2
+                : "=c" (dummy)
                 : "S" (src[0]+y*width), "a" (src[1]+y*(width/2)),
                   "d" (src[2]+y*(width/2)), "D" (dest[0]+y*width*2),
-                  "c" (width/2));
+                  "0" (width/2)
+#ifdef ARCH_X86_64
+                : FAKE_PUSH_REG, FAKE_PUSH_REG_2
+#endif
+            );
         }
     }
     return 1;
@@ -715,16 +747,25 @@ static int yuy2_yuv420p_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
     int y;
 
     for (y = 0; y < (height & ~1); y += 2) {
-        asm(YUY2_YUV420P_U
-            : /* no outputs */
+        int dummy;
+        asm volatile(YUY2_YUV420P_U
+            : "=c" (dummy)
             : "S" (src[0]+y*width*2), "a" (src[0]+(y+1)*width*2),
               "D" (dest[0]+y*width), "d" (dest[1]+(y/2)*(width/2)),
-              "c" (width/2));
-        asm(YUY2_YUV420P_V
-            : /* no outputs */
+              "0" (width/2)
+#ifdef ARCH_X86_64
+            : FAKE_PUSH_REG, FAKE_PUSH_REG_2
+#endif
+        );
+        asm volatile(YUY2_YUV420P_V
+            : "=c" (dummy)
             : "S" (src[0]+(y+1)*width*2), "a" (src[0]+y*width*2),
               "D" (dest[0]+(y+1)*width), "d" (dest[2]+(y/2)*(width/2)),
-              "c" (width/2));
+              "0" (width/2)
+#ifdef ARCH_X86_64
+            : FAKE_PUSH_REG, FAKE_PUSH_REG_2
+#endif
+        );
     }
     return 1;
 }
@@ -735,15 +776,24 @@ static int yuy2_yuv411p_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
         asm(YUY2_YUV411P
             : /* no outputs */
             : "S" (src[0]), "D" (dest[0]), "a" (dest[1]), "d" (dest[2]),
-              "c" ((width/4)*height));
+              "c" ((width/4)*height)
+#ifdef ARCH_X86_64
+            : FAKE_PUSH_REG, FAKE_PUSH_REG_2
+#endif
+        );
     } else {
         int y;
         for (y = 0; y < height; y++) {
-            asm(YUY2_YUV411P
-                : /* no outputs */
+            int dummy;
+            asm volatile(YUY2_YUV411P
+                : "=c" (dummy)
                 : "S" (src[0]+y*width*2), "D" (dest[0]+y*width),
                   "a" (dest[1]+y*(width/4)), "d" (dest[2]+y*(width/4)),
-                  "c" (width/4));
+                  "0" (width/4)
+#ifdef ARCH_X86_64
+                : FAKE_PUSH_REG, FAKE_PUSH_REG_2
+#endif
+            );
         }
     }
     return 1;
@@ -755,15 +805,24 @@ static int yuy2_yuv422p_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
         asm(YUY2_YUV422P
             : /* no outputs */
             : "S" (src[0]), "D" (dest[0]), "a" (dest[1]), "d" (dest[2]),
-              "c" ((width/2)*height));
+              "c" ((width/2)*height)
+#ifdef ARCH_X86_64
+            : FAKE_PUSH_REG
+#endif
+        );
     } else {
         int y;
         for (y = 0; y < height; y++) {
-            asm(YUY2_YUV422P
-                : /* no outputs */
+            int dummy;
+            asm volatile(YUY2_YUV422P
+                : "=c" (dummy)
                 : "S" (src[0]+y*width*2), "D" (dest[0]+y*width),
                   "a" (dest[1]+y*(width/2)), "d" (dest[2]+y*(width/2)),
-                  "c" (width/2));
+                  "0" (width/2)
+#ifdef ARCH_X86_64
+                : FAKE_PUSH_REG
+#endif
+            );
         }
     }
     return 1;
@@ -775,15 +834,24 @@ static int yuy2_yuv444p_sse2(uint8_t **src, uint8_t **dest, int width, int heigh
         asm(YUY2_YUV444P
             : /* no outputs */
             : "S" (src[0]), "D" (dest[0]), "a" (dest[1]), "d" (dest[2]),
-              "c" ((width/2)*height));
+              "c" ((width/2)*height)
+#ifdef ARCH_X86_64
+            : FAKE_PUSH_REG
+#endif
+        );
     } else {
         int y;
         for (y = 0; y < height; y++) {
-            asm(YUY2_YUV444P
-                : /* no outputs */
+            int dummy;
+            asm volatile(YUY2_YUV444P
+                : "=c" (dummy)
                 : "S" (src[0]+y*width*2), "D" (dest[0]+y*width),
                   "a" (dest[1]+y*width), "d" (dest[2]+y*width),
-                  "c" (width/2));
+                  "0" (width/2)
+#ifdef ARCH_X86_64
+                : FAKE_PUSH_REG
+#endif
+            );
         }
     }
     return 1;
@@ -796,7 +864,8 @@ static int y8_yuy2_sse2(uint8_t **src, uint8_t **dest, int width, int height)
     asm(Y8_YUY2
         : /* no outputs */
         : "S" (src[0]), "D" (dest[0]), "c" (width*height)
-        : "eax");
+        : "eax" COMMA_FAKE_PUSH_REG
+    );
     return 1;
 }
 
@@ -894,7 +963,7 @@ int ac_imgconvert_init_yuv_mixed(int accel)
             return 0;
         }
     }
-#endif  /* ARCH_X86 || ARCH_X86_64 */
+#endif  /* HAVE_ASM_SSE2 */
 
     return 1;
 }
