@@ -100,7 +100,7 @@ libveejay_la_LDFLAGS +=	$(SDL_LIBS) $(SDL_TTF_LIBS) $(DIRECTFB_LIBS) $(X_LIBS) $
 			$(XML2_LIBS) $(JPEG_LIBS) $(LIBLO_LIBS) $(LIBUNWIND_LIBS) $(GLIB_LIBS) \
 		 	$(FFMPEG_LIBS) $(XINERAMA_LIBS) $(MJPEGTOOLS_LIBS) $(LIBPNG_LIBS) \
 			$(LIBDV_LIBS) $(LIBM_LIBS) $(PIXBUF_LIBS) $(JACK_LIBS) $(LIBQUICKTIME_LIBS) $(RT_LIBS) $(LIBQRENCODE_LIBS) \
-			-DDYNAMIC -O3 -Wall -rdynamic -Wl,-no-undefined 
+			-DDYNAMIC -O3 -Wall -rdynamic -Wl,-no-undefined -fopenmp
 
 # *********************************************************************
 # The tools themselves

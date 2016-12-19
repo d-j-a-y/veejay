@@ -8,7 +8,7 @@ AM_CPPFLAGS = -I$(top_srcdir) -I$(includedir) \
 
 AM_CPPFLAGS += $(FFMPEG_CFLAGS) $(GLIB_CFLAGS)
 
-AM_CFLAGS = $(VJE_CFLAGS) 
+AM_CFLAGS = $(VJE_CFLAGS) -fopenmp
 
 pkginclude_HEADERS=vje.h
 
