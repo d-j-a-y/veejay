@@ -3989,10 +3989,15 @@ static gint load_parameter_info()
 	int *p = &(info->uc.entry_tokens[0]);
 	int len = 0;
 	int i = 0;
+// todo tooltip , update event handler : checkbox-p1 p2 ....
+
 
 	veejay_memset( p, 0, sizeof(info->uc.entry_tokens));
 
-	multi_vims( VIMS_CHAIN_GET_ENTRY, "%d %d", 0, info->uc.selected_chain_entry );
+	int sample_id = 0;
+	if(is_button_toggled("button_selected_sample_toggle") && info->selection_slot)
+		sample_id = info->selection_slot->sample_id;
+	multi_vims( VIMS_CHAIN_GET_ENTRY, "%d %d", sample_id, info->uc.selected_chain_entry );
 
 	gchar *answer = recv_vims(3,&len);
 	if(len <= 0 || answer == NULL )

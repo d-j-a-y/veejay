@@ -598,6 +598,20 @@ void	on_button_fx_entry_value_changed(GtkWidget *w, gpointer user_data)
 	}  	
 }
 
+void	on_button_selected_sample_toggle_toggled(GtkWidget *w, gpointer user_data)
+{
+    if (GTK_TOGGLE_BUTTON (w)->active) 
+    {
+		//todo tooltip ,if not selected do not switch)
+		gtk_widget_set_visible (glade_xml_get_widget_(info->main_window,"image_select_sample_selected"), TRUE);
+		gtk_widget_set_visible (glade_xml_get_widget_(info->main_window,"image_select_sample_current"), FALSE);
+    
+    } else {
+		gtk_widget_set_visible (glade_xml_get_widget_(info->main_window,"image_select_sample_current"), TRUE);
+		gtk_widget_set_visible (glade_xml_get_widget_(info->main_window,"image_select_sample_selected"), FALSE);
+    }
+}
+
 void	on_button_fx_del_clicked(GtkWidget *w, gpointer user_data)
 {
 	multi_vims( VIMS_CHAIN_ENTRY_CLEAR, "%d %d", 0, 

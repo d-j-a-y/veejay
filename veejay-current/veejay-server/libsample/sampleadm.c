@@ -2088,6 +2088,10 @@ int	sample_get_kf_status( int s1, int entry, int *type )
 	if(type != NULL)
 		*type = sample->effect_chain[entry]->kf_type;
 
+/*		type = 0; //GTK_CURVE_TYPE_LINEAR;
+		type = 1; //GTK_CURVE_TYPE_SPLINE;
+		type = 2; //GTK_CURVE_TYPE_FREE;
+*/
 	return sample->effect_chain[entry]->kf_status;
 }
 
