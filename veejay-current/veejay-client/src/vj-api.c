@@ -8819,6 +8819,8 @@ static gboolean on_slot_activated_by_mouse (GtkWidget *widget, GdkEventButton *e
 		vj_msg(VEEJAY_MSG_INFO,
 		       "Start playing %s %d",
 		       (s->sample_type==0 ? "Sample" : "Stream" ), s->sample_id );
+
+		set_selection_of_slot_in_samplebank(FALSE);
 	}
 	else if(event->type == GDK_BUTTON_PRESS )
 	{
@@ -8910,10 +8912,16 @@ static void set_activation_of_slot_in_samplebank( gboolean activate)
 	gtk_widget_modify_fg ( GTK_WIDGET(info->selected_gui_slot->timecode),GTK_STATE_NORMAL, &color );
 }
 
+/* --------------------------------------------------------------------------------------------------------------------------
+ *  Update the ui to reflect the current selection and activate adhoc actions
+   -------------------------------------------------------------------------------------------------------------------------- */
 static void set_selection_of_slot_in_samplebank(gboolean active)
 {
-	if(!info->selection_slot || info->selection_slot->sample_id <= 0)
+	if(!info->selection_slot || info->selection_slot->sample_id <= 0) {
+		set_toggle_button( "button_selected_sample_toggle", FALSE );
+		disable_widget("button_selected_sample_toggle");
 		return;
+	}
 	
 	GdkColor color;
 	color.red = info->normal->red;
@@ -8931,6 +8939,12 @@ static void set_selection_of_slot_in_samplebank(gboolean active)
 		color.blue = 0xffff;
 		color.green = 0;
 		color.red =0;
+
+		enable_widget("button_selected_sample_toggle");
+	}
+	else{
+		set_toggle_button( "button_selected_sample_toggle", FALSE );
+		disable_widget("button_selected_sample_toggle");
 	}
 
 //	gtk_widget_modify_fg ( GTK_WIDGET(info->selection_gui_slot->title),
@@ -9002,10 +9016,10 @@ static void remove_sample_from_slot()
 	if(gui_slot)
 		gtk_image_clear( GTK_IMAGE( gui_slot->image) );
 
-	//set_selection_of_slot_in_samplebank( FALSE );
-
 	info->selection_gui_slot = NULL;
 	info->selection_slot = NULL;
+
+	set_selection_of_slot_in_samplebank( FALSE );
 	
 	info->uc.reload_hint[HINT_SLIST] = 2;	
 
