@@ -5,7 +5,7 @@
 * [HowtoPlugins.txt](./HowtoPlugins.txt)
 * [HowtoUbuntu.txt](./HowtoUbuntu.txt)
 * [HowtoVeejay-PureData.html](./HowtoVeejay-PureData.html)
-* [HowtoVideoCodecs.txt](./HowtoVideoCodecs.txt)
+* [HowtoVideoCodecs.md](./HowtoVideoCodecs.md)
 * [INSTALL](./INSTALL)
 * [Installation](./Installation.md)
 * [NET.txt](./NET.txt)
