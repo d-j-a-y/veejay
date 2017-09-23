@@ -43,6 +43,7 @@ int _effect_get_minmax( int effect_id, int *min, int *max, int index );
 void find_user_themes();
 void register_signals();
 int is_button_toggled(const char *name);
+int get_fxparam_active_slot_id();
 gchar *_utf8str( const char *c_str );
 void gui_load_theme();
 

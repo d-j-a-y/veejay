@@ -1018,7 +1018,12 @@ void		multitrack_toggle_preview( void *data, int track_id, int status, GtkWidget
 		veejay_msg(VEEJAY_MSG_INFO, "VeejayGrabber: master preview %s", (status ? "enabled" : "disabled") );
 		if( status == 0 )
 			multitrack_set_logo( data, img );
-	}
+	}/*else{//WIP preview selected
+		gvr_track_toggle_preview( mt->preview, mt->selected, status ); //selected pb value same master_track to explore
+		veejay_msg(VEEJAY_MSG_INFO, "VeejayGrabber: selected preview %s", (status ? "enabled" : "disabled") );
+		if( status == 0 )
+			multitrack_set_logo( data, img );
+	}*/
 }
 
 void		multitrack_release_track(void *data, int id, int release_this )

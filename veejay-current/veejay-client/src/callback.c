@@ -569,19 +569,28 @@ void	on_button_fx_clearchain_clicked(GtkWidget *w, gpointer user_data)
 	vj_msg(VEEJAY_MSG_INFO, "Clear FX Chain");
 }
 
+int get_fxparam_active_slot_id()
+{
+	return (is_button_toggled("button_selected_sample_toggle") && info->selection_slot) ?
+		info->selection_slot->sample_id : 0;
+}
+
 void	on_button_entry_toggle_clicked(GtkWidget *w, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
+		int slot_id = get_fxparam_active_slot_id();
+		
 		gint val = is_button_toggled( "button_entry_toggle" );
 		int vims_id = VIMS_CHAIN_ENTRY_SET_VIDEO_OFF;
 		if(val)
 			vims_id = VIMS_CHAIN_ENTRY_SET_VIDEO_ON;
-		multi_vims( vims_id,"%d %d", 0, info->uc.selected_chain_entry );
+		multi_vims( vims_id,"%d %d", slot_id, info->uc.selected_chain_entry );
 
-		vj_midi_learning_vims_msg2( info->midi, NULL, vims_id, 0, info->uc.selected_chain_entry );
-		vj_msg(VEEJAY_MSG_INFO, "Chain Entry %d is %s",
+		vj_midi_learning_vims_msg2( info->midi, NULL, vims_id, slot_id, info->uc.selected_chain_entry );
+		vj_msg(VEEJAY_MSG_INFO, "Chain Entry %d of slot %d is %s",
 			info->uc.selected_chain_entry,
+			slot_id,
 			(val ? "Enabled" : "Disabled" ));
 		info->uc.reload_hint[HINT_ENTRY] = 1;
 	}	
@@ -3487,7 +3496,10 @@ void		on_previewbw_toggled( GtkWidget *w , gpointer user_data)
 
 void		on_previewtoggle_toggled(GtkWidget *w, gpointer user_data)
 {
-	multitrack_toggle_preview( info->mt, -1, is_button_toggled("previewtoggle"),glade_xml_get_widget(info->main_window, "imageA") );
+/*	if(get_fxparam_active_slot_id()) //WIP preview selected
+		multitrack_toggle_preview( info->mt, 1, is_button_toggled("previewtoggle"),glade_xml_get_widget(info->main_window, "imageA") );
+	else*/
+		multitrack_toggle_preview( info->mt, -1, is_button_toggled("previewtoggle"),glade_xml_get_widget(info->main_window, "imageA") );
 }
 
 void		on_previewspeed_value_changed( GtkWidget *widget, gpointer user_data)

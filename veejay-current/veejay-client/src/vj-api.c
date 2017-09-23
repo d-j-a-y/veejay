@@ -3994,9 +3994,8 @@ static gint load_parameter_info()
 
 	veejay_memset( p, 0, sizeof(info->uc.entry_tokens));
 
-	int sample_id = 0;
-	if(is_button_toggled("button_selected_sample_toggle") && info->selection_slot)
-		sample_id = info->selection_slot->sample_id;
+	int sample_id = get_fxparam_active_slot_id();
+
 	multi_vims( VIMS_CHAIN_GET_ENTRY, "%d %d", sample_id, info->uc.selected_chain_entry );
 
 	gchar *answer = recv_vims(3,&len);
