@@ -118,7 +118,7 @@ static inline int frei0r_param_get_double(f0r_get_param_value_f q,void *plugin, 
 	double d = 0.0;
 	(*q)( plugin, (void**) &d, seq_no );
 
-	return (int) d;
+	return (int) (d*100);
 }
 
 static inline int frei0r_param_set_double(f0r_set_param_value_f q,void *plugin, int seq_no,int offset, int *args )
@@ -525,6 +525,7 @@ static int init_param_fr( void *port, f0r_param_info_t *info, int offset, int fr
 {
 	int np = 0;
 	int size = frei0r_to_vj_np( info->type );
+
 	switch(info->type)
 	{
 		case F0R_PARAM_DOUBLE:
@@ -535,6 +536,7 @@ static int init_param_fr( void *port, f0r_param_info_t *info, int offset, int fr
 			break;
 		case F0R_PARAM_BOOL:
 			if( (offset+size) < _VJ_MAX_PARAMS ) {
+
 				store_parameter_port( port, offset, init_parameter_port( 0, 1,0, info->name,frei0r_param_count, info->type ) );
 				np = size;
 			}
@@ -873,6 +875,7 @@ void	frei0r_destroy()
 
 void *frei0r_plug_init( void *plugin , int w, int h, int pf )
 {
+	void *port = vpn( VEVO_FR_PORT );
 	void *instance = vpn( VEVO_ANONYMOUS_PORT );
 	f0r_construct_f base;
 	vevo_property_get( plugin, "construct", 0, &base);
@@ -902,6 +905,30 @@ void *frei0r_plug_init( void *plugin , int w, int h, int pf )
 	vevo_property_set( instance, "HOST_plugin_width",VEVO_ATOM_TYPE_INT,1,&w );
 	vevo_property_set( instance, "HOST_plugin_height",VEVO_ATOM_TYPE_INT,1,&h );
 
+
+/*DRAFT FREIOR DEFAULT*/
+//TODO loop over params
+	int hint = 0;
+	void *param = frei0r_plug_get_param(plugin, 0, &hint );
+
+	int seq_no = 0;
+	vevo_property_get( param, "seqno", 0, &seq_no );
+
+	f0r_get_param_value_f q = NULL;
+	int err = vevo_property_get( plugin, "get_params", 0, &q);
+	if( err != VEVO_NO_ERROR || q == NULL ) {
+		return 0;
+	}
+  int paramvalue = frei0r_param_get_double(q,k, seq_no);
+  //THIS WORK, for example with "frei0r sigmoidialetransfer" paramvalue = 75
+  printf("INITPARAM freior: %d \n", paramvalue);
+  
+  f0r_get_plugin_info_f	f0r_info;
+	vevo_property_get( plugin, "info", 0, &f0r_info);
+  //THIS DONT WORK
+	store_parameter_port( port, /*FIXME offset*/0, init_parameter_port( 0, 100,paramvalue, "test",seq_no, hint ) );
+	
+/*END DRAFT FREIOR DEFAULT*/
 
 	int frfmt = 0;
 	vevo_property_get( plugin, "format",0,&frfmt ); 
