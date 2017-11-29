@@ -2238,7 +2238,7 @@
     <property name="icon">icon_stream.png</property>
     <signal handler="on_generator_window_delete_event" name="delete_event"/>
     <child>
-      <object class="GtkFrame" id="frame1">
+      <object class="GtkFrame" id="frame_generator">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label_xalign">0</property>
@@ -2249,7 +2249,7 @@
             <property name="can_focus">False</property>
             <property name="left_padding">12</property>
             <child>
-              <object class="GtkVBox" id="vbox1">
+              <object class="GtkVBox" id="vbox_generators">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
@@ -7651,7 +7651,7 @@
                                                     <property name="can_focus">False</property>
                                                     <property name="label_xalign">0</property>
                                                     <child>
-                                                      <object class="GtkVBox" id="vbox1">
+                                                      <object class="GtkVBox" id="vbox_srt_colors">
                                                         <property name="visible">True</property>
                                                         <property name="can_focus">False</property>
                                                         <child>
@@ -13657,7 +13657,7 @@
                                                         <property name="visible">True</property>
                                                         <property name="can_focus">False</property>
                                                         <child>
-                                                          <object class="GtkFrame" id="frame1">
+                                                          <object class="GtkFrame" id="frame_active_bank">
                                                             <property name="visible">True</property>
                                                             <property name="can_focus">False</property>
                                                             <property name="label_xalign">0</property>
@@ -17852,7 +17852,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frame1">
+                  <object class="GtkFrame" id="frame_vloop">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label_xalign">0</property>
