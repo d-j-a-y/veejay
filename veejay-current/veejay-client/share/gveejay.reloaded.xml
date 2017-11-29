@@ -8439,7 +8439,7 @@
                                                             <property name="can_focus">False</property>
                                                             <property name="spacing">2</property>
                                                             <child>
-                                                            <object class="GtkImage" id="image112">
+                                                            <object class="GtkImage" id="image_sample_record_stop">
                                                             <property name="visible">True</property>
                                                             <property name="can_focus">False</property>
                                                             <property name="pixbuf">icon_recordstop.png</property>
@@ -17920,7 +17920,7 @@
                                 <property name="tooltip-text" translatable="yes">Enable vloopback output video</property>
                                 <signal handler="on_button_vloop_start_clicked" name="clicked"/>
                                 <child>
-                                  <object class="GtkImage" id="image112">
+                                  <object class="GtkImage" id="image_vloop_connect">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="pixbuf">icon_connect.png</property>
