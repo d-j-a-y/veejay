@@ -1385,7 +1385,7 @@
                   <placeholder/>
                 </child>
                 <child>
-                  <object class="GtkButton" id="connecting">
+                  <object class="GtkButton" id="button_connecting">
                     <property name="label" translatable="yes">button119</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -17073,7 +17073,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkProgressBar" id="connecting">
+          <object class="GtkProgressBar" id="progressbar_connecting">
             <property name="can_focus">False</property>
             <property name="pulse_step">0.10000000149</property>
           </object>
