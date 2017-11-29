@@ -5749,7 +5749,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkTable" id="table1">
+                                  <object class="GtkTable" id="table_kf_group2">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="n_columns">8</property>
@@ -17862,7 +17862,7 @@
                         <property name="can_focus">False</property>
                         <property name="left_padding">12</property>
                         <child>
-                          <object class="GtkTable" id="table1">
+                          <object class="GtkTable" id="table_vloop">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="n_columns">4</property>
