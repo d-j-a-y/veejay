@@ -2795,7 +2795,7 @@
                                 <property name="can_focus">False</property>
                                 <property name="spacing">2</property>
                                 <child>
-                                  <object class="GtkImage" id="image524">
+                                  <object class="GtkImage" id="image_generator_window_close">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="stock">gtk-close</property>
@@ -2807,7 +2807,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkLabel" id="label610">
+                                  <object class="GtkLabel" id="label_generator_window_close">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label">Close</property>
@@ -16780,7 +16780,7 @@
                                 <property name="can_focus">False</property>
                                 <property name="spacing">2</property>
                                 <child>
-                                  <object class="GtkImage" id="image524">
+                                  <object class="GtkImage" id="image_input_stream_close">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="stock">gtk-close</property>
@@ -16792,7 +16792,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkLabel" id="label610">
+                                  <object class="GtkLabel" id="label_input_stream_close">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label">Close</property>
