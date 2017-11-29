@@ -2846,7 +2846,7 @@
           </object>
         </child>
         <child type="label">
-          <object class="GtkLabel" id="label1">
+          <object class="GtkLabel" id="label_generators">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">&lt;b&gt;Generators&lt;/b&gt;</property>
@@ -3090,7 +3090,7 @@
                                       </object>
                                     </child>
                                     <child type="label">
-                                      <object class="GtkLabel" id="label272">
+                                      <object class="GtkLabel" id="label_p0_ui">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">&lt;b&gt;p0&lt;/b&gt;</property>
@@ -3213,7 +3213,7 @@
                                       </object>
                                     </child>
                                     <child type="label">
-                                      <object class="GtkLabel" id="label698">
+                                      <object class="GtkLabel" id="label_p1_ui">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">&lt;b&gt;p1&lt;/b&gt;</property>
@@ -3336,7 +3336,7 @@
                                       </object>
                                     </child>
                                     <child type="label">
-                                      <object class="GtkLabel" id="label699">
+                                      <object class="GtkLabel" id="label_p2_ui">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">&lt;b&gt;p2&lt;/b&gt;</property>
@@ -3459,7 +3459,7 @@
                                       </object>
                                     </child>
                                     <child type="label">
-                                      <object class="GtkLabel" id="label700">
+                                      <object class="GtkLabel" id="label_p3_ui">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">&lt;b&gt;p3&lt;/b&gt;</property>
@@ -3582,7 +3582,7 @@
                                       </object>
                                     </child>
                                     <child type="label">
-                                      <object class="GtkLabel" id="label701">
+                                      <object class="GtkLabel" id="label_p4_ui">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">&lt;b&gt;p4&lt;/b&gt;</property>
@@ -3706,7 +3706,7 @@
                                       </object>
                                     </child>
                                     <child type="label">
-                                      <object class="GtkLabel" id="label702">
+                                      <object class="GtkLabel" id="label_p5_ui">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">&lt;b&gt;p5&lt;/b&gt;</property>
@@ -3829,7 +3829,7 @@
                                       </object>
                                     </child>
                                     <child type="label">
-                                      <object class="GtkLabel" id="label703">
+                                      <object class="GtkLabel" id="label_p6_ui">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">&lt;b&gt;p6&lt;/b&gt;</property>
@@ -3953,7 +3953,7 @@
                                       </object>
                                     </child>
                                     <child type="label">
-                                      <object class="GtkLabel" id="label704">
+                                      <object class="GtkLabel" id="label_p7_ui">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">&lt;b&gt;p7&lt;/b&gt;</property>
@@ -4082,7 +4082,7 @@
                                           </object>
                                         </child>
                                         <child type="label">
-                                          <object class="GtkLabel" id="label1">
+                                          <object class="GtkLabel" id="label_p8_ui">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">&lt;b&gt;p8&lt;/b&gt;</property>
@@ -4218,7 +4218,7 @@
                                           </object>
                                         </child>
                                         <child type="label">
-                                          <object class="GtkLabel" id="label2">
+                                          <object class="GtkLabel" id="label_p9_ui">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">&lt;b&gt;p9&lt;/b&gt;</property>
@@ -4354,7 +4354,7 @@
                                           </object>
                                         </child>
                                         <child type="label">
-                                          <object class="GtkLabel" id="label3">
+                                          <object class="GtkLabel" id="label_p10_ui">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">&lt;b&gt;p10&lt;/b&gt;</property>
@@ -4490,7 +4490,7 @@
                                           </object>
                                         </child>
                                         <child type="label">
-                                          <object class="GtkLabel" id="label4">
+                                          <object class="GtkLabel" id="label_p11_ui">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">&lt;b&gt;p11&lt;/b&gt;</property>
@@ -4626,7 +4626,7 @@
                                           </object>
                                         </child>
                                         <child type="label">
-                                          <object class="GtkLabel" id="label5">
+                                          <object class="GtkLabel" id="label_p12_ui">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">&lt;b&gt;p12&lt;/b&gt;</property>
@@ -4762,7 +4762,7 @@
                                           </object>
                                         </child>
                                         <child type="label">
-                                          <object class="GtkLabel" id="label6">
+                                          <object class="GtkLabel" id="label_p13_ui">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">&lt;b&gt;p13&lt;/b&gt;</property>
@@ -4898,7 +4898,7 @@
                                           </object>
                                         </child>
                                         <child type="label">
-                                          <object class="GtkLabel" id="label7">
+                                          <object class="GtkLabel" id="label_p14_ui">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">&lt;b&gt;p14&lt;/b&gt;</property>
@@ -5034,7 +5034,7 @@
                                           </object>
                                         </child>
                                         <child type="label">
-                                          <object class="GtkLabel" id="label8">
+                                          <object class="GtkLabel" id="label_p15_ui">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">&lt;b&gt;p15&lt;/b&gt;</property>
@@ -17867,7 +17867,7 @@
                             <property name="can_focus">False</property>
                             <property name="n_columns">4</property>
                             <child>
-                              <object class="GtkLabel" id="label1">
+                              <object class="GtkLabel" id="label_vloop_out_device">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="xalign">0</property>
