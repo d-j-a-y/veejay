@@ -8407,7 +8407,7 @@
                                                     <property name="tooltip-text" translatable="yes">Start recording</property>
                                                     <signal handler="on_button_sample_recordstart_clicked" name="clicked"/>
                                                     <child>
-                                                      <object class="GtkImage" id="image2328">
+                                                      <object class="GtkImage" id="image_sample_record_start">
                                                         <property name="visible">True</property>
                                                         <property name="can_focus">False</property>
                                                         <property name="pixbuf">icon_record.png</property>
@@ -17899,7 +17899,7 @@
                                 <property name="tooltip-text" translatable="yes">Disable vloopback output video</property>
                                 <signal handler="on_button_vloop_stop_clicked" name="clicked"/>
                                 <child>
-                                  <object class="GtkImage" id="image2328">
+                                  <object class="GtkImage" id="image_vloop_disconnect">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="pixbuf">icon_disconnect.png</property>
