@@ -518,6 +518,7 @@ static void store_parameter_port( void *port, int seq_no, void *parameter_port )
 {
 	char key[20];	
 	snprintf(key,sizeof(key), "p%02d", seq_no );
+  vevo_port_dump(port,0);
 	vevo_property_set( port, key, VEVO_ATOM_TYPE_PORTPTR, 1, &parameter_port );
 }
 
@@ -875,7 +876,6 @@ void	frei0r_destroy()
 
 void *frei0r_plug_init( void *plugin , int w, int h, int pf )
 {
-	void *port = vpn( VEVO_FR_PORT );
 	void *instance = vpn( VEVO_ANONYMOUS_PORT );
 	f0r_construct_f base;
 	vevo_property_get( plugin, "construct", 0, &base);
@@ -926,7 +926,8 @@ void *frei0r_plug_init( void *plugin , int w, int h, int pf )
   f0r_get_plugin_info_f	f0r_info;
 	vevo_property_get( plugin, "info", 0, &f0r_info);
   //THIS DONT WORK
-	store_parameter_port( port, /*FIXME offset*/0, init_parameter_port( 0, 100,paramvalue, "test",seq_no, hint ) );
+  void * paramm = init_parameter_port( 0, 100,paramvalue, "test",seq_no, hint );
+	store_parameter_port( instance, /*FIXME offset*/0,  paramm);
 	
 /*END DRAFT FREIOR DEFAULT*/
 
