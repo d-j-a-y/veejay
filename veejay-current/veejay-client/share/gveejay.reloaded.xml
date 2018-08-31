@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <interface>
+  <requires lib="gtk+" version="3.0"/>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="upper">1</property>
     <property name="lower">0</property>
@@ -1102,8 +1103,6 @@
       </menubar>
     </ui>
   </object>
-  <!-- interface-requires gtk+ 2.6 -->
-  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="Dumpie">
     <property name="sensitive">False</property>
     <property name="can_focus">False</property>
