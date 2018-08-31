@@ -19,7 +19,6 @@
 
 #ifndef VJCURVE_H
 #define VJCURVE_H
-#include <gtk/gtkversion.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #define MAX_CHAIN_LEN	20

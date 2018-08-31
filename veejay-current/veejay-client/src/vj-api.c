@@ -36,6 +36,9 @@
 #include <libavutil/pixfmt.h>
 #include <glade/glade.h>
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
+#include <gdk/gdkx.h>
+
 #include <string.h>
 #include <sys/time.h>
 #include <stdint.h>
@@ -50,8 +53,6 @@
 #include <fcntl.h>
 #include "mpegconsts.h"
 #include "mpegtimecode.h"
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -61,9 +62,6 @@
 #ifdef HAVE_SDL
 #include <src/keyboard.h>
 #endif
-#include <gtk/gtkversion.h>
-#include <gdk/gdk.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <src/curve.h>
 #include <src/multitrack.h>
 #include <src/common.h>

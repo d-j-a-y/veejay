@@ -20,6 +20,8 @@
 #ifndef VJAPI_H
 #define VJAPI_H
 
+#include <gdk/gdk.h>
+
 #define DEFAULT_PORT_NUM 3490
 
 int veejay_tick();

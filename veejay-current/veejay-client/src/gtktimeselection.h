@@ -20,7 +20,7 @@
 #define GTKTIMESELECTION_H
 
 #include <gtk/gtk.h>
-#include <gtk/gtkvbox.h>
+
 
 #ifdef __cplusplus
 extern "C"

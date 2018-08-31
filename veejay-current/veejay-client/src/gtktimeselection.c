@@ -25,7 +25,6 @@
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
-#include <gtk/gtk.h>
 
 #include "gtktimeselection.h"
 

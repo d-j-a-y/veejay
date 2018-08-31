@@ -18,7 +18,7 @@
 #ifndef _cellrendererspin_h_included_
 #define _cellrendererspin_h_included_
 
-#include <gtk/gtkcellrenderertext.h>
+#include <gtk/gtk.h>
 
 /* Some boilerplate GObject type check and type cast macros */
 

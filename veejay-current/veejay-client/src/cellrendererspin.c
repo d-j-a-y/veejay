@@ -43,8 +43,7 @@
  */
 
 #include "cellrendererspin.h"
-#include <gtk/gtkadjustment.h>
-#include <gtk/gtkspinbutton.h>
+
 #include <stdlib.h>
 
 #define GUI_CELL_RENDERER_SPIN_PATH     "gui-cell-renderer-spin-path"
