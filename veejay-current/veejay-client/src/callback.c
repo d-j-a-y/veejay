@@ -4132,35 +4132,29 @@ void	on_button_text_update_clicked(GtkWidget *w, gpointer data)
 
 static	void change_box_color_rgb( GtkWidget *box, int r, int g, int b,int a, int fill )
 {
-	GdkGC *gc = gdk_gc_new( box->window );
-	GdkColor col;
+  cairo_t *cr;
+  cr = gdk_cairo_create (box->window);
 
-	memset( &col,0, sizeof( GdkColor ) );
-	col.red = 255.0 * r;
-	col.green = 255.0 * g;
-	col.blue = 255.0 * b;
+  GdkColor col;
 
-	if(fill)
-	{
-		update_slider_value( "textcolorred", r ,0);
-		update_slider_value( "textcolorgreen",g,0 );
-		update_slider_value( "textcolorblue",b,0);
-		update_slider_value( "textcoloralpha",a,0);
-	}
-	gdk_color_alloc( gtk_widget_get_colormap( box ), &col );
-	
-	gdk_gc_set_foreground( gc, &col );
-	
-	gdk_draw_rectangle( 
-			box->window,
-			gc,
-			TRUE,
-			0,
-			0,
-			24,
-			24 );
+  memset( &col,0, sizeof( GdkColor ) );
+  col.red = 255.0 * r;
+  col.green = 255.0 * g;
+  col.blue = 255.0 * b;
 
-	gdk_gc_unref( gc );
+  if(fill)
+  {
+    update_slider_value( "textcolorred", r ,0);
+    update_slider_value( "textcolorgreen",g,0 );
+    update_slider_value( "textcolorblue",b,0);
+    update_slider_value( "textcoloralpha",a,0);
+  }
+  gdk_colormap_alloc_color( gtk_widget_get_colormap( box ), &col , FALSE, TRUE);
+  gdk_cairo_set_source_color( cr, &col );
+  cairo_rectangle (cr, 0, 0, 24, 24);
+  cairo_fill (cr);
+
+  cairo_destroy(cr);
 }
 
 void	on_combobox_textsrt_changed( GtkWidget *w, gpointer data)
@@ -4184,77 +4178,69 @@ void	on_combobox_textsrt_changed( GtkWidget *w, gpointer data)
 
 static	void change_box_color( GtkWidget *box, double val, int plane, int fill )
 {
-	GdkGC *gc = gdk_gc_new( box->window );
-	GdkColor col;
+  cairo_t *cr;
+  cr = gdk_cairo_create (box->window);
 
-	memset( &col,0, sizeof( GdkColor ) );
-	double v = (1.0 / 255.0) * val;
+  GdkColor col;
+  memset( &col,0, sizeof( GdkColor ) );
+  double v = (1.0 / 255.0) * val;
 
-	int r = get_slider_val( "textcolorred" );
-	int b =  get_slider_val( "textcolorgreen" );
-	int g =  get_slider_val( "textcolorblue" );
-	int a = get_slider_val("textcoloralpha" );
-	
-	if(plane==0)
-	{
-		col.red = 65535.0 * v;
-		switch(fill)
-		{
-			case 0:	fg_[0] = r; break;
-			case 1: bg_[0] = r; break;
-			case 2: ln_[0] = r; break;
-		}
-	}
-	if(plane==1)
-	{
-		col.green = 65535 * v;
-		switch(fill)
-		{
-			case 0:	fg_[1] = g; break;
-			case 1: bg_[1] = g; break;
-			case 2: ln_[1] = g; break;
-		}
-	}
-	if(plane==2)
-	{
-		col.blue = 65535 * v;
-		switch(fill)
-		{
-			case 0:	fg_[2] = b; break;
-			case 1: bg_[2] = b; break;
-			case 2: ln_[2] = b; break;
-		}
+  int r = get_slider_val( "textcolorred" );
+  int b =  get_slider_val( "textcolorgreen" );
+  int g =  get_slider_val( "textcolorblue" );
+  int a = get_slider_val("textcoloralpha" );
 
-	}
-	if(plane==-1)
-	{
-		col.red = 255.0 * r;
-		col.green = 255.0 * g;
-		col.blue = 255.0 * b;
-		switch(fill)
-		{
-			case 0:	fg_[0] = r; fg_[1] = g; fg_[2] = b; fg_[3] = a; break;
-			case 1: bg_[0] = r; bg_[1] = g; bg_[2] = b; bg_[3] = a; break;
-			case 2: ln_[0] = r; ln_[1] = g; ln_[2] = b; ln_[3] = a; break;
-		}
+  if(plane==0)
+  {
+    col.red = 65535.0 * v;
+    switch(fill)
+    {
+      case 0:	fg_[0] = r; break;
+      case 1: bg_[0] = r; break;
+      case 2: ln_[0] = r; break;
+    }
+  }
+  if(plane==1)
+  {
+    col.green = 65535 * v;
+    switch(fill)
+    {
+      case 0:	fg_[1] = g; break;
+      case 1: bg_[1] = g; break;
+      case 2: ln_[1] = g; break;
+    }
+  }
+  if(plane==2)
+  {
+    col.blue = 65535 * v;
+    switch(fill)
+    {
+      case 0:	fg_[2] = b; break;
+      case 1: bg_[2] = b; break;
+      case 2: ln_[2] = b; break;
+    }
+  }
 
-	}
+  if(plane==-1)
+  {
+    col.red = 255.0 * r;
+    col.green = 255.0 * g;
+    col.blue = 255.0 * b;
+    switch(fill)
+    {
+      case 0:	fg_[0] = r; fg_[1] = g; fg_[2] = b; fg_[3] = a; break;
+      case 1: bg_[0] = r; bg_[1] = g; bg_[2] = b; bg_[3] = a; break;
+      case 2: ln_[0] = r; ln_[1] = g; ln_[2] = b; ln_[3] = a; break;
+    }
 
-	
-	gdk_color_alloc( gtk_widget_get_colormap( box ), &col );
-	
-	gdk_gc_set_foreground( gc, &col );
-	
-	gdk_draw_rectangle( 
-			box->window,
-			gc,
-			TRUE,
-			0,
-			0,
-			24,
-			24 );
+  }
 
-	gdk_gc_unref( gc );
+  gdk_colormap_alloc_color( gtk_widget_get_colormap( box ), &col , FALSE, TRUE);
+  gdk_cairo_set_source_color( cr, &col );
+  cairo_rectangle (cr, 0, 0, 24, 24);
+  cairo_fill (cr);
+
+  cairo_destroy(cr);
 }
 
 static	void	colbox( const char *name1,const char *name2, int plane )
@@ -4441,202 +4427,149 @@ void	on_buttonln_clicked( GtkWidget *w, gpointer data )
 	multi_vims( VIMS_FONT_COL, "%d %d %d %d %d", r,g,b,a, 3 );	
 }
 
-gboolean	boxfg_expose_event(GtkWidget *w,
-		GdkEventExpose *event, gpointer data )
+gboolean boxfg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-	gdk_window_clear_area( w->window,
-			event->area.x, event->area.y,
-			event->area.width,event->area.height );
+  gdk_window_clear_area( w->window,
+                        event->area.x, event->area.y,
+                        event->area.width,event->area.height );
 
-	
-	GdkGC *gc = gdk_gc_new( w->window );
-	GdkColor col;
+  cairo_t *cr;
+  cr = gdk_cairo_create (w->window);
 
-	memset( &col,0, sizeof( GdkColor ) );
-	col.red = 255.0 * fg_[0];
-	col.green = 255.0 * fg_[1];
-	col.blue = 255.0 * fg_[2];
+  GdkColor col;
+  memset( &col,0, sizeof( GdkColor ) );
+  col.red = 255.0 * fg_[0];
+  col.green = 255.0 * fg_[1];
+  col.blue = 255.0 * fg_[2];
 
-	gdk_color_alloc( gtk_widget_get_colormap( w ), &col );
-	
-	gdk_gc_set_foreground( gc, &col );
-	
-	gdk_draw_rectangle( 
-			w->window,
-			gc,
-			TRUE,
-			0,
-			0,
-			24,
-			24 );
+  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
+  gdk_cairo_set_source_color( cr, &col );
+  cairo_rectangle (cr, 0, 0, 24, 24);
+  cairo_fill ( cr );
 
-	gdk_gc_unref( gc );
+  cairo_destroy( cr );
+
+  return TRUE;
+}
+
+gboolean boxbg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
+{
+  gdk_window_clear_area( w->window,
+                        event->area.x, event->area.y,
+                        event->area.width,event->area.height );
+
+  cairo_t *cr;
+  cr = gdk_cairo_create (w->window);
+
+  GdkColor col;
+  memset( &col,0, sizeof( GdkColor ) );
+  col.red = 255.0 * bg_[0];
+  col.green = 255.0 * bg_[1];
+  col.blue = 255.0 * bg_[2];
+
+  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
+  gdk_cairo_set_source_color( cr, &col );
+  cairo_rectangle (cr, 0, 0, 24, 24);
+  cairo_fill ( cr );
+
+  cairo_destroy( cr );
 
 	return TRUE;
 }
 
-gboolean	boxbg_expose_event(GtkWidget *w,
-		GdkEventExpose *event, gpointer data )
+gboolean boxln_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-	gdk_window_clear_area( w->window,
-			event->area.x, event->area.y,
-			event->area.width,event->area.height );
+  gdk_window_clear_area( w->window,
+                        event->area.x, event->area.y,
+                        event->area.width,event->area.height );
 
-	
-	GdkGC *gc = gdk_gc_new( w->window );
-	GdkColor col;
+  cairo_t *cr;
+  cr = gdk_cairo_create (w->window);
 
-	memset( &col,0, sizeof( GdkColor ) );
-	col.red = 255.0 * bg_[0];
-	col.green = 255.0 * bg_[1];
-	col.blue = 255.0 * bg_[2];
+  GdkColor col;
+  memset( &col,0, sizeof( GdkColor ) );
+  col.red = 255.0 * ln_[0];
+  col.green = 255.0 * ln_[1];
+  col.blue = 255.0 * ln_[2];
 
-	gdk_color_alloc( gtk_widget_get_colormap( w ), &col );
-	
-	gdk_gc_set_foreground( gc, &col );
-	
-	gdk_draw_rectangle( 
-			w->window,
-			gc,
-			TRUE,
-			0,
-			0,
-			24,
-			24 );
+  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
+  gdk_cairo_set_source_color( cr, &col );
+  cairo_rectangle (cr, 0, 0, 24, 24);
+  cairo_fill ( cr );
 
-	gdk_gc_unref( gc );
+  cairo_destroy( cr );
 
-	return TRUE;
+  return TRUE;
 }
 
-gboolean	boxln_expose_event(GtkWidget *w,
-		GdkEventExpose *event, gpointer data )
+gboolean boxred_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-	gdk_window_clear_area( w->window,
-			event->area.x, event->area.y,
-			event->area.width,event->area.height );
+  gdk_window_clear_area( w->window,
+                        event->area.x, event->area.y,
+                        event->area.width,event->area.height );
 
-	
-	GdkGC *gc = gdk_gc_new( w->window );
-	GdkColor col;
+  cairo_t *cr;
+  cr = gdk_cairo_create (w->window);
 
-	memset( &col,0, sizeof( GdkColor ) );
-	col.red = 255.0 * ln_[0];
-	col.green = 255.0 * ln_[1];
-	col.blue = 255.0 * ln_[2];
+  GdkColor col;
+  memset( &col,0, sizeof( GdkColor ) );
+  col.red = 255 * get_slider_val( "textcolorred" );
 
-	gdk_color_alloc( gtk_widget_get_colormap( w ), &col );
-	
-	gdk_gc_set_foreground( gc, &col );
-	
-	gdk_draw_rectangle( 
-			w->window,
-			gc,
-			TRUE,
-			0,
-			0,
-			24,
-			24 );
+  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
+  gdk_cairo_set_source_color( cr, &col );
+  cairo_rectangle (cr, 0, 0, 24, 24);
+  cairo_fill ( cr );
 
-	gdk_gc_unref( gc );
+  cairo_destroy( cr );
 
-	return TRUE;
-}
-
-gboolean	boxred_expose_event(GtkWidget *w,
-		GdkEventExpose *event, gpointer data )
-{
-	gdk_window_clear_area( w->window,
-			event->area.x, event->area.y,
-			event->area.width,event->area.height );
-
-	
-	GdkGC *gc = gdk_gc_new( w->window );
-	GdkColor col;
-
-	memset( &col,0, sizeof( GdkColor ) );
-	col.red = 255 * get_slider_val( "textcolorred" );
-
-	gdk_color_alloc( gtk_widget_get_colormap( w ), &col );
-	
-	gdk_gc_set_foreground( gc, &col );
-	
-	gdk_draw_rectangle( 
-			w->window,
-			gc,
-			TRUE,
-			0,
-			0,
-			24,
-			24 );
-
-	gdk_gc_unref( gc );
-
-	return TRUE;
+  return TRUE;
 }
 
 
-gboolean	boxgreen_expose_event(GtkWidget *w,
-		GdkEventExpose *event, gpointer data )
+gboolean boxgreen_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-	gdk_window_clear_area( w->window,
-			event->area.x, event->area.y,
-			event->area.width,event->area.height );
+  gdk_window_clear_area( w->window,
+                        event->area.x, event->area.y,
+                        event->area.width,event->area.height );
 
-	
-	GdkGC *gc = gdk_gc_new( w->window );
-	GdkColor col;
+  cairo_t *cr;
+  cr = gdk_cairo_create (w->window);
 
-	memset( &col,0, sizeof( GdkColor ) );
-	col.green = 0xff * get_slider_val( "textcolorgreen" );
+  GdkColor col;
+  memset( &col,0, sizeof( GdkColor ) );
+  col.green = 0xff * get_slider_val( "textcolorgreen" );
 
-	gdk_color_alloc( gtk_widget_get_colormap( w ), &col );
-	
-	gdk_gc_set_foreground( gc, &col );
-	
-	gdk_draw_rectangle( 
-			w->window,
-			gc,
-			TRUE,
-			0,
-			0,
-			24,
-			24 );
+  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
+  gdk_cairo_set_source_color( cr, &col );
+  cairo_rectangle (cr, 0, 0, 24, 24);
+  cairo_fill ( cr );
 
-	gdk_gc_unref( gc );
+  cairo_destroy( cr );
 
-	return TRUE;
+  return TRUE;
 }
-gboolean	boxblue_expose_event(GtkWidget *w,
-		GdkEventExpose *event, gpointer data )
+
+gboolean boxblue_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-	gdk_window_clear_area( w->window,
-			event->area.x, event->area.y,
-			event->area.width,event->area.height );
+  gdk_window_clear_area( w->window,
+                        event->area.x, event->area.y,
+                        event->area.width,event->area.height );
 
-	
-	GdkGC *gc = gdk_gc_new( w->window );
-	GdkColor col;
+  cairo_t *cr;
+  cr = gdk_cairo_create (w->window);
 
-	memset( &col,0, sizeof( GdkColor ) );
-	col.blue = 255 * get_slider_val( "textcolorblue" );
+  GdkColor col;
+  memset( &col,0, sizeof( GdkColor ) );
+  col.blue = 255 * get_slider_val( "textcolorblue" );
 
-	gdk_color_alloc( gtk_widget_get_colormap( w ), &col );
-	
-	gdk_gc_set_foreground( gc, &col );
-	
-	gdk_draw_rectangle( 
-			w->window,
-			gc,
-			TRUE,
-			0,
-			0,
-			24,
-			24 );
+  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
+  gdk_cairo_set_source_color( cr, &col );
+  cairo_rectangle (cr, 0, 0, 24, 24);
+  cairo_fill ( cr );
 
-	gdk_gc_unref( gc );
+  cairo_destroy( cr );
 
-	return TRUE;
+  return TRUE;
 }
 
 
