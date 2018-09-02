@@ -10,7 +10,7 @@ AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src \
 RELOADED_BIN=reloaded
 reloaded_SOURCES = cellrendererspin.c gtktimeselection.c vj-midi.c curve.c utils.c tracksources.c gveejay.c keyboard.c sequence.c multitrack.c vj-api.c mjpeg_logging.c mpegconsts.c mpegtimecode.c yuv4mpeg.c yuv4mpeg_ratio.c ${reloaded_headers}
 
-bin_PROGRAMS = $(RELOADED_BIN) 
+bin_PROGRAMS = $(RELOADED_BIN)
 
 reloaded_LDFLAGS =  $(VEEJAY_LIBS) $(GTK_LIBS) $(GLIB_LIBS) \
 $(GLADE_LIBS) $(ALSA_LIBS) $(LIBM_LIBS) $(LIBX11_LIBS) -lgthread-2.0 -export-dynamic 
