@@ -42,6 +42,11 @@
  *     any comments on it, please drop me a mail.
  */
 
+ /*
+ * Modified by d.j.a.y , 2018
+ * - gtk3 compliant
+ */
+
 #include "cellrendererspin.h"
 
 #include <stdlib.h>
@@ -232,13 +237,15 @@ gui_cell_renderer_spin_editing_done (GtkCellEditable *spinbutton,
 
   info = g_object_get_data (G_OBJECT (data), GUI_CELL_RENDERER_SPIN_INFO);
 
-        if (info->focus_out_id > 0)
-        {
-                g_signal_handler_disconnect (spinbutton, info->focus_out_id);
-                info->focus_out_id = 0;
-        }
+  if (info->focus_out_id > 0)
+  {
+    g_signal_handler_disconnect (spinbutton, info->focus_out_id);
+    info->focus_out_id = 0;
+  }
 
-  if (GTK_ENTRY(spinbutton)->editing_canceled)
+  gboolean editing_canceled;
+  g_object_get (spinbutton, "editing-canceled", &editing_canceled, NULL);
+  if (editing_canceled)
     return;
 
   path = g_object_get_data (G_OBJECT (spinbutton), GUI_CELL_RENDERER_SPIN_PATH);
@@ -301,30 +308,34 @@ gui_cell_renderer_spin_start_editing (GtkCellRenderer      *cell,
 {
   GtkCellRendererText *celltext;
   GuiCellRendererSpin *spincell;
-        GtkAdjustment       *adj;
+  GtkAdjustment       *adj;
   GtkWidget           *spinbutton;
-        GCRSpinInfo         *info;
-        gdouble              curval = 0.0;
+  GCRSpinInfo         *info;
+  gdouble              curval = 0.0;
 
   celltext = GTK_CELL_RENDERER_TEXT(cell);
-        spincell = GUI_CELL_RENDERER_SPIN(cell);
+  spincell = GUI_CELL_RENDERER_SPIN(cell);
 
   /* If the cell isn't editable we return NULL. */
-  if (celltext->editable == FALSE)
+  gboolean editable;
+  g_object_get (celltext, "editable", &editable, NULL);
+  if (editable == FALSE)
     return NULL;
 
   spinbutton = g_object_new (GTK_TYPE_SPIN_BUTTON, "has_frame", FALSE, "numeric", TRUE, NULL);
 
         /* dirty */
-  if (celltext->text)
-                curval = atof(celltext->text);
+  gchar *text;
+  g_object_get (celltext, "text", &text, NULL);
+  if (text)
+    curval = atof(text);
 
-        adj = GTK_ADJUSTMENT(gtk_adjustment_new(curval,
-                                                spincell->lower,
-                                                spincell->upper,
-                                                spincell->step_inc,
-                                                spincell->page_inc,
-                                                0));
+  adj = GTK_ADJUSTMENT(gtk_adjustment_new(curval,
+                                          spincell->lower,
+                                          spincell->upper,
+                                          spincell->step_inc,
+                                          spincell->page_inc,
+                                          0));
 
         gtk_spin_button_configure(GTK_SPIN_BUTTON(spinbutton), adj, spincell->climb_rate, spincell->digits);
 
