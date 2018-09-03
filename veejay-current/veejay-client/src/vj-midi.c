@@ -404,9 +404,9 @@ static	void	vj_midi_send_vims_now( vmidi_t *v, int *data )
 				{
 					GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE(
 							glade_xml_get_widget_( v->mw, d->widget ) ) );
-					
-					min = a->lower;
-					max = a->upper;
+
+					min = gtk_adjustment_get_lower (a);
+					max = gtk_adjustment_get_upper (a);
 				}
 				break;
 				case 2: //spinbox
