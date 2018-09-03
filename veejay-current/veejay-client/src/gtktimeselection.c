@@ -22,6 +22,11 @@
 
  */
 
+ /*
+ * Modified by d.j.a.y , 2018
+ * - gtk3 compliant
+ */
+
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
@@ -554,7 +559,9 @@ event_scroll (GtkWidget *widget, GdkEventScroll *ev, gpointer user_data)
 static	gboolean event_press(GtkWidget *widget, GdkEventButton *ev, gpointer user_data)
 {
 	TimelineSelection *te = TIMELINE_SELECTION( widget );
-  	gdouble width   = widget->allocation.width;
+  GtkAllocation all;
+  gtk_widget_get_allocation(widget, &all);
+  gdouble width   = all.width;
 
 	te->grab_button = ev->button;
 	te->current_location = MOUSE_WIDGET;
@@ -630,7 +637,9 @@ static gboolean
 event_motion (GtkWidget *widget, GdkEventMotion *ev, gpointer user_data)
 {
 	TimelineSelection *te = TIMELINE_SELECTION (widget);
-	gdouble width = (gdouble) widget->allocation.width;
+  GtkAllocation all;
+  gtk_widget_get_allocation(widget, &all);
+	gdouble width = (gdouble) all.width;
 	gint x,y;
 	GdkModifierType state;
 	gdk_window_get_pointer( ev->window, &x,&y,&state );
@@ -726,11 +735,13 @@ cairo_rectangle_round (cairo_t * cr,
 static gboolean timeline_expose (GtkWidget *widget, GdkEventExpose *event )
 {
 	cairo_t *cr;
-	cr = gdk_cairo_create( widget->window );
+	cr = gdk_cairo_create( gtk_widget_get_window(widget) );
 
  	TimelineSelection *te = TIMELINE_SELECTION( widget );
-	double width = widget->allocation.width;
-	double height = widget->allocation.height;
+  GtkAllocation all;
+  gtk_widget_get_allocation (widget, &all);
+	double width = all.width;
+	double height = all.height;
 
 	gdouble marker_width = width/ te->num_video_frames;
 //	gdouble marker_height = height / te->num_video_frames;
