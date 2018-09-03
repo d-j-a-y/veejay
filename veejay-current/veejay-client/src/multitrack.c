@@ -311,7 +311,9 @@ static	void	seq_speed( GtkWidget *w, gpointer data)
 	multitracker_t *mt = v->backlink;
 	if(v->status_lock)
 		return;
-	gdouble value = GTK_ADJUSTMENT( GTK_RANGE(w)->adjustment )->value;
+
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gdouble value = gtk_adjustment_get_value (a);
 	gint speed = (gint) value;
 	gvr_queue_mvims( mt->preview, v->num ,VIMS_VIDEO_SET_SPEED , speed );
 }
@@ -324,7 +326,8 @@ static	void	seq_opacity( GtkWidget *w, gpointer data)
 	if(v->status_lock)
 		return;
 
-	gdouble value = GTK_ADJUSTMENT( GTK_RANGE(w)->adjustment )->value;
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gdouble value = gtk_adjustment_get_value (a);
 	gint opacity = (gint)( value * 255.0);
 	gvr_queue_mmmvims( mt->preview, v->num ,VIMS_CHAIN_MANUAL_FADE, 0, opacity, 0 );
 }
@@ -337,8 +340,8 @@ static	void	update_pos( void *user_data, gint total, gint current )
 	if(v->status_lock)
 		return;
 
-   	gtk_adjustment_set_value(
-                GTK_ADJUSTMENT(GTK_RANGE(v->timeline_)->adjustment), 1.0 / (gdouble) total * current );     
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( v->timeline_ ));
+  gtk_adjustment_set_value (a, 1.0 / (gdouble) total * current );
 
 	char *now = format_time( current , mt->fps);
 	gtk_label_set_text( GTK_LABEL(v->labels_[0]), now );
@@ -351,7 +354,8 @@ static	void	update_speed( void *user_data, gint speed )
 	if(v->status_lock)
 		return;
 
-	gtk_adjustment_set_value( GTK_ADJUSTMENT( GTK_RANGE( v->sliders_[0] )->adjustment), (gdouble) speed );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( v->sliders_[0] ));
+  gtk_adjustment_set_value( a, (gdouble) speed );
 }
 
 #define FIRST_ROW_END 5
@@ -557,7 +561,8 @@ static	void	sequence_set_current_frame(GtkWidget *w, gpointer user_data)
 	if(v->status_lock)
 		return;
 
-	gdouble pos = GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value;
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+  gdouble pos = gtk_adjustment_get_value (a);
 	gint frame = pos * v->status_cache[TOTAL_FRAMES];
 
 	gvr_queue_mvims( mt->preview, v->num, VIMS_VIDEO_SET_FRAME, frame );
@@ -572,7 +577,7 @@ static sequence_view_t *new_sequence_view( void *vp, int num )
 
 	seqv->event_box = gtk_event_box_new();
 	gtk_event_box_set_visible_window( GTK_EVENT_BOX(seqv->event_box), TRUE );
-	GTK_WIDGET_SET_FLAGS( seqv->event_box, GTK_CAN_FOCUS );
+  gtk_widget_set_can_focus(seqv->event_box, TRUE);
 
 	g_signal_connect( G_OBJECT( seqv->event_box ),
 				"button_press_event",
@@ -638,8 +643,8 @@ static sequence_view_t *new_sequence_view( void *vp, int num )
 	seqv->timeline_ = gtk_hscale_new_with_range( 0.0,1.0,0.1 );
 	gtk_scale_set_draw_value( GTK_SCALE(seqv->timeline_), FALSE );
 	//gtk_widget_set_size_request_( seqv->panel,180 ,180);
-	gtk_adjustment_set_value(
-                GTK_ADJUSTMENT(GTK_RANGE(seqv->timeline_)->adjustment), 0.0 );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( seqv->timeline_ ));
+  gtk_adjustment_set_value( a , 0.0 );
 	gtk_widget_show( seqv->panel );
 	gtk_box_pack_start( GTK_BOX( box ), seqv->timeline_, FALSE,FALSE, 0 );
 	gtk_box_pack_start( GTK_BOX( vvbox ), box , FALSE,FALSE,0);
@@ -668,12 +673,12 @@ static sequence_view_t *new_sequence_view( void *vp, int num )
 	seqv->sliders_[0] = gtk_vscale_new_with_range( -12.0,12.0,1.0 );
 	seqv->sliders_[1] = gtk_vscale_new_with_range( 0.0, 1.0, 0.01 );
 
-	gtk_adjustment_set_value(
-		GTK_ADJUSTMENT(GTK_RANGE(seqv->sliders_[0])->adjustment), 1.0 );
-	gtk_adjustment_set_value(
-                GTK_ADJUSTMENT(GTK_RANGE(seqv->sliders_[1])->adjustment), 0.0 );
-				
-	
+  a = gtk_range_get_adjustment( GTK_RANGE( seqv->sliders_[0]));
+  gtk_adjustment_set_value( a, 1.0 );
+  a = gtk_range_get_adjustment( GTK_RANGE( seqv->sliders_[1]));
+  gtk_adjustment_set_value( a, 0.0 );
+
+
 	gtk_scale_set_digits( GTK_SCALE(seqv->sliders_[1]), 2 );
 	g_signal_connect( G_OBJECT( seqv->sliders_[0] ), "value_changed", G_CALLBACK( seq_speed ),
 				(gpointer*)seqv );		
@@ -780,7 +785,8 @@ static char *mt_new_connection_dialog(multitracker_t *mt, int *port_num, int *er
 	gtk_container_add( GTK_CONTAINER( vbox ), text_entry );
 	gtk_container_add( GTK_CONTAINER( vbox ), num_label );
 	gtk_container_add( GTK_CONTAINER( vbox ), num_entry );
-	gtk_container_add( GTK_CONTAINER( GTK_DIALOG(dialog)->vbox), vbox );
+  GtkWidget* content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+	gtk_container_add( content_area, vbox );
 	gtk_widget_show_all( dialog );
 
 	gint res = gtk_dialog_run( GTK_DIALOG(dialog) );
