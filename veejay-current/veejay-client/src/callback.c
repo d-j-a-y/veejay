@@ -106,26 +106,27 @@ void	on_button_088_clicked(GtkWidget *widget, gpointer user_data)
 
 void	on_videobar_value_changed(GtkWidget *widget, gpointer user_data)
 {
-	if(!info->status_lock)
-	{
-		gdouble slider_val = GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value;
-		gint val = 0;
-		switch(info->status_tokens[PLAY_MODE])
-		{
-			case MODE_PLAIN:
-				val = slider_val * info->status_tokens[TOTAL_FRAMES];
-				break;
-			case MODE_SAMPLE:
-				val = slider_val * (info->status_tokens[SAMPLE_END] - info->status_tokens[SAMPLE_START]);
-				val += info->status_tokens[SAMPLE_START];
-				break;
-			default:
-				return;
-		}
-		multi_vims( VIMS_VIDEO_SET_FRAME, "%d", val );
+  if(!info->status_lock)
+  {
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+    gdouble slider_val = gtk_adjustment_get_value (a);
+    gint val = 0;
+    switch(info->status_tokens[PLAY_MODE])
+    {
+      case MODE_PLAIN:
+        val = slider_val * info->status_tokens[TOTAL_FRAMES];
+        break;
+      case MODE_SAMPLE:
+        val = slider_val * (info->status_tokens[SAMPLE_END] - info->status_tokens[SAMPLE_START]);
+        val += info->status_tokens[SAMPLE_START];
+        break;
+      default:
+        return;
+    }
+    multi_vims( VIMS_VIDEO_SET_FRAME, "%d", val );
 
-		vj_midi_learning_vims_simple( info->midi, "videobar", VIMS_VIDEO_SET_FRAME );
-	}
+    vj_midi_learning_vims_simple( info->midi, "videobar", VIMS_VIDEO_SET_FRAME );
+  }
 }
 
 void	on_subrender_toggled(GtkWidget *widget, gpointer user_data)
@@ -363,7 +364,8 @@ void	on_manualopacity_value_changed(GtkWidget *w, gpointer user_data)
 	if(info->status_lock)
 		return;
 
-	gdouble val = GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value;
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+  gdouble val = gtk_adjustment_get_value (a);
 	int mode = is_button_toggled("toggle_fademethod");
 	int value = ( mode == 1 ? 0xff - (int) val : (int) val );
 
@@ -626,7 +628,8 @@ static void gen_changed( int num, int value )
 			}
 			else {
 				GtkWidget *w = glade_xml_get_widget( info->main_window, gen_names_[i].text );
-				values[i] = (gint) GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value;
+        GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+        values[i] = gtk_adjustment_get_value (a);
 			}
 		}
 
@@ -654,12 +657,13 @@ static void genv_changed( int num, int value, const char *selected )
 		for( i = 0; gen_names_[i].text != NULL; i ++ ) {
 			GtkWidget *w = glade_xml_get_widget( info->main_window, gen_names_[i].text );
 
+      GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
 			if( num == i ) {
 				update_slider_value( gen_names_[i].text, (get_slider_val(gen_names_[i].text) + value), 0 );\
-				values[i] = (gint) GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value;
+				values[i] = (gint) gtk_adjustment_get_value (a);
 			}
 			else {
-				values[i] = (gint) GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value;
+				values[i] = (gint) gtk_adjustment_get_value (a);
 			}
 		}
 
@@ -676,73 +680,89 @@ static void genv_changed( int num, int value, const char *selected )
 
 void	on_slider_p0_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 0, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 0, (gint)gtk_adjustment_get_value (a) );
 }
 void	on_slider_p1_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 1, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 1, (gint)gtk_adjustment_get_value (a) );
 }
 void	on_slider_p2_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 2, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 2, (gint)gtk_adjustment_get_value (a) );
 }
 
 void	on_slider_p3_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 3, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 3, (gint)gtk_adjustment_get_value (a) );
 }
 void	on_slider_p4_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 4, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 4, (gint)gtk_adjustment_get_value (a) );
 }
 
 void	on_slider_p5_value_changed(GtkWidget *w, gpointer user_data)
 {
-		SLIDER_CHANGED( 5, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+		SLIDER_CHANGED( 5, (gint)gtk_adjustment_get_value (a) );
 }
 void	on_slider_p6_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 6, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 6, (gint)gtk_adjustment_get_value (a) );
 }
 
 void	on_slider_p7_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 7, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 7, (gint)gtk_adjustment_get_value (a) );
 }
 
 void	on_slider_p8_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 8, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 8, (gint)gtk_adjustment_get_value (a) );
 }
 
 void	on_slider_p9_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 9, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 9, (gint)gtk_adjustment_get_value (a) );
 }
 
 void	on_slider_p10_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 10, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 10, (gint)gtk_adjustment_get_value (a) );
 }
 void	on_slider_p11_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 11, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 11, (gint)gtk_adjustment_get_value (a) );
 }
 void	on_slider_p12_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 12, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 12, (gint)gtk_adjustment_get_value (a) );
 }
 void	on_slider_p13_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 13, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 13, (gint)gtk_adjustment_get_value (a) );
 }
 void	on_slider_p14_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 14, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 14, (gint)gtk_adjustment_get_value (a) );
 }
 void	on_slider_p15_value_changed(GtkWidget *w, gpointer user_data)
 {
-	SLIDER_CHANGED( 15, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	SLIDER_CHANGED( 15, (gint)gtk_adjustment_get_value (a) );
 }
 
 void	on_inc_p0_clicked(GtkWidget *w, gpointer user_data)
@@ -880,48 +900,59 @@ void	on_dec_p15_clicked(GtkWidget *w, gpointer user_data)
 
 void	slider_g0_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 0, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 0, (gint)gtk_adjustment_get_value (a) );
 }
 void	slider_g1_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 1, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 1, (gint)gtk_adjustment_get_value (a) );
 }
 void	slider_g2_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 2, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 2, (gint)gtk_adjustment_get_value (a) );
 }
 void	slider_g3_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 3, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 3, (gint)gtk_adjustment_get_value (a) );
 }
 void	slider_g4_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 4, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 4, (gint)gtk_adjustment_get_value (a) );
 }
 void	slider_g5_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 5, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 5, (gint)gtk_adjustment_get_value (a) );
 }
 void	slider_g6_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 6, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 6, (gint)gtk_adjustment_get_value (a) );
 }
 void	slider_g7_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 7, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 7, (gint)gtk_adjustment_get_value (a) );
 }
 
 void	slider_g8_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 8, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 8, (gint)gtk_adjustment_get_value (a) );
 }
 void	slider_g9_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 9, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 9, (gint)gtk_adjustment_get_value (a) );
 }
 void	slider_g10_value_changed(GtkWidget *w, gpointer user_data)
 {
-	gen_changed( 10, (gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value );
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gen_changed( 10, (gint)gtk_adjustment_get_value (a) );
 }
 
 void	on_inc_g0_clicked(GtkWidget *w, gpointer user_data)
@@ -1183,9 +1214,10 @@ void	on_v4l_brightness_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
 		multi_vims( VIMS_STREAM_SET_BRIGHTNESS, "%d %d",
 			info->selected_slot->sample_id,
-			(gint) (GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) );
+			(gint) (gtk_adjustment_get_value (a) * 65535.0) );
 		vj_midi_learning_vims_complex( info->midi, "v4l_brightness", VIMS_STREAM_SET_BRIGHTNESS, info->selected_slot->sample_id,
 			1 );
 	}
@@ -1195,9 +1227,10 @@ void	on_v4l_contrast_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
 		multi_vims( VIMS_STREAM_SET_CONTRAST, "%d %d", 
 			info->selected_slot->sample_id,
-			(gint) (GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0 ) );
+			(gint) (gtk_adjustment_get_value (a) * 65535.0 ) );
 		vj_midi_learning_vims_complex( info->midi, "v4l_contrast", VIMS_STREAM_SET_CONTRAST, info->selected_slot->sample_id,
 			1 );
 
@@ -1208,9 +1241,10 @@ void	on_v4l_hue_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
 		multi_vims( VIMS_STREAM_SET_HUE, "%d %d",
 			info->selected_slot->sample_id,
-			(gint) (GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0 ) );
+			(gint) (gtk_adjustment_get_value (a) * 65535.0 ) );
 		vj_midi_learning_vims_complex( info->midi, "v4l_hue", VIMS_STREAM_SET_HUE, info->selected_slot->sample_id,
 			1 );
 
@@ -1221,9 +1255,10 @@ void	on_v4l_gamma_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
 		multi_vims( VIMS_STREAM_SET_WHITE, "%d %d",
 			info->selected_slot->sample_id,
-			(gint) (GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0 ) );
+			(gint) (gtk_adjustment_get_value (a) * 65535.0 ) );
 		vj_midi_learning_vims_complex( info->midi, "v4l_white", VIMS_STREAM_SET_WHITE, info->selected_slot->sample_id,
 			1 );
 
@@ -1234,9 +1269,10 @@ void	on_v4l_color_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
 		multi_vims( VIMS_STREAM_SET_COLOR, "%d %d",
 			info->selected_slot->sample_id,
-			(gint) (GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) );
+			(gint) (gtk_adjustment_get_value (a) * 65535.0) );
 	vj_midi_learning_vims_complex( info->midi, "v4l_color", VIMS_STREAM_SET_COLOR, info->selected_slot->sample_id,
 			1 );
 
@@ -1246,9 +1282,10 @@ void	on_v4l_saturation_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
 		multi_vims( VIMS_STREAM_SET_SATURATION, "%d %d",
 			info->selected_slot->sample_id,
-			(gint) (GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) );
+			(gint) (gtk_adjustment_get_value (a) * 65535.0) );
 	vj_midi_learning_vims_complex( info->midi, "v4l_saturation", VIMS_STREAM_SET_SATURATION, info->selected_slot->sample_id,
 			1 );
 
@@ -1260,70 +1297,100 @@ void	on_v4l_gain_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d gain", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d gain", 
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_v4l_redbalance_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d red_balance", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d red_balance",
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_v4l_bluebalance_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d blue_balance", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d blue_balance",
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_v4l_greenbalance_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d green_balance", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d green_balance",
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_v4l_sharpness_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d sharpness", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d sharpness",
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_v4l_backlightcompensation_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d bl_compensate", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d bl_compensate",
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_v4l_temperature_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d temperature", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d temperature",
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_v4l_exposure_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d exposure", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d exposure",
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_v4l_whiteness_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d whiteness", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d whiteness",
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_v4l_black_level_value_changed(GtkWidget *widget, gpointer user_data)
 {
 	if(!info->status_lock)
 	{
-		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d black_level", info->selected_slot->sample_id,(int)(GTK_ADJUSTMENT(GTK_RANGE(widget)->adjustment)->value * 65535.0) ); 
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( widget ));
+		multi_vims( VIMS_STREAM_SET_V4LCTRL, "%d %d black_level",
+      info->selected_slot->sample_id,
+      (int)(gtk_adjustment_get_value (a) * 65535.0) ); 
 	}
 }
 void	on_check_autogain_toggled(GtkWidget *widget, gpointer user_data)
@@ -2563,7 +2630,8 @@ void	on_framerate_value_changed( GtkWidget *w, gpointer data )
 	if(info->status_lock)
 		return;
 
-	gdouble slider_val = GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value;
+  GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+	gdouble slider_val = gtk_adjustment_get_value (a);
 	int value = (int)(100.0 * slider_val);
 	multi_vims( VIMS_FRAMERATE, "%d", value );
 	vj_midi_learning_vims_simple( info->midi, "framerate", VIMS_FRAMERATE );
@@ -4133,7 +4201,7 @@ void	on_button_text_update_clicked(GtkWidget *w, gpointer data)
 static	void change_box_color_rgb( GtkWidget *box, int r, int g, int b,int a, int fill )
 {
   cairo_t *cr;
-  cr = gdk_cairo_create (box->window);
+  cr = gdk_cairo_create (gtk_widget_get_window(box));
 
   GdkColor col;
 
@@ -4179,7 +4247,7 @@ void	on_combobox_textsrt_changed( GtkWidget *w, gpointer data)
 static	void change_box_color( GtkWidget *box, double val, int plane, int fill )
 {
   cairo_t *cr;
-  cr = gdk_cairo_create (box->window);
+  cr = gdk_cairo_create (gtk_widget_get_window(box));
 
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
@@ -4429,12 +4497,12 @@ void	on_buttonln_clicked( GtkWidget *w, gpointer data )
 
 gboolean boxfg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( w->window,
+  gdk_window_clear_area( gtk_widget_get_window(w),
                         event->area.x, event->area.y,
                         event->area.width,event->area.height );
 
   cairo_t *cr;
-  cr = gdk_cairo_create (w->window);
+  cr = gdk_cairo_create (gtk_widget_get_window(w));
 
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
@@ -4454,12 +4522,12 @@ gboolean boxfg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 
 gboolean boxbg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( w->window,
+  gdk_window_clear_area( gtk_widget_get_window(w),
                         event->area.x, event->area.y,
                         event->area.width,event->area.height );
 
   cairo_t *cr;
-  cr = gdk_cairo_create (w->window);
+  cr = gdk_cairo_create (gtk_widget_get_window(w));
 
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
@@ -4479,12 +4547,12 @@ gboolean boxbg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 
 gboolean boxln_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( w->window,
+  gdk_window_clear_area( gtk_widget_get_window(w),
                         event->area.x, event->area.y,
                         event->area.width,event->area.height );
 
   cairo_t *cr;
-  cr = gdk_cairo_create (w->window);
+  cr = gdk_cairo_create (gtk_widget_get_window(w));
 
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
@@ -4504,12 +4572,12 @@ gboolean boxln_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 
 gboolean boxred_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( w->window,
+  gdk_window_clear_area( gtk_widget_get_window(w),
                         event->area.x, event->area.y,
                         event->area.width,event->area.height );
 
   cairo_t *cr;
-  cr = gdk_cairo_create (w->window);
+  cr = gdk_cairo_create (gtk_widget_get_window(w));
 
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
@@ -4528,12 +4596,12 @@ gboolean boxred_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data 
 
 gboolean boxgreen_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( w->window,
+  gdk_window_clear_area( gtk_widget_get_window(w),
                         event->area.x, event->area.y,
                         event->area.width,event->area.height );
 
   cairo_t *cr;
-  cr = gdk_cairo_create (w->window);
+  cr = gdk_cairo_create (gtk_widget_get_window(w));
 
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
@@ -4551,12 +4619,12 @@ gboolean boxgreen_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer dat
 
 gboolean boxblue_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( w->window,
+  gdk_window_clear_area( gtk_widget_get_window(w),
                         event->area.x, event->area.y,
                         event->area.width,event->area.height );
 
   cairo_t *cr;
-  cr = gdk_cairo_create (w->window);
+  cr = gdk_cairo_create (gtk_widget_get_window(w));
 
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );

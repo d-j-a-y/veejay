@@ -2142,8 +2142,9 @@ int prompt_keydialog(const char *title, char *msg)
     }
 #endif
 
-    gtk_container_add( GTK_CONTAINER( GTK_DIALOG( dialog )->vbox ), hbox1 );
-    gtk_container_add( GTK_CONTAINER( GTK_DIALOG( dialog )->vbox ), hbox2 );
+    GtkWidget* content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+    gtk_container_add( GTK_CONTAINER(content_area), hbox1 );
+    gtk_container_add( GTK_CONTAINER(content_area), hbox2 );
 
     gtk_widget_show_all( dialog );
 
@@ -2183,8 +2184,8 @@ void message_dialog( const char *title, char *msg )
     GtkWidget *label = gtk_label_new( msg );
     g_signal_connect_swapped(dialog, "response",
                              G_CALLBACK(gtk_widget_destroy),dialog);
-    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),
-                      label );
+    GtkWidget* content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+    gtk_container_add(GTK_CONTAINER(content_area), label );
     gtk_widget_show_all(dialog);
 }
 
@@ -2212,7 +2213,7 @@ prompt_dialog(const char *title, char *msg)
     GtkWidget *label = gtk_label_new( msg );
     gtk_container_add( GTK_CONTAINER( hbox1 ), icon );
     gtk_container_add( GTK_CONTAINER( hbox1 ), label );
-    gtk_container_add( GTK_CONTAINER( GTK_DIALOG( dialog )->vbox ), hbox1 );
+    gtk_container_add( GTK_CONTAINER(gtk_dialog_get_content_area (GTK_DIALOG (dialog))), hbox1 );
     gtk_widget_show_all( dialog );
 
     int n = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -2244,7 +2245,7 @@ error_dialog(const char *title, char *msg)
     GtkWidget *label = gtk_label_new( msg );
     gtk_container_add( GTK_CONTAINER( hbox1 ), icon );
     gtk_container_add( GTK_CONTAINER( hbox1 ), label );
-    gtk_container_add( GTK_CONTAINER( GTK_DIALOG( dialog )->vbox ), hbox1 );
+    gtk_container_add( GTK_CONTAINER(gtk_dialog_get_content_area (GTK_DIALOG (dialog))), hbox1 );
     gtk_widget_show_all( dialog );
 
     int n = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -2617,7 +2618,8 @@ static int get_slider_val(const char *name)
 {
     GtkWidget *w = glade_xml_get_widget_( info->main_window, name );
     if(!w) return 0;
-    return ((gint)GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment)->value);
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+    return (gint) gtk_adjustment_get_value (a);
 }
 
 static void vj_kf_reset()
@@ -2879,7 +2881,8 @@ static void update_slider_gvalue(const char *name, gdouble value)
         veejay_msg(VEEJAY_MSG_ERROR, "No such widget (slider): '%s'",name);
         return;
     }
-    gtk_adjustment_set_value( GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment), value );
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+    gtk_adjustment_set_value( a, value );
 }
 
 static void update_slider_value(const char *name, gint value, gint scale)
@@ -2896,8 +2899,8 @@ static void update_slider_value(const char *name, gint value, gint scale)
     else
         gvalue = (gdouble) value;
 
-    gtk_adjustment_set_value(
-        GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment), gvalue );
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+    gtk_adjustment_set_value( a, gvalue );
 }
 
 static void update_spin_incr( const char *name, gdouble step, gdouble page )
@@ -2982,7 +2985,8 @@ static void update_slider_range(const char *name, gint min, gint max, gint value
         gtk_range_set_value(range, gval );
     }
 
-    gtk_range_set_adjustment(range, GTK_ADJUSTMENT(GTK_RANGE(w)->adjustment ) );
+    GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
+    gtk_range_set_adjustment(range, a );
 }
 
 static void update_label_i(const char *name, int num, int prefix)
@@ -8522,8 +8526,10 @@ static void widget_get_rect_in_screen (GtkWidget *widget, GdkRectangle *r)
 //r->y = y + (extents.height-h)-(extents.width-w)/2 + widget->allocation.y; /* calculating y (assuming: left border size == right border size == bottom border size) */
     r->x = 0;
     r->y = 0;
-    r->width = widget->allocation.width;
-    r->height = widget->allocation.height;
+    GtkAllocation all;
+    gtk_widget_get_allocation(widget, &all);
+    r->width = all.width;
+    r->height = all.height;
 }
 
 /* --------------------------------------------------------------------------------------------------------------------------
@@ -8919,7 +8925,7 @@ static void create_sequencer_slots(int nx, int ny)
 
         gui_slot->event_box = gtk_event_box_new();
         gtk_event_box_set_visible_window(GTK_EVENT_BOX(gui_slot->event_box), TRUE);
-        GTK_WIDGET_SET_FLAGS(gui_slot->event_box,GTK_CAN_FOCUS);
+        gtk_widget_set_can_focus(gui_slot->event_box, TRUE);
 
         g_signal_connect( G_OBJECT(gui_slot->event_box),
             "button_press_event",
@@ -8971,7 +8977,7 @@ static void create_ref_slots(int envelope_size)
         info->sequence_view->gui_slot[row] = gui_slot;
         gui_slot->event_box = gtk_event_box_new();
         gtk_event_box_set_visible_window(GTK_EVENT_BOX(gui_slot->event_box), TRUE);
-        GTK_WIDGET_SET_FLAGS(gui_slot->event_box,GTK_CAN_FOCUS);
+        gtk_widget_set_can_focus(gui_slot->event_box, TRUE);
         /* Right mouse button is popup menu, click = play */
         g_signal_connect( G_OBJECT(gui_slot->event_box),
             "button_press_event",
@@ -9013,7 +9019,7 @@ static void create_slot(gint bank_nr, gint slot_nr, gint w, gint h)
     gui_slot->event_box = gtk_event_box_new();
     gtk_event_box_set_visible_window(GTK_EVENT_BOX(gui_slot->event_box), TRUE);
 
-    GTK_WIDGET_SET_FLAGS(gui_slot->event_box,GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(gui_slot->event_box, TRUE);
     g_signal_connect( G_OBJECT(gui_slot->event_box),
         "button_press_event",
         G_CALLBACK(on_slot_activated_by_mouse),
