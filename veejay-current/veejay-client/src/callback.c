@@ -627,7 +627,7 @@ static void gen_changed( int num, int value )
 				values[num] = value;
 			}
 			else {
-				GtkWidget *w = glade_xml_get_widget( info->main_window, gen_names_[i].text );
+				GtkWidget *w = glade_xml_get_widget_( info->main_window, gen_names_[i].text );
         GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
         values[i] = gtk_adjustment_get_value (a);
 			}
@@ -655,7 +655,7 @@ static void genv_changed( int num, int value, const char *selected )
 		info->parameter_lock = 1;
 
 		for( i = 0; gen_names_[i].text != NULL; i ++ ) {
-			GtkWidget *w = glade_xml_get_widget( info->main_window, gen_names_[i].text );
+			GtkWidget *w = glade_xml_get_widget_( info->main_window, gen_names_[i].text );
 
       GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
 			if( num == i ) {
@@ -1465,7 +1465,7 @@ void	on_seq_rec_stop_clicked( GtkWidget *w, gpointer data )
 
 void	on_rec_seq_start_clicked( GtkWidget *w, gpointer data )
 {
-	GtkComboBox *combo = GTK_COMBO_BOX( GTK_WIDGET(glade_xml_get_widget(info->main_window,"combo_samplecodec")));
+	GtkComboBox *combo = GTK_COMBO_BOX( glade_xml_get_widget_(info->main_window,"combo_samplecodec"));
 	gchar *gformat = (gchar*)gtk_combo_box_get_active_text(combo) ;
 	gchar *format = gformat;
 	if(format != NULL && strlen(format) > 2)
@@ -1491,7 +1491,7 @@ void	on_stream_recordstart_clicked(GtkWidget *widget, gpointer user_data)
 
 	gint nframes = get_nums( "spin_streamduration");
 	gint autoplay = is_button_toggled("button_stream_autoplay"); 
-	GtkComboBox *combo = GTK_COMBO_BOX( GTK_WIDGET(glade_xml_get_widget(info->main_window,"combo_streamcodec")));
+	GtkComboBox *combo = GTK_COMBO_BOX( glade_xml_get_widget_(info->main_window,"combo_streamcodec"));
 	gchar *gformat = (gchar*)gtk_combo_box_get_active_text(combo) ;
 	gchar *format = gformat;
 	if(format != NULL && strlen(format) > 2)
@@ -1580,7 +1580,7 @@ void	on_button_sample_recordstart_clicked(GtkWidget *widget, gpointer user_data)
 {
 
 	gint autoplay = is_button_toggled("button_sample_autoplay"); 
-	GtkComboBox *combo = GTK_COMBO_BOX( GTK_WIDGET(glade_xml_get_widget(info->main_window,"combo_samplecodec")));
+	GtkComboBox *combo = GTK_COMBO_BOX( glade_xml_get_widget_(info->main_window,"combo_samplecodec"));
 
 	gchar *format = (gchar*) gtk_combo_box_get_active_text(combo);
 	gint n_frames = 0;
@@ -1847,7 +1847,7 @@ void	on_button_el_paste_clicked(GtkWidget *widget, gpointer user_data)
 void	on_new_colorstream_clicked(GtkWidget *widget, gpointer user_data)
 {
 	GdkColor current_color;
-	GtkWidget *colorsel = glade_xml_get_widget(info->main_window,
+	GtkWidget *colorsel = glade_xml_get_widget_(info->main_window,
 			"colorselection" );
 	gtk_color_selection_get_current_color(
 		GTK_COLOR_SELECTION( colorsel ),
@@ -2309,7 +2309,7 @@ void on_openConnection_activate             (GtkMenuItem     *menuitem,
 {
 	if(!info->status_lock)
 	{
-		GtkWidget *veejay_conncection_window = glade_xml_get_widget(info->main_window, "veejay_connection");
+		GtkWidget *veejay_conncection_window = glade_xml_get_widget_(info->main_window, "veejay_connection");
 		gtk_widget_show(veejay_conncection_window);	
 	} 
 }
@@ -2341,7 +2341,7 @@ void on_VideoSettings_activate              (GtkMenuItem     *menuitem,
 {
 	if(!info->status_lock)
 	{
-		GtkWidget *veejay_settings_window = glade_xml_get_widget(info->main_window, "video_options");
+		GtkWidget *veejay_settings_window = glade_xml_get_widget_(info->main_window, "video_options");
 		gtk_widget_show(veejay_settings_window);	
 	} 
 }
@@ -2349,7 +2349,7 @@ void on_VideoSettings_activate              (GtkMenuItem     *menuitem,
 
 void	on_image_calibration1_activate	(GtkMenuItem	*menuitem, gpointer data)
 {
-	GtkWidget *win = glade_xml_get_widget(info->main_window,"calibration_window" );
+	GtkWidget *win = glade_xml_get_widget_(info->main_window,"calibration_window" );
 	gtk_widget_show(win);
 	cali_onoff = 1;
 }
@@ -2362,7 +2362,7 @@ void on_video_options_close                 (GtkDialog       *dialog,
 {
 	if(!info->status_lock)
 	{
-		GtkWidget *veejay_settings_window = glade_xml_get_widget(info->main_window, "video_options");
+		GtkWidget *veejay_settings_window = glade_xml_get_widget_(info->main_window, "video_options");
 		gtk_widget_hide(veejay_settings_window);	
 	}
 }
@@ -2511,7 +2511,7 @@ void	on_cali_reset_button_clicked( 	GtkButton *button, gpointer data )
 void on_vims_bundles_activate               (GtkMenuItem     *menuitem,
 					     gpointer         user_data)
 {
-	GtkWidget *vims_bundles_window = glade_xml_get_widget(info->main_window, "vims_bundles");
+	GtkWidget *vims_bundles_window = glade_xml_get_widget_(info->main_window, "vims_bundles");
 	gtk_widget_show(vims_bundles_window);	
 }
 
@@ -2522,7 +2522,7 @@ void on_vims_bundles_activate               (GtkMenuItem     *menuitem,
 void on_vims_bundles_close                  (GtkDialog       *dialog,
 					     gpointer         user_data)
 {
-	GtkWidget *vims_bundles_window = glade_xml_get_widget(info->main_window, "vims_bundles");
+	GtkWidget *vims_bundles_window = glade_xml_get_widget_(info->main_window, "vims_bundles");
 	gtk_widget_hide(vims_bundles_window);	
 }
 
@@ -3128,7 +3128,7 @@ void	on_sampleadd_clicked(GtkWidget *widget, gpointer user_data)
 void	on_streamnew_clicked(GtkWidget *widget, gpointer user_data)
 {
 	// inputstream_window
-	GtkWidget *w = glade_xml_get_widget(info->main_window, "inputstream_window");
+	GtkWidget *w = glade_xml_get_widget_(info->main_window, "inputstream_window");
 	scan_devices( "tree_v4ldevices" );
 	gtk_widget_show(w);
 	
@@ -3136,20 +3136,20 @@ void	on_streamnew_clicked(GtkWidget *widget, gpointer user_data)
 
 void	on_generatornew_clicked(GtkWidget *widget, gpointer user_data)
 {
-	GtkWidget *w = glade_xml_get_widget(info->main_window, "generator_window");
+	GtkWidget *w = glade_xml_get_widget_(info->main_window, "generator_window");
 	scan_generators( "generators" );
 	gtk_widget_show(w);
 }
 
 void	on_inputstream_close_clicked(GtkWidget *w,  gpointer user_data)
 {
-	GtkWidget *wid = glade_xml_get_widget(info->main_window, "inputstream_window");
+	GtkWidget *wid = glade_xml_get_widget_(info->main_window, "inputstream_window");
 	gtk_widget_hide(wid);	
 }
 
 void	on_generators_close_clicked(GtkWidget *w, gpointer user_data)
 {
-	GtkWidget *wid = glade_xml_get_widget(info->main_window, "generator_window");
+	GtkWidget *wid = glade_xml_get_widget_(info->main_window, "generator_window");
 	gtk_widget_hide(wid);	
 }	
 
@@ -3279,7 +3279,7 @@ void	on_vs_fps_value_changed(GtkWidget *w, gpointer user_data)
 }
 void	on_vs_close_clicked( GtkWidget *w, gpointer user_data)
 {
-	GtkWidget *vs = glade_xml_get_widget(info->main_window, "vs");
+	GtkWidget *vs = glade_xml_get_widget_(info->main_window, "vs");
 	gtk_widget_hide(vs);	
 }
 
@@ -3320,19 +3320,19 @@ void	on_vs_mcastvims_changed( GtkWidget *w, gpointer user_data)
 
 void	on_inputstream_window_delete_event(GtkWidget *w, gpointer user_data)
 {
-	GtkWidget *vs = glade_xml_get_widget(info->main_window, "inputstream_window");
+	GtkWidget *vs = glade_xml_get_widget_(info->main_window, "inputstream_window");
 	gtk_widget_hide(vs);
 }
 
 void	on_generator_window_delete_event(GtkWidget *w, gpointer user_data)
 {
-	GtkWidget *vs = glade_xml_get_widget(info->main_window, "generator_window");
+	GtkWidget *vs = glade_xml_get_widget_(info->main_window, "generator_window");
 	gtk_widget_hide(vs);
 }
 
 void	on_calibration_window_delete_event(GtkWidget *w,gpointer data)
 {
-	GtkWidget *win = glade_xml_get_widget(info->main_window, "calibration_window");
+	GtkWidget *win = glade_xml_get_widget_(info->main_window, "calibration_window");
 	cali_onoff = 0;
 	gtk_widget_hide(win);
 }
@@ -3340,12 +3340,12 @@ void	on_calibration_window_delete_event(GtkWidget *w,gpointer data)
 
 void	on_vs_delete_event( GtkWidget *w, gpointer user_data)
 {
-	GtkWidget *vs = glade_xml_get_widget(info->main_window, "vs");
+	GtkWidget *vs = glade_xml_get_widget_(info->main_window, "vs");
 	gtk_widget_hide(vs);	
 }
 void	on_configure1_activate( GtkWidget *w, gpointer user_data)
 {
-	GtkWidget *vs = glade_xml_get_widget(info->main_window, "vs");
+	GtkWidget *vs = glade_xml_get_widget_(info->main_window, "vs");
 /* load options from config */
 
 	update_spin_value( "vs_size0", info->config.w );
@@ -3558,7 +3558,7 @@ void		on_previewbw_toggled( GtkWidget *w , gpointer user_data)
 void		on_previewtoggle_toggled(GtkWidget *w, gpointer user_data)
 {
     int enabled = is_button_toggled("previewtoggle");
-	multitrack_toggle_preview( info->mt, -1, enabled,glade_xml_get_widget(info->main_window, "imageA") );
+    multitrack_toggle_preview( info->mt, -1, enabled,glade_xml_get_widget_(info->main_window, "imageA") );
     vj_msg(VEEJAY_MSG_INFO,"Live view is %s", (enabled ? "enabled" : "disabled" ));
 }
 
@@ -3920,7 +3920,7 @@ void
 on_vims_messenger_single_clicked( void )
 {
 	GtkTextView *t= GTK_TEXT_VIEW(GTK_WIDGET(
-				glade_xml_get_widget(
+				glade_xml_get_widget_(
 					info->main_window,
 					"vims_messenger_textview"))
 			);
@@ -4007,16 +4007,16 @@ static	gint	srt_load_subtitle(int sid)
 	update_spin_value( "spin_text_end", s2 );
 
 	change_box_color_rgb(
-		 glade_xml_get_widget(info->main_window, "boxbg" ),
+		 glade_xml_get_widget_(info->main_window, "boxbg" ),
 		 bg[0],bg[1],bg[2],bg[3], (is_button_toggled( "textcolorbg" ) ? 1 : 0 ) );
 
 	change_box_color_rgb(
-		 glade_xml_get_widget(info->main_window, "boxtext" ),
+		 glade_xml_get_widget_(info->main_window, "boxtext" ),
 		 fg[0],fg[1],fg[2],fg[3], (is_button_toggled( "textcolorfg" ) ? 1: 0) );
 
 
 	change_box_color_rgb(
-		glade_xml_get_widget( info->main_window, "boxln" ),
+		glade_xml_get_widget_( info->main_window, "boxln" ),
 		ln[0],ln[1],ln[2],ln[3], (is_button_toggled( "textcolorln" ) ? 1: 0) );
 
 	memcpy( bg_, bg, sizeof(bg_));
@@ -4050,11 +4050,11 @@ static	gint	srt_load_subtitle(int sid)
 		update_slider_value( "textcolorgreen",ln_[1],0);
 		update_slider_value( "textcoloralpha", ln_[3],0);
 	}
-	GtkWidget *combo = glade_xml_get_widget( info->main_window, "combobox_fonts" );
+	GtkWidget *combo = glade_xml_get_widget_( info->main_window, "combobox_fonts" );
 	gtk_combo_box_set_active( GTK_COMBO_BOX( combo ), font );
 
 
-//	glade_xml_get_widget( info->main_window, "combobox_textsrt" );
+//	glade_xml_get_widget_( info->main_window, "combobox_textsrt" );
 //      gtk_combo_box_set_active( GTK_COMBO_BOX( combo ), seq_id-1 );
 
 //	if(len > 0 )
@@ -4181,7 +4181,7 @@ void	on_spin_text_size_value_changed( GtkWidget *w, gpointer data )
 {
 	if( srt_locked_)
 		return;
-	GtkWidget *ww = glade_xml_get_widget( info->main_window,
+	GtkWidget *ww = glade_xml_get_widget_( info->main_window,
 			"combobox_fonts" );
 	gint font = gtk_combo_box_get_active( GTK_COMBO_BOX( ww ) );
 	gint size = get_nums( "spin_text_size" );
@@ -4319,27 +4319,27 @@ static	void	colbox( const char *name1,const char *name2, int plane )
 
 	int v  = get_slider_val( name2 );
 	change_box_color(
-			glade_xml_get_widget( info->main_window,name1 ) ,
+			glade_xml_get_widget_( info->main_window,name1 ) ,
 			v, 
 			plane,
 			-1 ); //green
 
 	if(fg)
 		change_box_color(
-				glade_xml_get_widget( info->main_window, "boxtext" ),
+				glade_xml_get_widget_( info->main_window, "boxtext" ),
 				0.0,
 				-1,
 			        0	);
 	if(bg)
 		change_box_color(
-				glade_xml_get_widget( info->main_window, "boxbg" ),
+				glade_xml_get_widget_( info->main_window, "boxbg" ),
 				0.0,
 				-1,
 			        1	);
 
 	if(ln)
 		change_box_color(
-				glade_xml_get_widget( info->main_window, "boxln" ),
+				glade_xml_get_widget_( info->main_window, "boxln" ),
 				0.0,
 				-1,
 			        2	);

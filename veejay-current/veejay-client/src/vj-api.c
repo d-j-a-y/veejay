@@ -34,7 +34,6 @@
 #include <errno.h>
 #include <libavutil/avutil.h>
 #include <libavutil/pixfmt.h>
-#include <glade/glade.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
@@ -476,7 +475,7 @@ typedef struct
 
 typedef struct
 {
-    GladeXML *main_window;
+    GtkBuilder *main_window;
     vj_client   *client;
     int status_tokens[STATUS_TOKENS];   /* current status tokens */
     int *history_tokens[4];     /* list last known status tokens */
@@ -778,9 +777,9 @@ static gchar* strduplastn(gchar *title) {
 	return result;
 }
 
-GtkWidget *glade_xml_get_widget_( GladeXML *m, const char *name )
+GtkWidget *glade_xml_get_widget_( GtkBuilder *m, const char *name )
 {
-    GtkWidget *widget = glade_xml_get_widget( m , name );
+    GtkWidget *widget = GTK_WIDGET (gtk_builder_get_object( m , name ));
     if(!widget)
     {
         return NULL;
@@ -3546,7 +3545,7 @@ static void update_current_slot(int *history, int pm, int last_pm)
 
     if( fx_anim ) {
         set_toggle_button("kf_none",1);
-        reset_curve(glade_xml_get_widget(info->main_window, "curve"));
+        reset_curve(glade_xml_get_widget_(info->main_window, "curve"));
     }
 }
 
@@ -3558,7 +3557,7 @@ static void on_vims_messenger (void)
     GtkTextView* t= NULL;
     gchar *str = NULL;
     static int wait = 0;
-    t = GTK_TEXT_VIEW(GTK_WIDGET(glade_xml_get_widget
+    t = GTK_TEXT_VIEW(GTK_WIDGET(glade_xml_get_widget_
                                  (info->main_window,"vims_messenger_textview")));
     buffer = gtk_text_view_get_buffer(t);
 
@@ -3965,7 +3964,7 @@ void    generators_selection_func(GtkTreeView *treeview,
 
         gveejay_new_slot(MODE_STREAM);
 
-        gtk_widget_hide( glade_xml_get_widget(info->main_window, "generator_window") );
+        gtk_widget_hide( glade_xml_get_widget_(info->main_window, "generator_window") );
     }
 }
 
@@ -4846,7 +4845,7 @@ static GdkPixbuf *pix_trashcan[3] = { NULL,NULL,NULL };
 
 void reset_cali_images( int type, char *wid_name )
 {
-    GtkWidget *dstImage = glade_xml_get_widget( info->main_window, wid_name );
+    GtkWidget *dstImage = glade_xml_get_widget_( info->main_window, wid_name );
 
     if( pix_trashcan[type] != NULL ) {
         g_object_unref( pix_trashcan[type] );
@@ -4861,7 +4860,7 @@ void reset_cali_images( int type, char *wid_name )
 
 int get_and_draw_frame(int type, char *wid_name)
 {
-    GtkWidget *dstImage = glade_xml_get_widget( info->main_window, wid_name );
+    GtkWidget *dstImage = glade_xml_get_widget_( info->main_window, wid_name );
     if(dstImage == 0 ) {
         veejay_msg(VEEJAY_MSG_ERROR, "No widget '%s'",wid_name);
         return 0;
@@ -5819,7 +5818,7 @@ static void init_srt_editor()
 
 static void reload_fontlist()
 {
-    GtkWidget *box = glade_xml_get_widget( info->main_window, "combobox_fonts");
+    GtkWidget *box = glade_xml_get_widget_( info->main_window, "combobox_fonts");
     remove_all( GTK_COMBO_BOX( box ) );
     single_vims( VIMS_FONT_LIST );
     gint len = 0;
@@ -5851,7 +5850,7 @@ static void reload_srt()
         have_srt_ = 1;
     }
 
-    GtkWidget *box = glade_xml_get_widget( info->main_window, "combobox_textsrt");
+    GtkWidget *box = glade_xml_get_widget_( info->main_window, "combobox_textsrt");
     remove_all( GTK_COMBO_BOX( box ) );
 
     clear_textview_buffer( "textview_text");
@@ -6672,7 +6671,7 @@ int veejay_update_multitrack( void *ptr )
         return 1;
     }
 
-    GtkWidget *maintrack = glade_xml_get_widget( info->main_window, "imageA");
+    GtkWidget *maintrack = glade_xml_get_widget_( info->main_window, "imageA");
     int i;
     GtkWidget *ww = glade_xml_get_widget_( info->main_window, crappy_design[ui_skin_].name );
     int deckpage = gtk_notebook_get_current_page(GTK_NOTEBOOK(ww));
@@ -7925,13 +7924,16 @@ void vj_gui_init(char *glade_file,
     veejay_memset( vj_event_list, 0, sizeof(vj_event_list));
 
     gui->client = NULL;
-    gui->main_window = glade_xml_new(glade_path,NULL,NULL);
-    if(gui->main_window == NULL)
+    GError* error = NULL;
+    gui->main_window = gtk_builder_new ();
+    if (!gtk_builder_add_from_file (gui->main_window, glade_path, &error))
     {
         free(gui);
-        veejay_msg(VEEJAY_MSG_ERROR, "Cannot find '%s'", glade_path );
+        veejay_msg(VEEJAY_MSG_ERROR, "Couldn't load builder file: %s , %s", error->message, glade_path);
+        g_error_free (error);
         return;
     }
+
     info = gui;
 
     //set "connection" button has default in veejay connection dialog
@@ -7947,7 +7949,7 @@ void vj_gui_init(char *glade_file,
                                                        "veejay_connection");
     gtk_window_set_default(GTK_WINDOW(connection_dial), vj_button);
 
-    glade_xml_signal_autoconnect( gui->main_window );
+    gtk_builder_connect_signals( gui->main_window , NULL);
     GtkWidget *frame = glade_xml_get_widget_( info->main_window, "markerframe" );
     info->tl = timeline_new();
 
@@ -8027,12 +8029,12 @@ void vj_gui_init(char *glade_file,
 
     text_defaults();
 
-    GtkWidget *fgb = glade_xml_get_widget(info->main_window, "boxtext" );
-    GtkWidget *bgb = glade_xml_get_widget(info->main_window, "boxbg" );
-    GtkWidget *rb = glade_xml_get_widget(info->main_window, "boxred" );
-    GtkWidget *gb = glade_xml_get_widget(info->main_window, "boxgreen" );
-    GtkWidget *bb = glade_xml_get_widget(info->main_window, "boxblue" );
-    GtkWidget *lnb = glade_xml_get_widget(info->main_window,"boxln" );
+    GtkWidget *fgb = glade_xml_get_widget_(info->main_window, "boxtext" );
+    GtkWidget *bgb = glade_xml_get_widget_(info->main_window, "boxbg" );
+    GtkWidget *rb = glade_xml_get_widget_(info->main_window, "boxred" );
+    GtkWidget *gb = glade_xml_get_widget_(info->main_window, "boxgreen" );
+    GtkWidget *bb = glade_xml_get_widget_(info->main_window, "boxblue" );
+    GtkWidget *lnb = glade_xml_get_widget_(info->main_window,"boxln" );
     g_signal_connect(G_OBJECT( bgb ), "expose_event",
                      G_CALLBACK( boxbg_expose_event ), NULL);
     g_signal_connect(G_OBJECT( fgb ), "expose_event",
@@ -8115,7 +8117,7 @@ void vj_gui_init(char *glade_file,
     info->midi =  vj_midi_new( info->main_window );
     gettimeofday( &(info->time_last) , 0 );
 
-    GtkWidget *srtbox = glade_xml_get_widget( info->main_window, "combobox_textsrt");
+    GtkWidget *srtbox = glade_xml_get_widget_( info->main_window, "combobox_textsrt");
     set_tooltip_by_widget( srtbox, tooltips[TOOLTIP_SRTSELECT].text);
 
     if(!beta)
@@ -8139,14 +8141,14 @@ void vj_gui_init(char *glade_file,
 
     for( i = 0 ; i < MAX_UI_PARAMETERS; i ++ )
     {
-        GtkWidget *slider = glade_xml_get_widget( info->main_window, slider_names_[i].text );
+        GtkWidget *slider = glade_xml_get_widget_( info->main_window, slider_names_[i].text );
         g_signal_connect( GTK_OBJECT(slider), "scroll-event", G_CALLBACK(slider_scroll_event), (gpointer) castIntToGpointer(i) );
         update_slider_range( slider_names_[i].text, 0,1,0,0);
     }
 
-    g_signal_connect(GTK_OBJECT( glade_xml_get_widget(info->main_window, "speed_slider") ), "scroll-event",
+    g_signal_connect(GTK_OBJECT( glade_xml_get_widget_(info->main_window, "speed_slider") ), "scroll-event",
                      G_CALLBACK(speed_scroll_event), NULL );
-    g_signal_connect(GTK_OBJECT( glade_xml_get_widget(info->main_window, "slow_slider") ), "scroll-event",
+    g_signal_connect(GTK_OBJECT( glade_xml_get_widget_(info->main_window, "slow_slider") ), "scroll-event",
                      G_CALLBACK(slow_scroll_event), NULL );
 
     GtkWidget *lw = glade_xml_get_widget_( info->main_window, "veejay_connection");
@@ -8323,7 +8325,7 @@ static void veejay_stop_connecting(vj_gui_t *gui)
 
     info->launch_sensitive = 0;
 
-    veejay_conncection_window = glade_xml_get_widget(info->main_window, "veejay_connection");
+    veejay_conncection_window = glade_xml_get_widget_(info->main_window, "veejay_connection");
     gtk_widget_hide(veejay_conncection_window);
     GtkWidget *mw = glade_xml_get_widget_(info->main_window,"gveejay_window" );
 
