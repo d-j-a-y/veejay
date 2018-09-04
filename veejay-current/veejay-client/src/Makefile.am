@@ -3,7 +3,7 @@ MAINTAINERCLEANFILES = Makefile.in
 AM_CFLAGS=$(OP_CFLAGS)
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src \
               $(VEEJAY_CFLAGS) $(GTK_CFLAGS) \
-              $(GLIB_CFLAGS) $(FFMPEG_CFLAGS) $(GLADE_CFLAGS) \
+              $(GLIB_CFLAGS) $(FFMPEG_CFLAGS) \
               -DGNOMELOCALEDIR=\""$(datadir)/locale"\" \
               -DRELOADED_DATADIR=\""$(reloaded_datadir)"\"
 
@@ -13,4 +13,4 @@ reloaded_SOURCES = cellrendererspin.c gtktimeselection.c vj-midi.c curve.c utils
 bin_PROGRAMS = $(RELOADED_BIN)
 
 reloaded_LDFLAGS =  $(VEEJAY_LIBS) $(GTK_LIBS) $(GLIB_LIBS) \
-$(GLADE_LIBS) $(ALSA_LIBS) $(LIBM_LIBS) $(LIBX11_LIBS) -lgthread-2.0 -export-dynamic 
+$(ALSA_LIBS) $(LIBM_LIBS) $(LIBX11_LIBS) -export-dynamic -lgmodule-2.0  -lgthread-2.0 

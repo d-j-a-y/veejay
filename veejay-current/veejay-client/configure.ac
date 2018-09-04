@@ -197,16 +197,16 @@ if test x$have_veejay != xtrue ; then
    AC_MSG_ERROR([Cannot find veejay 1.5.60 or later])
 fi
 
-have_pixbuf=false
-if test x$with_pixbuf != xno ; then
-  PKG_CHECK_MODULES(PIXBUF, [gtk+-2.0 >= 2.8 gdk-pixbuf-2.0],
-                    [
- 		     AC_SUBST(PIXBUF_CFLAGS)
-		     AC_SUBST(PIXBUF_LIBS)
-		     have_pixbuf=true
-                     AC_DEFINE(USE_GDK_PIXBUF, 1, [use gdk image load / save])],
-                    [have_pixbuf=false])
-fi
+#~ have_pixbuf=false
+#~ if test x$with_pixbuf != xno ; then
+  #~ PKG_CHECK_MODULES(PIXBUF, [gtk+-2.0 >= 2.8 gdk-pixbuf-2.0],
+                    #~ [
+ 		     #~ AC_SUBST(PIXBUF_CFLAGS)
+		     #~ AC_SUBST(PIXBUF_LIBS)
+		     #~ have_pixbuf=true
+                     #~ AC_DEFINE(USE_GDK_PIXBUF, 1, [use gdk image load / save])],
+                    #~ [have_pixbuf=false])
+#~ fi
 
 have_sdl=false
 if test x$with_sdl != xno ; then
@@ -675,15 +675,22 @@ PKG_CHECK_MODULES(GLIB, [$glib_modules])
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 
-gtk_modules="gtk+-2.0 >= 2.8"
+#~ AM_PATH_GTK_3_0([3.0.0],,AC_MSG_ERROR([Gtk+ 3.0.0 or higher required.]))
+
+gtk_modules="gtk+-3.0 >= 3"
 PKG_CHECK_MODULES(GTK, [$gtk_modules])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-libglade_modules="libglade-2.0 >= 2.0.1"
-PKG_CHECK_MODULES(GLADE, [$libglade_modules])
-AC_SUBST(GLADE_CFLAGS)
-AC_SUBST(GLADE_LIBS)
+#~ gdk_modules="gdk+-3.0 >= 3"
+#~ PKG_CHECK_MODULES(GDK, [$gdk_modules])
+#~ AC_SUBST(GDK_CFLAGS)
+#~ AC_SUBST(GDK_LIBS)
+
+#~ libglade_modules="libglade-2.0 >= 2.0.1"
+#~ PKG_CHECK_MODULES(GLADE, [$libglade_modules])
+#~ AC_SUBST(GLADE_CFLAGS)
+#~ AC_SUBST(GLADE_LIBS)
 
 reloaded_datadir="${datarootdir}/reloaded"
 AC_SUBST(reloaded_datadir)
@@ -748,6 +755,6 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([ Required dependencies:])
 AC_MSG_NOTICE([  - Veejay 1.5.50                 : ${have_veejay}])
 AC_MSG_NOTICE([  - POSIX Threads (pthread)       : ${have_pthread}])
-AC_MSG_NOTICE([  - GDK Pixbuf support            : ${have_pixbuf}])
+#~ AC_MSG_NOTICE([  - GDK Pixbuf support            : ${have_pixbuf}])
 AC_MSG_NOTICE([  - Alsa support (midi sequencer) : ${have_alsa}])
 AC_MSG_NOTICE([])
