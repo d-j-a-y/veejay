@@ -786,7 +786,7 @@ static char *mt_new_connection_dialog(multitracker_t *mt, int *port_num, int *er
 	gtk_container_add( GTK_CONTAINER( vbox ), num_label );
 	gtk_container_add( GTK_CONTAINER( vbox ), num_entry );
   GtkWidget* content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-	gtk_container_add( content_area, vbox );
+	gtk_container_add( GTK_CONTAINER (content_area), vbox );
 	gtk_widget_show_all( dialog );
 
 	gint res = gtk_dialog_run( GTK_DIALOG(dialog) );
