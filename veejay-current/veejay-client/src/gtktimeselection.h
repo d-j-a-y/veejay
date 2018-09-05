@@ -27,16 +27,16 @@ extern "C"
 {
 #endif
 
-#define TIMELINE_SELECTION(obj) GTK_CHECK_CAST(obj, timeline_get_type(), TimelineSelection )
+#define TIMELINE_SELECTION(obj)           (G_TYPE_CHECK_INSTANCE_CAST(obj, timeline_get_type(), TimelineSelection ))
 
-#define TIMELINE_SELECTION_CLASS(klass) GTK_CHECK_CLASS_CAST( klass, timeline_get_type(), TimelineSelectionClass )
+#define TIMELINE_SELECTION_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST( klass, timeline_get_type(), TimelineSelectionClass ))
 
-#define IS_TIMELINE_SELECTION(obj) GTK_CHECK_TYPE( obj, timeline_get_type() )
+#define IS_TIMELINE_SELECTION(obj)        (G_TYPE_CHECK_INSTANCE_TYPE( obj, timeline_get_type() ))
 
 typedef struct _TimelineSelection TimelineSelection;
 typedef struct _TimelineSelectionClass TimelineSelectionClass;
 
-GtkType		timeline_get_type	(void);
+GType		timeline_get_type	(void);
 GtkWidget*	timeline_new		(void);
 
 gdouble		timeline_get_length	(TimelineSelection *te);
