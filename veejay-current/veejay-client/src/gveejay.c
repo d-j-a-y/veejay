@@ -27,7 +27,6 @@
 
 #include <gtk/gtk.h>
 #include <glib.h>
-#include <glade/glade.h>
 
 #include <veejay/vevo.h>
 #include <veejay/vjmem.h>
@@ -254,8 +253,6 @@ int main(int argc, char *argv[])
 		err ++;
 
 	if( err ) usage(argv[0]);
-
-	glade_init();
 
 	vj_mem_init();
 

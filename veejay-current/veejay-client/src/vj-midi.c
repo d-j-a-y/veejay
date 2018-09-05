@@ -26,12 +26,11 @@
 #include <veejay/vj-msg.h>
 #include <alsa/asoundlib.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <veejay/libvevo.h>
 #include <veejay/vevo.h>
 #include <src/vj-api.h>
 
-extern GtkWidget      *glade_xml_get_widget_( GladeXML *m, const char *name );
+extern GtkWidget      *glade_xml_get_widget_( GtkBuilder *m, const char *name );
 extern void    msg_vims(char *message);
 extern void    vj_msg(int type, const char format[], ...);
 extern int prompt_dialog(const char *title, char *msg);
