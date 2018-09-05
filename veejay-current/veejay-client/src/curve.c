@@ -24,21 +24,22 @@
 #include <src/vj-api.h>
 #include <stdlib.h>
 #include "curve.h"
+
 void	get_points_from_curve( GtkWidget *curve, int len, float *vec )
 {
-	gtk_curve_get_vector( GTK_CURVE(curve), len, vec );
+  gtk3_curve_get_vector( curve, len, vec );
 }
 
 void	reset_curve( GtkWidget *curve )
 {
-	gtk_widget_set_sensitive( GTK_WIDGET(curve), TRUE );
-	gtk_curve_reset(GTK_CURVE(curve));
-	gtk_curve_set_range( GTK_CURVE(curve), 0.0, 1.0, 0.0, 1.0 );
+  gtk_widget_set_sensitive( curve, TRUE );
+  gtk3_curve_reset( curve );
+  gtk3_curve_set_range( curve , 0.0, 1.0, 0.0, 1.0 );
 }
 
-void	set_points_in_curve( int type, GtkWidget *curve)
+void	set_points_in_curve( Gtk3CurveType type, GtkWidget *curve)
 {
-	gtk_curve_set_curve_type( GTK_CURVE(curve), type );
+  gtk3_curve_set_curve_type( curve , type );
 }
 
 
@@ -77,15 +78,15 @@ int	set_points_in_curve_ext( GtkWidget *curve, unsigned char *blob, int id, int 
 		k++;
 	}
 	
-	gtk_curve_set_vector( GTK_CURVE( curve ), len, vec );
+  gtk3_curve_set_vector( curve , len, vec );
 
 	switch( type ) {
-		case 1: *curve_type = GTK_CURVE_TYPE_SPLINE; break;
-		case 2: *curve_type = GTK_CURVE_TYPE_FREE; break;
-		default: *curve_type = GTK_CURVE_TYPE_LINEAR; break;
+		case 1: *curve_type = GTK3_CURVE_TYPE_SPLINE; break;
+		case 2: *curve_type = GTK3_CURVE_TYPE_FREE; break;
+		default: *curve_type = GTK3_CURVE_TYPE_LINEAR; break;
 	}
 
-	gtk_curve_set_curve_type( GTK_CURVE(curve), *curve_type );
+  gtk3_curve_set_curve_type( curve, *curve_type );
 
 	*lo = start;
 	*hi = end;

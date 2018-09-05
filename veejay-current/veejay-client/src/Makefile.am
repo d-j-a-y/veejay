@@ -8,7 +8,7 @@ AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src \
               -DRELOADED_DATADIR=\""$(reloaded_datadir)"\"
 
 RELOADED_BIN=reloaded
-reloaded_SOURCES = cellrendererspin.c gtktimeselection.c vj-midi.c curve.c utils.c tracksources.c gveejay.c keyboard.c sequence.c multitrack.c vj-api.c mjpeg_logging.c mpegconsts.c mpegtimecode.c yuv4mpeg.c yuv4mpeg_ratio.c ${reloaded_headers}
+reloaded_SOURCES = cellrendererspin.c gtktimeselection.c vj-midi.c curve.c utils.c tracksources.c gveejay.c keyboard.c sequence.c multitrack.c vj-api.c mjpeg_logging.c mpegconsts.c mpegtimecode.c yuv4mpeg.c yuv4mpeg_ratio.c gtk3curve.c ${reloaded_headers}
 
 bin_PROGRAMS = $(RELOADED_BIN)
 
