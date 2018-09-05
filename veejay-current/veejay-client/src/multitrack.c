@@ -772,7 +772,7 @@ static char *mt_new_connection_dialog(multitracker_t *mt, int *port_num, int *er
 
 	gint   p = (1000 * (mt->selected)) + base;
 
-	GtkObject *adj = gtk_adjustment_new( p,1024,65535,5,10,0);
+	GtkAdjustment *adj = gtk_adjustment_new( p,1024,65535,5,10,0);
 	GtkWidget *num_entry = gtk_spin_button_new( GTK_ADJUSTMENT(adj), 5.0, 0 );
 
 	GtkWidget *text_label = gtk_label_new( "Hostname" );

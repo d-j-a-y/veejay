@@ -57,6 +57,7 @@
 #include <unistd.h>
 #include <cellrendererspin.h>
 #include <gtktimeselection.h>
+#include <gtk3curve.h>
 #include <libgen.h>
 #ifdef HAVE_SDL
 #include <src/keyboard.h>
@@ -388,7 +389,7 @@ typedef struct
     GtkWidget *timecode;
     GtkWidget *hotkey;
 //  GtkWidget *edit_button;
-    GtkTooltips *tips;
+//    GtkTooltip *tips;
     GtkWidget *image;
     GtkWidget  *frame;
     GtkWidget *event_box;
@@ -492,7 +493,7 @@ typedef struct
     struct timeval  alarm;
     struct timeval  timer;
 //  GIOChannel  *channel;
-    GdkColormap *color_map;
+    GdkVisual *color_map;
     gint connecting;
 //  gint logging;
     gint streamrecording;
@@ -2700,11 +2701,11 @@ static void update_curve_widget(GtkWidget *curve)
             info->uc.selected_parameter_id = p;
             switch( curve_type )
             {
-                case GTK_CURVE_TYPE_SPLINE:
+                case GTK3_CURVE_TYPE_SPLINE:
                     set_toggle_button( "curve_typespline", 1 );
                     break;
-                case GTK_CURVE_TYPE_FREE:
-                    set_toggle_button( "curve_typefreehand",1 );
+                case GTK3_CURVE_TYPE_FREE:
+                    set_toggle_button( "curve_typefree",1 );
                     break;
                 default: set_toggle_button( "curve_typelinear", 1 );
                     break;
@@ -4110,14 +4111,15 @@ static gint load_parameter_info()
 
     switch( p[ENTRY_KF_TYPE] )
     {
-        case 1:
+        case GTK3_CURVE_TYPE_SPLINE:
             set_toggle_button( "curve_typespline", 1 );
             break;
-        case 2:
-            set_toggle_button( "curve_typefreehand",1 );
+        case GTK3_CURVE_TYPE_FREE:
+            set_toggle_button( "curve_typefree",1 );
             break;
         default:
-            case GTK_CURVE_TYPE_LINEAR: set_toggle_button( "curve_typelinear", 1 );
+        case GTK3_CURVE_TYPE_LINEAR: 
+            set_toggle_button( "curve_typelinear", 1 );
             break;
         break;
     }
@@ -5819,7 +5821,8 @@ static void init_srt_editor()
 static void reload_fontlist()
 {
     GtkWidget *box = glade_xml_get_widget_( info->main_window, "combobox_fonts");
-    remove_all( GTK_COMBO_BOX( box ) );
+    gtk_combo_box_text_remove_all (GTK_COMBO_BOX_TEXT( box ) );
+
     single_vims( VIMS_FONT_LIST );
     gint len = 0;
     gchar *srts = recv_vims(6,&len );
@@ -5834,7 +5837,7 @@ static void reload_fontlist()
         int slen = atoi(tmp);
         p += 3;
         gchar *seq_str = strndup( p, slen );
-        gtk_combo_box_append_text( GTK_COMBO_BOX(box),  seq_str );
+        gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT(box), NULL, seq_str );
         p += slen;
         free(seq_str);
         i += (slen + 3);
@@ -5851,7 +5854,7 @@ static void reload_srt()
     }
 
     GtkWidget *box = glade_xml_get_widget_( info->main_window, "combobox_textsrt");
-    remove_all( GTK_COMBO_BOX( box ) );
+    gtk_combo_box_text_remove_all (GTK_COMBO_BOX_TEXT( box ) );
 
     clear_textview_buffer( "textview_text");
 
@@ -5875,7 +5878,7 @@ static void reload_srt()
             break;
         if(token)
         {
-            gtk_combo_box_append_text( GTK_COMBO_BOX(box),token );
+            gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT(box), NULL, token );
             i += strlen(token) + 1;
             free(token);
         }
@@ -7480,7 +7483,7 @@ void vj_gui_free()
 void vj_gui_style_setup()
 {
     if(!info) return;
-    info->color_map = gdk_colormap_get_system();
+    info->color_map = gdk_screen_get_system_visual (gdk_screen_get_default ());
 }
 
 void vj_gui_theme_setup(int default_theme)
@@ -7488,47 +7491,48 @@ void vj_gui_theme_setup(int default_theme)
     gtk_rc_parse(theme_file);
 }
 
-void send_refresh_signal(void)
-{
-    GdkEventClient event;
-    event.type = GDK_CLIENT_EVENT;
-    event.send_event = TRUE;
-    event.window = NULL;
-    event.message_type = gdk_atom_intern("_GTK_READ_RCFILES", FALSE);
-    event.data_format = 8;
-    gdk_event_send_clientmessage_toall((GdkEvent *)&event);
-}
+//~ NOT USED
+//~ void send_refresh_signal(void)
+//~ {
+    //~ GdkEventClient event;
+    //~ event.type = GDK_CLIENT_EVENT;
+    //~ event.send_event = TRUE;
+    //~ event.window = NULL;
+    //~ event.message_type = gdk_atom_intern("_GTK_READ_RCFILES", FALSE);
+    //~ event.data_format = 8;
+    //~ gdk_event_send_clientmessage_toall((GdkEvent *)&event);
+//~ }
 
-gint gui_client_event_signal(GtkWidget *widget,
-                             GdkEventClient *event,
-                             void *data)
-{
-    static GdkAtom atom_rcfiles = GDK_NONE;
-    if(!atom_rcfiles)
-        atom_rcfiles = gdk_atom_intern("_GTK_READ_RCFILES", FALSE);
+//~ gint gui_client_event_signal(GtkWidget *widget,
+                             //~ GdkEventClient *event,
+                             //~ void *data)
+//~ {
+    //~ static GdkAtom atom_rcfiles = GDK_NONE;
+    //~ if(!atom_rcfiles)
+        //~ atom_rcfiles = gdk_atom_intern("_GTK_READ_RCFILES", FALSE);
 
-    if(event->message_type == atom_rcfiles)
-    {
-        gtk_rc_parse( theme_file );
+    //~ if(event->message_type == atom_rcfiles)
+    //~ {
+        //~ gtk_rc_parse( theme_file );
 
-        gtk_widget_reset_rc_styles(glade_xml_get_widget_(info->main_window,
-                                                         "gveejay_window")
-                                   );
+        //~ gtk_widget_reset_rc_styles(glade_xml_get_widget_(info->main_window,
+                                                         //~ "gveejay_window")
+                                   //~ );
 
-        gtk_rc_reparse_all();
+        //~ gtk_rc_reparse_all();
 
-        veejay_msg(VEEJAY_MSG_WARNING,
-            "Loaded GTK theme %s (catched _GTK_READ_RCFILES)", theme_file );
-        veejay_msg(VEEJAY_MSG_INFO,
-            "If the new theme is using an engine that modifies the internal structure");
-        veejay_msg(VEEJAY_MSG_INFO,
-            "of the widgets, there is no way for me to undo those changes and display");
-        veejay_msg(VEEJAY_MSG_INFO,
-            "%s correctly", theme_file );
-        return TRUE;
-    }
-    return FALSE;
-}
+        //~ veejay_msg(VEEJAY_MSG_WARNING,
+            //~ "Loaded GTK theme %s (catched _GTK_READ_RCFILES)", theme_file );
+        //~ veejay_msg(VEEJAY_MSG_INFO,
+            //~ "If the new theme is using an engine that modifies the internal structure");
+        //~ veejay_msg(VEEJAY_MSG_INFO,
+            //~ "of the widgets, there is no way for me to undo those changes and display");
+        //~ veejay_msg(VEEJAY_MSG_INFO,
+            //~ "%s correctly", theme_file );
+        //~ return TRUE;
+    //~ }
+    //~ return FALSE;
+//~ }
 
 void vj_gui_set_debug_level(int level, int n_tracks, int pw, int ph )
 {
@@ -7982,9 +7986,9 @@ void vj_gui_init(char *glade_file,
     gtk_label_set_text(GTK_LABEL(glade_xml_get_widget_(info->main_window,
                                                         "build_revision")),
                        text);
-
-    g_signal_connect_after( GTK_OBJECT(mainw), "client_event",
-        GTK_SIGNAL_FUNC( G_CALLBACK(gui_client_event_signal) ), NULL );
+    //~ NOT USED
+    //~ g_signal_connect_after( GTK_OBJECT(mainw), "client_event",
+        //~ GTK_SIGNAL_FUNC( G_CALLBACK(gui_client_event_signal) ), NULL );
 
     g_signal_connect( GTK_OBJECT(mainw), "destroy",
             G_CALLBACK( gveejay_quit ),

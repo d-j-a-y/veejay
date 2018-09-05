@@ -1429,22 +1429,22 @@ void	on_check_autowhitebalance_toggled(GtkWidget *widget, gpointer user_data)
 	}
 }
 
-
-#ifndef HAVE_GTK2_6
-static gchar	*my_gtk_combo_box_get_active_text(GtkComboBox *combo )
-{
- GtkTreeIter _iter = { 0 };
- gchar *_format = NULL;
-	 GtkTreeModel *_model=NULL;
- g_return_val_if_fail( GTK_IS_COMBO_BOX(combo),NULL);
- _model = gtk_combo_box_get_model(combo);
-g_return_val_if_fail( GTK_IS_LIST_STORE(_model),NULL);
- if(gtk_combo_box_get_active_iter(combo,&_iter))
-	gtk_tree_model_get(_model, &_iter,0,&_format,-1);
- return _format;
-}
-#define gtk_combo_box_get_active_text( combo ) my_gtk_combo_box_get_active_text(combo)
-#endif
+//~ NOT USED
+//~ #ifndef HAVE_GTK2_6
+//~ static gchar	*my_gtk_combo_box_get_active_text(GtkComboBox *combo )
+//~ {
+ //~ GtkTreeIter _iter = { 0 };
+ //~ gchar *_format = NULL;
+	 //~ GtkTreeModel *_model=NULL;
+ //~ g_return_val_if_fail( GTK_IS_COMBO_BOX(combo),NULL);
+ //~ _model = gtk_combo_box_get_model(combo);
+//~ g_return_val_if_fail( GTK_IS_LIST_STORE(_model),NULL);
+ //~ if(gtk_combo_box_get_active_iter(combo,&_iter))
+	//~ gtk_tree_model_get(_model, &_iter,0,&_format,-1);
+ //~ return _format;
+//~ }
+//~ #define gtk_combo_box_get_active_text( combo ) my_gtk_combo_box_get_active_text(combo)
+//~ #endif
 
 void on_button_seq_clearall_clicked( GtkWidget *w, gpointer data )
 {
@@ -1465,8 +1465,8 @@ void	on_seq_rec_stop_clicked( GtkWidget *w, gpointer data )
 
 void	on_rec_seq_start_clicked( GtkWidget *w, gpointer data )
 {
-	GtkComboBox *combo = GTK_COMBO_BOX( glade_xml_get_widget_(info->main_window,"combo_samplecodec"));
-	gchar *gformat = (gchar*)gtk_combo_box_get_active_text(combo) ;
+	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT( glade_xml_get_widget_(info->main_window,"combo_samplecodec"));
+	gchar *gformat = (gchar*)gtk_combo_box_text_get_active_text(combo) ;
 	gchar *format = gformat;
 	if(format != NULL && strlen(format) > 2)
 	{
@@ -1491,8 +1491,8 @@ void	on_stream_recordstart_clicked(GtkWidget *widget, gpointer user_data)
 
 	gint nframes = get_nums( "spin_streamduration");
 	gint autoplay = is_button_toggled("button_stream_autoplay"); 
-	GtkComboBox *combo = GTK_COMBO_BOX( glade_xml_get_widget_(info->main_window,"combo_streamcodec"));
-	gchar *gformat = (gchar*)gtk_combo_box_get_active_text(combo) ;
+	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT( glade_xml_get_widget_(info->main_window,"combo_streamcodec"));
+	gchar *gformat = (gchar*)gtk_combo_box_text_get_active_text(combo) ;
 	gchar *format = gformat;
 	if(format != NULL && strlen(format) > 2)
 	{
@@ -1580,9 +1580,9 @@ void	on_button_sample_recordstart_clicked(GtkWidget *widget, gpointer user_data)
 {
 
 	gint autoplay = is_button_toggled("button_sample_autoplay"); 
-	GtkComboBox *combo = GTK_COMBO_BOX( glade_xml_get_widget_(info->main_window,"combo_samplecodec"));
+	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT( glade_xml_get_widget_(info->main_window,"combo_samplecodec"));
 
-	gchar *format = (gchar*) gtk_combo_box_get_active_text(combo);
+	gchar *format = (gchar*) gtk_combo_box_text_get_active_text(combo);
 	gint n_frames = 0;
 
 	gint dur_val = get_nums( "spin_sampleduration" );
@@ -2684,11 +2684,11 @@ void	on_curve_buttonstore_clicked(GtkWidget *widget, gpointer user_data )
 
 	int type = 0;
 	if( is_button_toggled( "curve_typelinear" ) ) {
-		type = 0; //GTK_CURVE_TYPE_LINEAR;
+		type = GTK3_CURVE_TYPE_LINEAR;
 	} else if ( is_button_toggled( "curve_typespline" ) ) {
-		type = 1; //GTK_CURVE_TYPE_SPLINE;
+		type = GTK3_CURVE_TYPE_SPLINE;
 	} else if ( is_button_toggled( "curve_typefreehand" ) ) {
-		type = 2; //GTK_CURVE_TYPE_FREE;
+		type = GTK3_CURVE_TYPE_FREE;
 	}
 	
 	int min=0,max=0;
@@ -2759,7 +2759,7 @@ void	on_curve_typelinear_toggled(GtkWidget *widget, gpointer user_data)
 		if(!s)
 			return;
 		GtkWidget *curve = glade_xml_get_widget_( info->main_window, "curve");
-		set_points_in_curve( GTK_CURVE_TYPE_LINEAR, curve );
+		set_points_in_curve( GTK3_CURVE_TYPE_LINEAR, curve );
 	}
 }	
 void	on_curve_typespline_toggled(GtkWidget *widget, gpointer user_data)
@@ -2773,7 +2773,7 @@ void	on_curve_typespline_toggled(GtkWidget *widget, gpointer user_data)
 		if(!s)
 			return;
 		GtkWidget *curve = glade_xml_get_widget_( info->main_window, "curve");
-		set_points_in_curve( GTK_CURVE_TYPE_SPLINE, curve );
+		set_points_in_curve( GTK3_CURVE_TYPE_SPLINE, curve );
 	}
 }	
 void	on_curve_typefreehand_toggled(GtkWidget *widget, gpointer user_data)
@@ -2786,7 +2786,7 @@ void	on_curve_typefreehand_toggled(GtkWidget *widget, gpointer user_data)
 		if(!s)
 			return;
 		GtkWidget *curve = glade_xml_get_widget_( info->main_window, "curve");
-		set_points_in_curve( GTK_CURVE_TYPE_FREE, curve );
+		set_points_in_curve( GTK3_CURVE_TYPE_FREE, curve );
 	}
 
 }
@@ -4217,7 +4217,7 @@ static	void change_box_color_rgb( GtkWidget *box, int r, int g, int b,int a, int
     update_slider_value( "textcolorblue",b,0);
     update_slider_value( "textcoloralpha",a,0);
   }
-  gdk_colormap_alloc_color( gtk_widget_get_colormap( box ), &col , FALSE, TRUE);
+
   gdk_cairo_set_source_color( cr, &col );
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill (cr);
@@ -4230,7 +4230,7 @@ void	on_combobox_textsrt_changed( GtkWidget *w, gpointer data)
 	if(info->status_lock)
 		return;
 
-	gchar *k = gtk_combo_box_get_active_text( GTK_COMBO_BOX(w) );
+	gchar *k = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT(w) );
 	int sid  = atoi(k);
 	if( sid > 0)
 	{
@@ -4303,7 +4303,6 @@ static	void change_box_color( GtkWidget *box, double val, int plane, int fill )
 
   }
 
-  gdk_colormap_alloc_color( gtk_widget_get_colormap( box ), &col , FALSE, TRUE);
   gdk_cairo_set_source_color( cr, &col );
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill (cr);
@@ -4510,7 +4509,6 @@ gboolean boxfg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
   col.green = 255.0 * fg_[1];
   col.blue = 255.0 * fg_[2];
 
-  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
   gdk_cairo_set_source_color( cr, &col );
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
@@ -4535,7 +4533,6 @@ gboolean boxbg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
   col.green = 255.0 * bg_[1];
   col.blue = 255.0 * bg_[2];
 
-  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
   gdk_cairo_set_source_color( cr, &col );
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
@@ -4560,7 +4557,6 @@ gboolean boxln_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
   col.green = 255.0 * ln_[1];
   col.blue = 255.0 * ln_[2];
 
-  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
   gdk_cairo_set_source_color( cr, &col );
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
@@ -4583,7 +4579,6 @@ gboolean boxred_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data 
   memset( &col,0, sizeof( GdkColor ) );
   col.red = 255 * get_slider_val( "textcolorred" );
 
-  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
   gdk_cairo_set_source_color( cr, &col );
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
@@ -4607,7 +4602,6 @@ gboolean boxgreen_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer dat
   memset( &col,0, sizeof( GdkColor ) );
   col.green = 0xff * get_slider_val( "textcolorgreen" );
 
-  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
   gdk_cairo_set_source_color( cr, &col );
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
@@ -4630,7 +4624,6 @@ gboolean boxblue_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data
   memset( &col,0, sizeof( GdkColor ) );
   col.blue = 255 * get_slider_val( "textcolorblue" );
 
-  gdk_colormap_alloc_color( gtk_widget_get_colormap( w ), &col , FALSE, TRUE);
   gdk_cairo_set_source_color( cr, &col );
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
