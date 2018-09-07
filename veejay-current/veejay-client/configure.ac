@@ -53,9 +53,6 @@ AC_ARG_ENABLE([simd-accel],
 AC_ARG_WITH([extra-cflags],
             AC_HELP_STRING([--with-extra-cflags=flags],
                            [Options to be added to CFLAGS (optional)]))
-AC_ARG_WITH([pixbuf],
-            AC_HELP_STRING([--without-pixbuf], [Do not use GDK pixbuf]),
-            [], [with_pixbuf=yes])
 
 arch_target="auto"
 AC_ARG_WITH([arch-target], AS_HELP_STRING( [--with-arch-target=generic or auto],
@@ -670,10 +667,10 @@ if test x"$with_extra_cflags" != "x"; then
    CXXFLAGS="$CXXFLAGS $with_extra_cflags"
 fi
 
-glib_modules="glib-2.0 >= 2.4"
-PKG_CHECK_MODULES(GLIB, [$glib_modules])
-AC_SUBST(GLIB_CFLAGS)
-AC_SUBST(GLIB_LIBS)
+#~ glib_modules="glib-2.0 >= 2.4"
+#~ PKG_CHECK_MODULES(GLIB, [$glib_modules])
+#~ AC_SUBST(GLIB_CFLAGS)
+#~ AC_SUBST(GLIB_LIBS)
 
 #~ AM_PATH_GTK_3_0([3.0.0],,AC_MSG_ERROR([Gtk+ 3.0.0 or higher required.]))
 

@@ -48,7 +48,7 @@ AM_CPPFLAGS += -I /usr/X11R6/include \
 		-I$(top_srcdir)/libqrwrap \
 		-I$(top_srcdir)/libvjxml \
 		$(FFMPEG_CFLAGS) $(LIBQUICKTIME_CFLAGS) $(FT_CFLAGS) $(MJPEGTOOLS_CFLAGS) $(GLIB_CFLAGS) \
-		$(AVIPLAY_CFLAGS) $(XML2_CFLAGS) $(GTK_CFLAGS) $(DV_FLAGS) $(X_CFLAGS) $(LIBLO_CFLAGS) \
+		$(AVIPLAY_CFLAGS) $(XML2_CFLAGS) $(DV_FLAGS) $(X_CFLAGS) $(LIBLO_CFLAGS) \
 		$(DIRECTFB_CFLAGS) $(SDL_CFLAGS) $(SDL_TTF_CFLAGS) $(JPEG_CFLAGS) $(JACK_CFLAGS) $(LIBUNWIND_CFLAGS) $(PTHREAD_CFLAGS) $(LIBQRENCODE_CFLAGS)
 
 pkginclude_HEADERS = vims.h
@@ -96,10 +96,12 @@ if HAVE_ARM
 libveejay_la_LIBADD+=$(top_builddir)/thirdparty/fastarm/libfastarm.la
 endif
 
-libveejay_la_LDFLAGS +=	$(SDL_LIBS) $(SDL_TTF_LIBS) $(DIRECTFB_LIBS) $(X_LIBS) $(PTHREAD_LIBS) $(FT_LDFLAGS) $(FT_LIBS) \
+libveejay_la_LDFLAGS +=	$(SDL_LIBS) $(SDL_TTF_LIBS) $(DIRECTFB_LIBS) \
+			$(X_LIBS) $(PTHREAD_LIBS) $(FT_LDFLAGS) $(FT_LIBS) \
 			$(XML2_LIBS) $(JPEG_LIBS) $(LIBLO_LIBS) $(LIBUNWIND_LIBS) $(GLIB_LIBS) \
 		 	$(FFMPEG_LIBS) $(XINERAMA_LIBS) $(MJPEGTOOLS_LIBS) $(LIBPNG_LIBS) \
-			$(LIBDV_LIBS) $(LIBM_LIBS) $(PIXBUF_LIBS) $(JACK_LIBS) $(LIBQUICKTIME_LIBS) $(RT_LIBS) $(LIBQRENCODE_LIBS) \
+			$(LIBDV_LIBS) $(LIBM_LIBS) $(PIXBUF_LIBS) $(JACK_LIBS) \ 
+			$(LIBQUICKTIME_LIBS) $(RT_LIBS) $(LIBQRENCODE_LIBS) \
 			-DDYNAMIC -O3 -Wall -rdynamic -Wl,-no-undefined 
 
 # *********************************************************************

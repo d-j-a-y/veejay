@@ -2650,7 +2650,7 @@ void	on_curve_clear_parameter_clicked( GtkWidget *widget, gpointer user_data )
 	if( info->uc.selected_parameter_id == -1 )
 		return;
 	multi_vims( VIMS_SAMPLE_KF_CLEAR, "%d %d", info->uc.selected_chain_entry, info->uc.selected_parameter_id  );
-	reset_curve(  glade_xml_get_widget_(info->main_window, "curve") );
+	reset_curve(  info->curve );
 }
 
 void	on_curve_buttonstore_clicked(GtkWidget *widget, gpointer user_data )
@@ -2679,8 +2679,6 @@ void	on_curve_buttonstore_clicked(GtkWidget *widget, gpointer user_data )
 			vj_msg(VEEJAY_MSG_INFO, "Length of animation is 0");
 		return;
 	}
-	
-	GtkWidget *curve = glade_xml_get_widget_( info->main_window, "curve");
 
 	int type = 0;
 	if( is_button_toggled( "curve_typelinear" ) ) {
@@ -2696,7 +2694,7 @@ void	on_curve_buttonstore_clicked(GtkWidget *widget, gpointer user_data )
 
 	_effect_get_minmax( id, &min, &max,j );
 
-	get_points_from_curve( curve, length, data );
+	get_points_from_curve( info->curve, length, data );
 
 	char header[64];
 	
@@ -2742,7 +2740,6 @@ void	on_curve_buttonclear_clicked(GtkWidget *widget, gpointer user_data)
 	if( id < 0 )
 		id = 0;
 	int i = info->uc.selected_chain_entry;
-//	GtkWidget *curve = glade_xml_get_widget_( info->main_window, "curve");
 	vj_kf_refresh(); 
 
 	multi_vims( VIMS_SAMPLE_KF_RESET, "%d", i );
@@ -2758,8 +2755,7 @@ void	on_curve_typelinear_toggled(GtkWidget *widget, gpointer user_data)
 		sample_slot_t *s = info->selected_slot;
 		if(!s)
 			return;
-		GtkWidget *curve = glade_xml_get_widget_( info->main_window, "curve");
-		set_points_in_curve( GTK3_CURVE_TYPE_LINEAR, curve );
+		set_points_in_curve( GTK3_CURVE_TYPE_LINEAR, info->curve );
 	}
 }	
 void	on_curve_typespline_toggled(GtkWidget *widget, gpointer user_data)
@@ -2772,8 +2768,7 @@ void	on_curve_typespline_toggled(GtkWidget *widget, gpointer user_data)
 		sample_slot_t *s = info->selected_slot;
 		if(!s)
 			return;
-		GtkWidget *curve = glade_xml_get_widget_( info->main_window, "curve");
-		set_points_in_curve( GTK3_CURVE_TYPE_SPLINE, curve );
+		set_points_in_curve( GTK3_CURVE_TYPE_SPLINE, info->curve );
 	}
 }	
 void	on_curve_typefreehand_toggled(GtkWidget *widget, gpointer user_data)
@@ -2785,8 +2780,7 @@ void	on_curve_typefreehand_toggled(GtkWidget *widget, gpointer user_data)
 		sample_slot_t *s = info->selected_slot;
 		if(!s)
 			return;
-		GtkWidget *curve = glade_xml_get_widget_( info->main_window, "curve");
-		set_points_in_curve( GTK3_CURVE_TYPE_FREE, curve );
+		set_points_in_curve( GTK3_CURVE_TYPE_FREE, info->curve );
 	}
 
 }
@@ -2901,7 +2895,7 @@ void	on_kf_none_toggled( GtkToggleButton *widget, gpointer user_data)
 		info->uc.selected_parameter_id = -1;
 
 		disable_widget( "fxanimcontrols" );
-		disable_widget( "curve" );
+		disable_widget( "curve_container" );
 
 		if(info->status_lock)
 			return;
@@ -3024,7 +3018,7 @@ void	on_button_videobook_clicked(GtkWidget *widget, gpointer user_data)
 void	on_samplepage_clicked(GtkWidget *widget, gpointer user_data)
 {
 	GtkWidget *m = glade_xml_get_widget_(info->main_window , "notebook18");
-	gtk_notebook_set_page( GTK_NOTEBOOK(m), 5 );
+	gtk_notebook_set_current_page( GTK_NOTEBOOK(m), 5 );
 
 	GtkWidget *n = glade_xml_get_widget_( info->main_window, "panels" );
 
@@ -3045,7 +3039,7 @@ void	on_samplepage_clicked(GtkWidget *widget, gpointer user_data)
 	}	
 	
 	if( page_needed != page )
-		gtk_notebook_set_page(
+		gtk_notebook_set_current_page(
 				GTK_NOTEBOOK(n),
 				page_needed );
 }
@@ -3452,7 +3446,7 @@ void	on_alpha_effects_toggled(GtkWidget *w, gpointer user_data)
 	 GtkWidget *n = glade_xml_get_widget_( info->main_window, "effectspanel" );
 	 gint page = gtk_notebook_get_current_page( GTK_NOTEBOOK(n) );
      if(page != 2)
-		gtk_notebook_set_page(GTK_NOTEBOOK(n), 2);
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(n), 2);
 }
 
 void	on_toggle_alpha255_toggled(GtkWidget *w, gpointer user_data)
@@ -3475,7 +3469,7 @@ void	on_mixing_effects_toggled(GtkWidget *w, gpointer user_data)
 	 GtkWidget *n = glade_xml_get_widget_( info->main_window, "effectspanel" );
 	 gint page = gtk_notebook_get_current_page( GTK_NOTEBOOK(n) );
 	 if(page != 0 )
-		 gtk_notebook_set_page(GTK_NOTEBOOK(n), 0 );
+		 gtk_notebook_set_current_page(GTK_NOTEBOOK(n), 0 );
 }
 
 void	on_image_effects_toggled(GtkWidget *w, gpointer user_data)
@@ -3483,7 +3477,7 @@ void	on_image_effects_toggled(GtkWidget *w, gpointer user_data)
 	 GtkWidget *n = glade_xml_get_widget_( info->main_window, "effectspanel" );
 	 gint page = gtk_notebook_get_current_page( GTK_NOTEBOOK(n) );
 	 if(page != 1)
-		 gtk_notebook_set_page(GTK_NOTEBOOK(n),1);
+		 gtk_notebook_set_current_page(GTK_NOTEBOOK(n),1);
 }
 
 void	on_filter_effects_activate(GtkWidget *widget, gpointer user_data)
@@ -3523,10 +3517,10 @@ void	on_console1_activate(GtkWidget *w, gpointer user_data)
 	gint page = gtk_notebook_get_current_page( GTK_NOTEBOOK( n ) );
 
 	if( page == MODE_PLAIN )
-		gtk_notebook_set_page( GTK_NOTEBOOK(n),
+		gtk_notebook_set_current_page( GTK_NOTEBOOK(n),
 				info->status_tokens[PLAY_MODE] );
 	else
-		gtk_notebook_set_page( GTK_NOTEBOOK(n),
+		gtk_notebook_set_current_page( GTK_NOTEBOOK(n),
 				MODE_PLAIN );
 }
 
@@ -4496,10 +4490,6 @@ void	on_buttonln_clicked( GtkWidget *w, gpointer data )
 
 gboolean boxfg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( gtk_widget_get_window(w),
-                        event->area.x, event->area.y,
-                        event->area.width,event->area.height );
-
   cairo_t *cr;
   cr = gdk_cairo_create (gtk_widget_get_window(w));
 
@@ -4520,10 +4510,6 @@ gboolean boxfg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 
 gboolean boxbg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( gtk_widget_get_window(w),
-                        event->area.x, event->area.y,
-                        event->area.width,event->area.height );
-
   cairo_t *cr;
   cr = gdk_cairo_create (gtk_widget_get_window(w));
 
@@ -4544,10 +4530,6 @@ gboolean boxbg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 
 gboolean boxln_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( gtk_widget_get_window(w),
-                        event->area.x, event->area.y,
-                        event->area.width,event->area.height );
-
   cairo_t *cr;
   cr = gdk_cairo_create (gtk_widget_get_window(w));
 
@@ -4568,10 +4550,6 @@ gboolean boxln_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 
 gboolean boxred_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( gtk_widget_get_window(w),
-                        event->area.x, event->area.y,
-                        event->area.width,event->area.height );
-
   cairo_t *cr;
   cr = gdk_cairo_create (gtk_widget_get_window(w));
 
@@ -4591,10 +4569,6 @@ gboolean boxred_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data 
 
 gboolean boxgreen_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( gtk_widget_get_window(w),
-                        event->area.x, event->area.y,
-                        event->area.width,event->area.height );
-
   cairo_t *cr;
   cr = gdk_cairo_create (gtk_widget_get_window(w));
 
@@ -4613,10 +4587,6 @@ gboolean boxgreen_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer dat
 
 gboolean boxblue_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
 {
-  gdk_window_clear_area( gtk_widget_get_window(w),
-                        event->area.x, event->area.y,
-                        event->area.width,event->area.height );
-
   cairo_t *cr;
   cr = gdk_cairo_create (gtk_widget_get_window(w));
 

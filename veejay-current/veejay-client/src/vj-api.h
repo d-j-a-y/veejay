@@ -76,5 +76,6 @@ int gveejay_restart();
 int gveejay_update();
 int gveejay_time_to_sync( void *ptr );
 int update_gveejay();
-void	reloaded_show_launcher();
+void reloaded_show_launcher();
+void reloaded_restart ();
 #endif

@@ -533,6 +533,7 @@ typedef struct
 //  guchar  *rawdata;
     int prev_mode;
     GtkWidget   *tl;
+    GtkWidget   *curve;
     config_settings_t   config;
     int status_frame;
     int key_id;
@@ -2624,9 +2625,7 @@ static int get_slider_val(const char *name)
 
 static void vj_kf_reset()
 {
-    GtkWidget *curve = glade_xml_get_widget_(info->main_window, "curve");
-
-    reset_curve( curve );
+    reset_curve( info->curve );
     set_toggle_button( "curve_chain_toggleentry", 0 );
     set_toggle_button( "curve_toggleentry_param", 0);
     update_label_str( "curve_parameter",FX_PARAMETER_DEFAULT_NAME);
@@ -2648,7 +2647,7 @@ static void vj_kf_refresh()
     int *entry_tokens = &(info->uc.entry_tokens[0]);
     if( entry_tokens[ENTRY_FXID] > 0 ) {
         enable_widget( "frame_fxtree3" );
-        update_curve_widget(glade_xml_get_widget_(info->main_window, "curve"));
+        update_curve_widget(info->curve);
     }
     else {
         set_toggle_button( "curve_toggleentry_param", 0 );
@@ -2673,10 +2672,8 @@ static void vj_kf_select_parameter(int num)
     update_label_str( "curve_parameter", name );
     g_free(name);
 
-    GtkWidget *curve = glade_xml_get_widget_(info->main_window, "curve");
-    reset_curve( curve );
-
-    update_curve_widget( curve );
+    reset_curve( info->curve );
+    update_curve_widget( info->curve );
 }
 
 static void update_curve_widget(GtkWidget *curve)
@@ -3546,7 +3543,7 @@ static void update_current_slot(int *history, int pm, int last_pm)
 
     if( fx_anim ) {
         set_toggle_button("kf_none",1);
-        reset_curve(glade_xml_get_widget_(info->main_window, "curve"));
+        reset_curve(info->curve);
     }
 }
 
@@ -6219,7 +6216,7 @@ static void notebook_set_page(const char *name, int page)
         veejay_msg(VEEJAY_MSG_ERROR, "Widget '%s' not found",name);
         return;
     }
-    gtk_notebook_set_page( GTK_NOTEBOOK(w), page );
+    gtk_notebook_set_current_page( GTK_NOTEBOOK(w), page );
 }
 
 static void hide_widget(const char *name)
@@ -6819,7 +6816,7 @@ static void update_status_accessibility(int old_pm, int new_pm)
         default:
             break;
     }
-    gtk_notebook_set_page( GTK_NOTEBOOK(n), page_needed );
+    gtk_notebook_set_current_page( GTK_NOTEBOOK(n), page_needed );
 }
 
 static void set_pm_page_label(int sample_id, int type)
@@ -7990,10 +7987,10 @@ void vj_gui_init(char *glade_file,
     //~ g_signal_connect_after( GTK_OBJECT(mainw), "client_event",
         //~ GTK_SIGNAL_FUNC( G_CALLBACK(gui_client_event_signal) ), NULL );
 
-    g_signal_connect( GTK_OBJECT(mainw), "destroy",
+    g_signal_connect( mainw, "destroy",
             G_CALLBACK( gveejay_quit ),
             NULL );
-    g_signal_connect( GTK_OBJECT(mainw), "delete-event",
+    g_signal_connect( mainw, "delete-event",
             G_CALLBACK( gveejay_quit ),
             NULL );
 
@@ -8075,6 +8072,11 @@ void vj_gui_init(char *glade_file,
                              (void*) gui,
                              use_threads);
 
+    gui->curve = gtk3_curve_new ();
+    gtk_container_add(GTK_CONTAINER(glade_xml_get_widget_( info->main_window,
+                                                          "curve_container" )),
+                      gui->curve);
+
     veejay_memset( &info->watch, 0, sizeof(watchdog_t));
     info->watch.state = STATE_WAIT_FOR_USER; //
 
@@ -8146,13 +8148,13 @@ void vj_gui_init(char *glade_file,
     for( i = 0 ; i < MAX_UI_PARAMETERS; i ++ )
     {
         GtkWidget *slider = glade_xml_get_widget_( info->main_window, slider_names_[i].text );
-        g_signal_connect( GTK_OBJECT(slider), "scroll-event", G_CALLBACK(slider_scroll_event), (gpointer) castIntToGpointer(i) );
+        g_signal_connect( slider, "scroll-event", G_CALLBACK(slider_scroll_event), (gpointer) castIntToGpointer(i) );
         update_slider_range( slider_names_[i].text, 0,1,0,0);
     }
 
-    g_signal_connect(GTK_OBJECT( glade_xml_get_widget_(info->main_window, "speed_slider") ), "scroll-event",
+    g_signal_connect(glade_xml_get_widget_(info->main_window, "speed_slider"), "scroll-event",
                      G_CALLBACK(speed_scroll_event), NULL );
-    g_signal_connect(GTK_OBJECT( glade_xml_get_widget_(info->main_window, "slow_slider") ), "scroll-event",
+    g_signal_connect(glade_xml_get_widget_(info->main_window, "slow_slider"), "scroll-event",
                      G_CALLBACK(slow_scroll_event), NULL );
 
     GtkWidget *lw = glade_xml_get_widget_( info->main_window, "veejay_connection");
