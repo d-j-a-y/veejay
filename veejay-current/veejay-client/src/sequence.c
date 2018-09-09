@@ -748,7 +748,9 @@ void		gvr_queue_mmvims( void *preview, int track_id, int vims_id, int val1,int v
 		if( vp->tracks[track_id] && vp->tracks[track_id]->active)
 			gvr_multiv_queue_vims( vp->tracks[track_id], vims_id,val1,val2 );
 	}
-}void		gvr_queue_mmmvims( void *preview, int track_id, int vims_id, int val1,int val2, int val3 )
+}
+
+void		gvr_queue_mmmvims( void *preview, int track_id, int vims_id, int val1,int val2, int val3 )
 {
 	veejay_preview_t *vp = (veejay_preview_t*) preview;
 	int i;

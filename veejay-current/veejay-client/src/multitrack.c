@@ -329,7 +329,7 @@ static	void	seq_opacity( GtkWidget *w, gpointer data)
   GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( w ));
 	gdouble value = gtk_adjustment_get_value (a);
 	gint opacity = (gint)( value * 255.0);
-	gvr_queue_mmmvims( mt->preview, v->num ,VIMS_CHAIN_MANUAL_FADE, 0, opacity, 0 );
+	gvr_queue_mmvims( mt->preview, v->num ,VIMS_CHAIN_MANUAL_FADE, 0, opacity);
 }
 
 
@@ -640,7 +640,8 @@ static sequence_view_t *new_sequence_view( void *vp, int num )
 	gtk_widget_show(vvbox);
 
 	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
-	seqv->timeline_ = gtk_hscale_new_with_range( 0.0,1.0,0.1 );
+	seqv->timeline_ = gtk_scale_new_with_range( GTK_ORIENTATION_HORIZONTAL, 
+                                              0.0, 1.0, 0.1);
 	gtk_scale_set_draw_value( GTK_SCALE(seqv->timeline_), FALSE );
 	//gtk_widget_set_size_request_( seqv->panel,180 ,180);
   GtkAdjustment *a = gtk_range_get_adjustment( GTK_RANGE( seqv->timeline_ ));
@@ -670,8 +671,10 @@ static sequence_view_t *new_sequence_view( void *vp, int num )
 
 	GtkWidget *hhbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
 
-	seqv->sliders_[0] = gtk_vscale_new_with_range( -12.0,12.0,1.0 );
-	seqv->sliders_[1] = gtk_vscale_new_with_range( 0.0, 1.0, 0.01 );
+	seqv->sliders_[0] = gtk_scale_new_with_range( GTK_ORIENTATION_VERTICAL,
+                                                -12.0,12.0,1.0 );
+	seqv->sliders_[1] = gtk_scale_new_with_range( GTK_ORIENTATION_VERTICAL,
+                                                0.0, 1.0, 0.01 );
 
   a = gtk_range_get_adjustment( GTK_RANGE( seqv->sliders_[0]));
   gtk_adjustment_set_value( a, 1.0 );
@@ -832,20 +835,21 @@ void		*multitrack_new(
 //	gtk_widget_set_size_request(mt->scroll,50+max_w*2, max_h);
 	gtk_container_set_border_width(GTK_CONTAINER(mt->scroll),1);
 	gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(mt->scroll),GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
-	GtkWidget *table = gtk_table_new( 1, MAX_TRACKS, FALSE );
+	GtkWidget *grid = gtk_grid_new();
+
 	gtk_box_pack_start( GTK_BOX( mt->main_box ), mt->scroll , TRUE,TRUE, 0 );
 	gtk_widget_show(mt->scroll);
 	int c = 0;
 	for( c = 0; c < MAX_TRACKS; c ++ )
 	{
 		mt->view[c] = new_sequence_view( mt,  c );
-		gtk_table_attach_defaults( GTK_TABLE(table), mt->view[c]->event_box, c, c+1, 0, 1 );
+		gtk_grid_attach( GTK_GRID(grid), mt->view[c]->event_box, c, 0, 1, 1 );
 	}
 
 	gtk_scrolled_window_add_with_viewport(
-			GTK_SCROLLED_WINDOW( mt->scroll ), table );
+			GTK_SCROLLED_WINDOW( mt->scroll ), grid );
 
-	gtk_widget_show(table);
+	gtk_widget_show(grid);
 
 	mt->master_track = 0;
 
