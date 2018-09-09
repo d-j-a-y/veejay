@@ -2090,9 +2090,9 @@ int prompt_keydialog(const char *title, char *msg)
     g_signal_connect(G_OBJECT(dialog), "response",
                      G_CALLBACK( gtk_widget_hide ), G_OBJECT(dialog ) );
 
-    GtkWidget *hbox1 = gtk_hbox_new( FALSE, 12 );
+    GtkWidget *hbox1 = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 12 );
     gtk_container_set_border_width( GTK_CONTAINER( hbox1 ), 6 );
-    GtkWidget *hbox2 = gtk_hbox_new( FALSE, 12 );
+    GtkWidget *hbox2 = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 12 );
     gtk_container_set_border_width( GTK_CONTAINER( hbox2 ), 6 );
 
     GtkWidget *icon = gtk_image_new_from_file( pixmap );
@@ -2207,7 +2207,7 @@ prompt_dialog(const char *title, char *msg)
     gtk_window_set_resizable( GTK_WINDOW(dialog), FALSE );
     g_signal_connect(G_OBJECT(dialog), "response",
                      G_CALLBACK( gtk_widget_hide ), G_OBJECT(dialog ) );
-    GtkWidget *hbox1 = gtk_hbox_new( FALSE, 12 );
+    GtkWidget *hbox1 = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 12 );
     gtk_container_set_border_width( GTK_CONTAINER( hbox1 ), 6 );
     GtkWidget *icon = gtk_image_new_from_stock( GTK_STOCK_DIALOG_QUESTION,
         GTK_ICON_SIZE_DIALOG );
@@ -2239,7 +2239,7 @@ error_dialog(const char *title, char *msg)
     gtk_window_set_resizable( GTK_WINDOW(dialog), FALSE );
     g_signal_connect(G_OBJECT(dialog), "response",
                      G_CALLBACK( gtk_widget_hide ), G_OBJECT(dialog ) );
-    GtkWidget *hbox1 = gtk_hbox_new( FALSE, 12 );
+    GtkWidget *hbox1 = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 12 );
     gtk_container_set_border_width( GTK_CONTAINER( hbox1 ), 6 );
     GtkWidget *icon = gtk_image_new_from_stock(GTK_STOCK_DIALOG_ERROR,
                                                GTK_ICON_SIZE_DIALOG );
@@ -2523,16 +2523,16 @@ int get_loop_value()
 
     if( is_button_toggled( "loop_normal" ))
         return 1;
-           
+
     if( is_button_toggled( "loop_pingpong" ))
         return 2;
-            
+
     if (is_button_toggled("loop_random"))
         return 3;
-            
+
     if( is_button_toggled( "loop_oncenop" ))
         return 4;
-    
+
     return 1; // loop normal
 }
 
@@ -3695,7 +3695,7 @@ void reportbug ()
              "firefox \"http://groups.google.com/group/veejay-discussion/post?hl=%s\" &",l );
 
     puts(URL);
-    
+
     if( system(URL) <= 0 ) {
         veejay_msg(VEEJAY_MSG_ERROR, "Unable to open browser to veejay homepage");
     }
@@ -3713,7 +3713,7 @@ void donatenow()
 }
 
 static void reset_fxtree()
-{   
+{
     int i;
     for(i = 0; i < 3; i ++ )
     {
@@ -3736,7 +3736,7 @@ static void reset_tree(const char *name)
     else {
         if( GTK_IS_LIST_STORE(tree_model) ) {
             gtk_list_store_clear(GTK_LIST_STORE(tree_model));
-        } 
+        }
         else {
             veejay_msg(0,"%s: wrong tree model type" ,__FUNCTION__);
         }
@@ -4115,7 +4115,7 @@ static gint load_parameter_info()
             set_toggle_button( "curve_typefree",1 );
             break;
         default:
-        case GTK3_CURVE_TYPE_LINEAR: 
+        case GTK3_CURVE_TYPE_LINEAR:
             set_toggle_button( "curve_typelinear", 1 );
             break;
         break;
@@ -5039,12 +5039,12 @@ static void load_samplelist_info(gboolean with_reset_slotselection)
         reset_samplebank();
         reset_tree( "tree_sources" );
     }
-    
+
     int load_from = info->uc.expected_num_samples;
     if( load_from < 0 )
         load_from = 0;
 
-    
+
     multi_vims( VIMS_SAMPLE_LIST,"%d", (with_reset_slotselection ? 0 : load_from) );
     gint fxlen = 0;
     gchar *fxtext = recv_vims(8,&fxlen);
@@ -5095,7 +5095,7 @@ static void load_samplelist_info(gboolean with_reset_slotselection)
         }
         offset = 0;
     }
-    
+
     if( fxtext ) free(fxtext);
     fxlen = 0;
 
@@ -5128,7 +5128,7 @@ static void load_samplelist_info(gboolean with_reset_slotselection)
                        &values[0], &values[1], &values[2],
                        &values[3], &values[4], &values[5],
                        &values[6], &values[7]);
-    
+
                 strncpy( descr, line + 22, values[6] );
                 switch( values[1] )
                 {
@@ -5199,7 +5199,7 @@ static void load_samplelist_info(gboolean with_reset_slotselection)
             offset += len;
         }
 
-    }   
+    }
 
     if(fxtext) free(fxtext);
 
@@ -6972,7 +6972,7 @@ static void update_globalinfo(int *history, int pm, int last_pm)
             indicate_sequence( FALSE, info->sequencer_view->gui_slot[ info->sequence_playing ] );
             info->sequence_playing = in;
             indicate_sequence( TRUE, info->sequencer_view->gui_slot[ info->sequence_playing ] );
-        } 
+        }
         else
         {
             indicate_sequence( FALSE, info->sequencer_view->gui_slot[ info->sequence_playing ] );
@@ -7830,11 +7830,11 @@ void vj_gui_set_geom( int x, int y )
     geo_pos_[1] = y;
 }
 
-void vj_event_list_free() 
+void vj_event_list_free()
 {
     int i;
     for( i = 0; i < VIMS_MAX; i ++ ) {
-        if( vj_event_list[i].format ) 
+        if( vj_event_list[i].format )
             free(vj_event_list[i].format);
         if( vj_event_list[i].descr )
             free(vj_event_list[i].descr);
@@ -8058,13 +8058,13 @@ void vj_gui_init(char *glade_file,
 
     gui->mt = multitrack_new((void(*)(int,char*,int)) vj_gui_cb,
                              NULL,
-                             glade_xml_get_widget_( info->main_window, 
+                             glade_xml_get_widget_( info->main_window,
                                                    "gveejay_window" ),
-                             glade_xml_get_widget_( info->main_window, 
+                             glade_xml_get_widget_( info->main_window,
                                                    "mt_box" ),
-                             glade_xml_get_widget_( info->main_window, 
+                             glade_xml_get_widget_( info->main_window,
                                                    "statusbar") ,
-                             glade_xml_get_widget_( info->main_window, 
+                             glade_xml_get_widget_( info->main_window,
                                                    "previewtoggle"),
                              pw,
                              ph,
@@ -8414,7 +8414,7 @@ gboolean    is_alive( int *do_sync )
     //  reloaded_schedule_restart();
         reloaded_restart();
     //  *do_sync = 0;
-        gui->watch.state = STATE_WAIT_FOR_USER; 
+        gui->watch.state = STATE_WAIT_FOR_USER;
         if( info->launch_sensitive == 0 ) {
             return FALSE;
         }
@@ -8949,7 +8949,7 @@ static void create_sequencer_slots(int nx, int ny)
         gtk_container_add (GTK_CONTAINER (gui_slot->event_box), gui_slot->frame);
 
         /* the slot main container */
-        gui_slot->main_vbox = gtk_vbox_new(FALSE,0);
+        gui_slot->main_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
         gtk_container_add (GTK_CONTAINER (gui_slot->frame), gui_slot->main_vbox);
         gtk_widget_show( GTK_WIDGET(gui_slot->main_vbox) );
 
@@ -9001,7 +9001,7 @@ static void create_ref_slots(int envelope_size)
         gtk_container_add (GTK_CONTAINER (gui_slot->event_box), gui_slot->frame);
 
         /* the slot main container */
-        gui_slot->main_vbox = gtk_vbox_new(FALSE,0);
+        gui_slot->main_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
         gtk_container_add (GTK_CONTAINER (gui_slot->frame), gui_slot->main_vbox);
         gtk_widget_show( GTK_WIDGET(gui_slot->main_vbox) );
 
@@ -9042,7 +9042,7 @@ static void create_slot(gint bank_nr, gint slot_nr, gint w, gint h)
     gtk_container_add (GTK_CONTAINER (gui_slot->event_box), GTK_WIDGET(gui_slot->frame));
 
     /* the slot main container */
-    gui_slot->main_vbox = gtk_vbox_new(FALSE,0);
+    gui_slot->main_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
     gtk_container_add (GTK_CONTAINER (gui_slot->frame), gui_slot->main_vbox);
     gtk_widget_show( GTK_WIDGET(gui_slot->main_vbox) );
 
@@ -9059,7 +9059,7 @@ static void create_slot(gint bank_nr, gint slot_nr, gint w, gint h)
     gtk_widget_show( GTK_WIDGET(gui_slot->image));
 
     /* the upper container for all slot-informations */
-    gui_slot->upper_hbox = gtk_hbox_new(FALSE,0);
+    gui_slot->upper_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
     gtk_box_pack_start (GTK_BOX (gui_slot->main_vbox), gui_slot->upper_hbox, FALSE, TRUE, 0);
     gtk_widget_show(GTK_WIDGET(gui_slot->upper_hbox));
 
@@ -9078,7 +9078,7 @@ static void create_slot(gint bank_nr, gint slot_nr, gint w, gint h)
     gtk_misc_set_padding (GTK_MISC(gui_slot->hotkey), 0, 0);
     gtk_box_pack_start (GTK_BOX (gui_slot->upper_hbox), GTK_WIDGET(gui_slot->hotkey), FALSE, FALSE, 0);
     gtk_widget_show(GTK_WIDGET(gui_slot->hotkey));
-    gui_slot->upper_vbox = gtk_vbox_new(FALSE,0);
+    gui_slot->upper_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
     gtk_box_pack_start (GTK_BOX (gui_slot->upper_hbox), gui_slot->upper_vbox, TRUE, TRUE, 0);
     gtk_widget_show(GTK_WIDGET(gui_slot->upper_vbox));
     gui_slot->title = gtk_label_new("");
@@ -9216,7 +9216,7 @@ static void set_selection_of_slot_in_samplebank(gboolean active)
 {
     if(!info->selection_slot || info->selection_slot->sample_id <= 0)
         return;
-    
+
     GdkColor color;
     color.red = info->normal->red;
     color.green = info->normal->green;
@@ -9250,7 +9250,7 @@ static int add_sample_to_sample_banks(int bank_page,sample_slot_t *slot)
     int result = verify_bank_capacity( &bp, &s, slot->sample_id, slot->sample_type );
 
     veejay_msg(VEEJAY_MSG_DEBUG,
-               "add slot on page %d: type=%d id=%d. result=%d", 
+               "add slot on page %d: type=%d id=%d. result=%d",
                bank_page,slot->sample_type,slot->sample_id,result );
 
     if( result )
@@ -9298,7 +9298,7 @@ static void remove_sample_from_slot()
                "%d",
                info->selection_slot->sample_id );
 
-    update_sample_slot_data( bank_nr, slot_nr, 0, -1, NULL, NULL); 
+    update_sample_slot_data( bank_nr, slot_nr, 0, -1, NULL, NULL);
 
     sample_gui_slot_t *gui_slot = info->sample_banks[bank_nr]->gui_slot[slot_nr];
     if(gui_slot)
@@ -9308,8 +9308,8 @@ static void remove_sample_from_slot()
 
     info->selection_gui_slot = NULL;
     info->selection_slot = NULL;
-    
-    info->uc.reload_hint[HINT_SLIST] = 2;   
+
+    info->uc.reload_hint[HINT_SLIST] = 2;
 
 }
 
