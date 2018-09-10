@@ -51,10 +51,7 @@ EXTRA_DIST = \
  share/gveejay.glade \
  share/gveejay.rc \
  share/gveejay.reloaded.glade \
- share/gveejay.reloaded.glade.bak \
- share/gveejay.reloaded.gladep \
- share/gveejay.reloaded.gladep.bak \
- share/gveejay.reloaded.glade~ \
+ share/gveejay.reloaded.css \
  share/high_contrast.rc \
  share/icon_apply.png \
  share/icon_berserk.png \

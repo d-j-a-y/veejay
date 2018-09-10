@@ -1087,42 +1087,45 @@ void		multitrack_update_sequence_image( void *data , int track, GdkPixbuf *img )
  */
 static gboolean seqv_mouse_press_event ( GtkWidget *w, GdkEventButton *event, gpointer user_data )
 {
-	sequence_view_t *v = (sequence_view_t*) user_data;
-	multitracker_t *mt = v->backlink;
+    sequence_view_t *v = (sequence_view_t*) user_data;
+    multitracker_t *mt = v->backlink;
 
-	if(event->type == GDK_BUTTON_PRESS)
-	{
-		if( !gvr_track_test( mt->preview , v->num ) )
-			return FALSE;
+    if(event->type == GDK_BUTTON_PRESS)
+    {
+      if( !gvr_track_test( mt->preview , v->num ) )
+        return FALSE;
 
-		int last_selected = mt->selected;
-		mt->selected = v->num;
-		vj_gui_disable();
+      int last_selected = mt->selected;
+      mt->selected = v->num;
+      vj_gui_disable();
 
-		// hostname, port_num from gvr
-		char *host = gvr_track_get_hostname( mt->preview, v->num );
-		int   port = gvr_track_get_portnum ( mt->preview, v->num );
+      // hostname, port_num from gvr
+      char *host = gvr_track_get_hostname( mt->preview, v->num );
+      int   port = gvr_track_get_portnum ( mt->preview, v->num );
 
-		if(!host || port <= 0 )
-		{
-			vj_gui_enable();
-			return FALSE;
-		}
+      if(!host || port <= 0 )
+      {
+        vj_gui_enable();
+        return FALSE;
+      }
 
-		vj_gui_cb( 0, host, port );
+      vj_gui_cb( 0, host, port );
 
-		gvr_set_master( mt->preview, v->num );
-		if(!gvr_track_configure( mt->preview, v->num, mt->pw,mt->ph) )
-		{
-			veejay_msg(0, "Unable to configure preview %d x %d",mt->pw , mt->ph );
-		}
-		veejay_msg(VEEJAY_MSG_INFO, "Set master to track %d", mt->master_track );
-		mt->master_track = v->num;
-		if( last_selected >= 0 && last_selected < MAX_TRACKS )
-			gtk_widget_set_state (mt->view[last_selected]->event_box, GTK_STATE_NORMAL);
-		gtk_widget_set_state (w, GTK_STATE_SELECTED);
+      gvr_set_master( mt->preview, v->num );
+      if(!gvr_track_configure( mt->preview, v->num, mt->pw,mt->ph) )
+      {
+        veejay_msg(0, "Unable to configure preview %d x %d",mt->pw , mt->ph );
+      }
+      veejay_msg(VEEJAY_MSG_INFO, "Set master to track %d", mt->master_track );
+      mt->master_track = v->num;
+      if( last_selected >= 0 && last_selected < MAX_TRACKS )
+      {
+        gtk_widget_set_state_flags( mt->view[last_selected]->event_box,
+                                    GTK_STATE_FLAG_NORMAL, TRUE);
+      }
+      gtk_widget_set_state_flags(w, GTK_STATE_FLAG_SELECTED, TRUE);
 
-		vj_gui_enable();
-	}
-	return FALSE;
+      vj_gui_enable();
+    }
+    return FALSE;
 }

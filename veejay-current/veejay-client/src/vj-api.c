@@ -537,7 +537,7 @@ typedef struct
     config_settings_t   config;
     int status_frame;
     int key_id;
-    GdkColor    *normal;
+    GdkRGBA    *normal;
     gboolean key_now;
     void *mt;
     watchdog_t  watch;
@@ -1023,16 +1023,21 @@ gchar *_utf8str(const char *c_str)
     return result;
 }
 
-GdkColor *widget_get_fg(GtkWidget *w )
+/*! \brief Return the widget current state foreground color.
+ *
+ *  \param w A pointer of calling widget
+
+ *  \return A pointer to GdkRGBA.
+ */
+GdkRGBA *widget_get_fg(GtkWidget *w )
 {
     if(!w)
         return NULL;
-    GdkColor *c = (GdkColor*)vj_calloc(sizeof(GdkColor));
-    GtkStyle *s = gtk_widget_get_style( w);
-    c->red   = s->fg[0].red;
-    c->green = s->fg[0].green;
-    c->blue  = s->fg[0].blue;
-    return c;
+    GtkStyleContext *sc = gtk_widget_get_style_context(w);
+    GdkRGBA *color = (GdkRGBA*)vj_calloc(sizeof(GdkRGBA));
+    gtk_style_context_get_color ( sc, gtk_style_context_get_state (sc),
+                                  color );
+    return color;
 }
 
 static void scan_devices( const char *name)
@@ -7488,7 +7493,7 @@ void vj_gui_theme_setup(int default_theme)
     gtk_rc_parse(theme_file);
 }
 
-//~ NOT USED
+//~ NOT USED FIXME
 //~ void send_refresh_signal(void)
 //~ {
     //~ GdkEventClient event;
@@ -7930,12 +7935,29 @@ void vj_gui_init(char *glade_file,
     if (!gtk_builder_add_from_file (gui->main_window, glade_path, &error))
     {
         free(gui);
+        free(gui->main_window);
         veejay_msg(VEEJAY_MSG_ERROR, "Couldn't load builder file: %s , %s", error->message, glade_path);
         g_error_free (error);
         return;
     }
-
     info = gui;
+
+    char css_path[1024];
+    snprintf( css_path, sizeof(css_path), "%s/%s",RELOADED_DATADIR,"gveejay.reloaded.css");
+    printf("fdf : %s", css_path);
+    GtkCssProvider * css = gtk_css_provider_new();
+    if(!gtk_css_provider_load_from_path(css, css_path, &error))
+    {
+        free(gui);
+        free(gui->main_window);
+        free(css);
+        veejay_msg(VEEJAY_MSG_ERROR, "Couldn't load style file: %s , %s", error->message, css_path);
+        g_error_free (error);
+        return;
+    }
+    gtk_style_context_add_provider_for_screen ( gdk_screen_get_default (), 
+                                                css,
+                                                GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
     //set "connection" button has default in veejay connection dialog
     gtk_entry_set_activates_default(GTK_ENTRY(glade_xml_get_widget_( info->main_window,
