@@ -4488,11 +4488,8 @@ void	on_buttonln_clicked( GtkWidget *w, gpointer data )
 	multi_vims( VIMS_FONT_COL, "%d %d %d %d %d", r,g,b,a, 3 );	
 }
 
-gboolean boxfg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
+gboolean boxfg_draw(GtkWidget *w, cairo_t *cr )
 {
-  cairo_t *cr;
-  cr = gdk_cairo_create (gtk_widget_get_window(w));
-
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
   col.red = 255.0 * fg_[0];
@@ -4503,16 +4500,11 @@ gboolean boxfg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
 
-  cairo_destroy( cr );
-
   return TRUE;
 }
 
-gboolean boxbg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
+gboolean boxbg_draw(GtkWidget *w, cairo_t *cr )
 {
-  cairo_t *cr;
-  cr = gdk_cairo_create (gtk_widget_get_window(w));
-
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
   col.red = 255.0 * bg_[0];
@@ -4523,16 +4515,11 @@ gboolean boxbg_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
 
-  cairo_destroy( cr );
-
-	return TRUE;
+  return TRUE;
 }
 
-gboolean boxln_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
+gboolean boxln_draw(GtkWidget *w, cairo_t *cr )
 {
-  cairo_t *cr;
-  cr = gdk_cairo_create (gtk_widget_get_window(w));
-
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
   col.red = 255.0 * ln_[0];
@@ -4543,16 +4530,11 @@ gboolean boxln_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
 
-  cairo_destroy( cr );
-
   return TRUE;
 }
 
-gboolean boxred_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
+gboolean boxred_draw(GtkWidget *w, cairo_t *cr )
 {
-  cairo_t *cr;
-  cr = gdk_cairo_create (gtk_widget_get_window(w));
-
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
   col.red = 255 * get_slider_val( "textcolorred" );
@@ -4561,17 +4543,12 @@ gboolean boxred_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data 
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
 
-  cairo_destroy( cr );
-
   return TRUE;
 }
 
 
-gboolean boxgreen_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
+gboolean boxgreen_draw(GtkWidget *w, cairo_t *cr )
 {
-  cairo_t *cr;
-  cr = gdk_cairo_create (gtk_widget_get_window(w));
-
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
   col.green = 0xff * get_slider_val( "textcolorgreen" );
@@ -4580,16 +4557,11 @@ gboolean boxgreen_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer dat
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
 
-  cairo_destroy( cr );
-
   return TRUE;
 }
 
-gboolean boxblue_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data )
+gboolean boxblue_draw(GtkWidget *w, cairo_t *cr )
 {
-  cairo_t *cr;
-  cr = gdk_cairo_create (gtk_widget_get_window(w));
-
   GdkColor col;
   memset( &col,0, sizeof( GdkColor ) );
   col.blue = 255 * get_slider_val( "textcolorblue" );
@@ -4597,8 +4569,6 @@ gboolean boxblue_expose_event(GtkWidget *w, GdkEventExpose *event, gpointer data
   gdk_cairo_set_source_color( cr, &col );
   cairo_rectangle (cr, 0, 0, 24, 24);
   cairo_fill ( cr );
-
-  cairo_destroy( cr );
 
   return TRUE;
 }

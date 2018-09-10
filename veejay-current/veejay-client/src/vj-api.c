@@ -7942,22 +7942,22 @@ void vj_gui_init(char *glade_file,
     }
     info = gui;
 
+// FIXME hardcoded ressource file
     char css_path[1024];
     snprintf( css_path, sizeof(css_path), "%s/%s",RELOADED_DATADIR,"gveejay.reloaded.css");
-    printf("fdf : %s", css_path);
-    GtkCssProvider * css = gtk_css_provider_new();
+    GtkCssProvider *css = gtk_css_provider_new();
     if(!gtk_css_provider_load_from_path(css, css_path, &error))
     {
-        free(gui);
-        free(gui->main_window);
-        free(css);
         veejay_msg(VEEJAY_MSG_ERROR, "Couldn't load style file: %s , %s", error->message, css_path);
         g_error_free (error);
-        return;
     }
-    gtk_style_context_add_provider_for_screen ( gdk_screen_get_default (), 
-                                                css,
-                                                GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    else
+    {
+      gtk_style_context_add_provider_for_screen ( gdk_screen_get_default (),
+                                                  css,
+                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    }
+    g_clear_object(&css);
 
     //set "connection" button has default in veejay connection dialog
     gtk_entry_set_activates_default(GTK_ENTRY(glade_xml_get_widget_( info->main_window,
@@ -8058,18 +8058,18 @@ void vj_gui_init(char *glade_file,
     GtkWidget *gb = glade_xml_get_widget_(info->main_window, "boxgreen" );
     GtkWidget *bb = glade_xml_get_widget_(info->main_window, "boxblue" );
     GtkWidget *lnb = glade_xml_get_widget_(info->main_window,"boxln" );
-    g_signal_connect(G_OBJECT( bgb ), "expose_event",
-                     G_CALLBACK( boxbg_expose_event ), NULL);
-    g_signal_connect(G_OBJECT( fgb ), "expose_event",
-                     G_CALLBACK( boxfg_expose_event ), NULL);
-    g_signal_connect(G_OBJECT( lnb ), "expose_event",
-                     G_CALLBACK( boxln_expose_event ), NULL);
-    g_signal_connect(G_OBJECT( rb ), "expose_event",
-                     G_CALLBACK( boxred_expose_event ), NULL);
-    g_signal_connect(G_OBJECT( gb ), "expose_event",
-                     G_CALLBACK( boxgreen_expose_event ), NULL);
-    g_signal_connect(G_OBJECT( bb ), "expose_event",
-                     G_CALLBACK( boxblue_expose_event ), NULL);
+    g_signal_connect(G_OBJECT( bgb ), "draw",
+                     G_CALLBACK( boxbg_draw ), NULL);
+    g_signal_connect(G_OBJECT( fgb ), "draw",
+                     G_CALLBACK( boxfg_draw ), NULL);
+    g_signal_connect(G_OBJECT( lnb ), "draw",
+                     G_CALLBACK( boxln_draw ), NULL);
+    g_signal_connect(G_OBJECT( rb ), "draw",
+                     G_CALLBACK( boxred_draw ), NULL);
+    g_signal_connect(G_OBJECT( gb ), "draw",
+                     G_CALLBACK( boxgreen_draw ), NULL);
+    g_signal_connect(G_OBJECT( bb ), "draw",
+                     G_CALLBACK( boxblue_draw ), NULL);
 
     set_toggle_button( "button_252", vims_verbosity );
 

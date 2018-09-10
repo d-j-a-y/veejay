@@ -63,12 +63,12 @@ vj_kf_select_parameter(arg_num);\
 /*int sample_calctime();*/
 void text_defaults();
 
-gboolean boxbg_expose_event ( GtkWidget *w, GdkEventExpose *event, gpointer data );
-gboolean boxfg_expose_event ( GtkWidget *w, GdkEventExpose *event, gpointer data );
-gboolean boxln_expose_event ( GtkWidget *w, GdkEventExpose *event, gpointer data );
-gboolean boxred_expose_event ( GtkWidget *w, GdkEventExpose *event, gpointer data );
-gboolean boxblue_expose_event ( GtkWidget *w, GdkEventExpose *event, gpointer data );
-gboolean boxgreen_expose_event ( GtkWidget *w, GdkEventExpose *event, gpointer data );
+gboolean boxbg_draw ( GtkWidget *w,  cairo_t *cr);
+gboolean boxfg_draw ( GtkWidget *w, cairo_t *cr );
+gboolean boxln_draw ( GtkWidget *w, cairo_t *cr );
+gboolean boxred_draw ( GtkWidget *w, cairo_t *cr );
+gboolean boxblue_draw ( GtkWidget *w, cairo_t *cr );
+gboolean boxgreen_draw ( GtkWidget *w, cairo_t *cr );
 
 
 void on_timeline_value_changed ( GtkWidget *widget, gpointer user_data );
