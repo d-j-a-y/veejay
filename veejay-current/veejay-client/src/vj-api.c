@@ -3740,7 +3740,17 @@ static void reset_tree(const char *name)
     }
     else {
         if( GTK_IS_LIST_STORE(tree_model) ) {
+/*!
+ * invalidate selection callback to prevent undesirable calls, clear the list
+ * and finally restore selection callback.
+ */
+            GtkTreeSelection *selection;
+            GtkTreeSelectionFunc selection_func;
+            selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree_widget));
+            selection_func = gtk_tree_selection_get_select_function(selection);
+            gtk_tree_selection_set_select_function(selection, NULL, NULL, NULL);
             gtk_list_store_clear(GTK_LIST_STORE(tree_model));
+            gtk_tree_selection_set_select_function(selection, selection_func, NULL, NULL);
         }
         else {
             veejay_msg(0,"%s: wrong tree model type" ,__FUNCTION__);
@@ -3767,13 +3777,15 @@ gboolean view_entry_selection_func (GtkTreeSelection *selection,
             multi_vims( VIMS_CHAIN_SET_ENTRY, "%d", name );
             if( !is_button_toggled( "fx_mnone" )) {
                 multi_vims( VIMS_CHAIN_FADE_ENTRY,"%d %d",0, name );
+            }
+            update_label_i( "label_fxentry", name, 0 );
+            vj_midi_learning_vims_msg( info->midi, NULL, VIMS_CHAIN_SET_ENTRY,name );
+            return TRUE; /*the state of the node may be toggled*/
         }
-        update_label_i( "label_fxentry", name, 0 );
-        vj_midi_learning_vims_msg( info->midi, NULL, VIMS_CHAIN_SET_ENTRY,name );
-        }
+        return TRUE;
     }
 
-    return TRUE; /* allow selection state to change */
+    return FALSE; /* the state of the node should be left unchanged */
 }
 
 gboolean cali_sources_selection_func (GtkTreeSelection *selection,
@@ -7293,13 +7305,9 @@ static void process_reload_hints(int *history, int pm)
 
         /* upate effect tree chain selection */
         {
-          GtkTreeSelection *selection = gtk_tree_view_get_selection( view );
-          GtkTreeIter iter;
-
           GtkTreePath *path = gtk_tree_path_new_from_indices(info->uc.selected_chain_entry, -1);
-          gtk_tree_model_get_iter(model, &iter, path);
-
-          gtk_tree_selection_select_iter (selection, &iter);
+          gtk_tree_view_set_cursor (view, path, NULL, FALSE);
+          gtk_tree_path_free (path);
         }
     }
     info->parameter_lock = 0;
@@ -8293,6 +8301,7 @@ int vj_gui_reconnect(char *hostname,char *group_name, int port_num)
     info->parameter_lock = 1;
     info->uc.expected_num_samples = -1;
     info->uc.expected_num_streams = -1;
+    info->uc.selected_chain_entry = -1;
 
     single_vims( VIMS_PROMOTION );
 
