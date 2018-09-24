@@ -194,17 +194,6 @@ if test x$have_veejay != xtrue ; then
    AC_MSG_ERROR([Cannot find veejay 1.5.60 or later])
 fi
 
-#~ have_pixbuf=false
-#~ if test x$with_pixbuf != xno ; then
-  #~ PKG_CHECK_MODULES(PIXBUF, [gtk+-2.0 >= 2.8 gdk-pixbuf-2.0],
-                    #~ [
- 		     #~ AC_SUBST(PIXBUF_CFLAGS)
-		     #~ AC_SUBST(PIXBUF_LIBS)
-		     #~ have_pixbuf=true
-                     #~ AC_DEFINE(USE_GDK_PIXBUF, 1, [use gdk image load / save])],
-                    #~ [have_pixbuf=false])
-#~ fi
-
 have_sdl=false
 if test x$with_sdl != xno ; then
  PKG_CHECK_MODULES(SDL, [sdl >= 1.2],
@@ -596,6 +585,24 @@ then
 	AC_MSG_ERROR([libx11 not found.])
 fi
 
+dnl Check for Gtk3
+have_gtk3=false
+gtk_modules="gtk+-3.0 >= 3"
+PKG_CHECK_MODULES( GTK, [$gtk_modules],
+	[
+		AC_SUBST(GTK_CFLAGS)
+		AC_SUBST(GTK_LIBS)
+		have_gtk3=true
+		AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_3_0, [Ignore post Gtk 3.0 deprecations])
+		AC_DEFINE(GDK_VERSION_MAX_ALLOWED, GDK_VERSION_3_0, [Prevent post Gtk 3.0 APIs])
+	]
+		,
+		[have_gtk3=false])
+
+if test x$have_gtk3 != xtrue ; then
+   AC_MSG_ERROR([Cannot find Gtk+ 3.0 or later.])
+fi
+
 FFMPEG_CFLAGS="${LIBAVUTIL_CFLAGS}"
 AC_SUBST(FFMPEG_CFLAGS)
 dnl **********************************************************************
@@ -667,28 +674,6 @@ if test x"$with_extra_cflags" != "x"; then
    CXXFLAGS="$CXXFLAGS $with_extra_cflags"
 fi
 
-#~ glib_modules="glib-2.0 >= 2.4"
-#~ PKG_CHECK_MODULES(GLIB, [$glib_modules])
-#~ AC_SUBST(GLIB_CFLAGS)
-#~ AC_SUBST(GLIB_LIBS)
-
-#~ AM_PATH_GTK_3_0([3.0.0],,AC_MSG_ERROR([Gtk+ 3.0.0 or higher required.]))
-
-gtk_modules="gtk+-3.0 >= 3"
-PKG_CHECK_MODULES(GTK, [$gtk_modules])
-AC_SUBST(GTK_CFLAGS)
-AC_SUBST(GTK_LIBS)
-
-#~ gdk_modules="gdk+-3.0 >= 3"
-#~ PKG_CHECK_MODULES(GDK, [$gdk_modules])
-#~ AC_SUBST(GDK_CFLAGS)
-#~ AC_SUBST(GDK_LIBS)
-
-#~ libglade_modules="libglade-2.0 >= 2.0.1"
-#~ PKG_CHECK_MODULES(GLADE, [$libglade_modules])
-#~ AC_SUBST(GLADE_CFLAGS)
-#~ AC_SUBST(GLADE_LIBS)
-
 reloaded_datadir="${datarootdir}/reloaded"
 AC_SUBST(reloaded_datadir)
 
@@ -750,8 +735,8 @@ AC_MSG_NOTICE([      Good luck! You can be the first! ])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([ Required dependencies:])
-AC_MSG_NOTICE([  - Veejay 1.5.50                 : ${have_veejay}])
+AC_MSG_NOTICE([  - Veejay 1.5.60                 : ${have_veejay}])
 AC_MSG_NOTICE([  - POSIX Threads (pthread)       : ${have_pthread}])
-#~ AC_MSG_NOTICE([  - GDK Pixbuf support            : ${have_pixbuf}])
+AC_MSG_NOTICE([  - Gtk3 support (gui)            : ${have_gtk3}])
 AC_MSG_NOTICE([  - Alsa support (midi sequencer) : ${have_alsa}])
 AC_MSG_NOTICE([])
