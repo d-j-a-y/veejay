@@ -7999,9 +7999,8 @@ void vj_gui_init(char *glade_file,
 
     bankport_ = vpn( VEVO_ANONYMOUS_PORT );
 
-    gtk_widget_show(frame);
     gtk_container_add( GTK_CONTAINER(frame), info->tl );
-    gtk_widget_show(info->tl);
+    gtk_widget_show_all(frame);
 
     GtkWidget *mainw = glade_xml_get_widget_(info->main_window,"gveejay_window" );
 

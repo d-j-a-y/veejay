@@ -736,19 +736,14 @@ cairo_rectangle_round (cairo_t * cr,
 static gboolean timeline_draw (GtkWidget *widget, cairo_t *cr )
 {
   TimelineSelection *te = TIMELINE_SELECTION( widget );
-  GtkAllocation all;
-  gtk_widget_get_allocation (widget, &all);
-  double width = all.width;
-  double height = all.height;
+  double width = gtk_widget_get_allocated_width (widget);
+  double height = gtk_widget_get_allocated_height (widget);
 
 	gdouble marker_width = width/ te->num_video_frames;
 //	gdouble marker_height = height / te->num_video_frames;
 	gdouble marker_height = te->frame_height;
 
 	te->frame_width = marker_width;
-
-	cairo_save(cr);
-	cairo_identity_matrix(cr);
 
 /* Draw stepper */
 	if( te->has_stepper )
@@ -843,7 +838,6 @@ static gboolean timeline_draw (GtkWidget *widget, cairo_t *cr )
 		te->selection.height = te->font_line;
 		cairo_fill_preserve(cr);
 	}
-	cairo_restore(cr);
 
 	return FALSE;
 }
