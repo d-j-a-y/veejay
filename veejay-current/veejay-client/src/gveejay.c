@@ -290,13 +290,14 @@ int main (int argc, char *argv[])
 
 	vevo_strict_init();
 
-	find_user_themes(gveejay_theme);
+// FIXME OLDRC
+	//~ find_user_themes(gveejay_theme);
 
 	vj_gui_set_debug_level( verbosity , n_tracks,0,0);
 	set_skin( selected_skin, gveejay_theme );
 
 	default_bank_values( &col, &row );
-	gui_load_theme();
+//	gui_load_theme(); FIXME OLDRC
 
 	register_signals();
 

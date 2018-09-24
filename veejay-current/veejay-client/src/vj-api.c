@@ -6448,133 +6448,136 @@ static void set_default_theme()
     use_default_theme_ = 1;
 }
 
-void find_user_themes(int theme)
-{
-    char *home = getenv("HOME");
-    char location[1024];
-    char path[1024];
-    veejay_memset( theme_path, 0, sizeof(theme_path));
-    veejay_memset( theme_file, 0, sizeof(theme_file));
+// FIXME OLDRC
+//~ void find_user_themes(int theme)
+//~ {
+    //~ char *home = getenv("HOME");
+    //~ char location[1024];
+    //~ char path[1024];
+    //~ veejay_memset( theme_path, 0, sizeof(theme_path));
+    //~ veejay_memset( theme_file, 0, sizeof(theme_file));
 
-    theme_settings = gtk_settings_get_default();
+    //~ theme_settings = gtk_settings_get_default();
 
-    if(!home)
-    {
-        if(theme) set_default_theme();
-        return;
-    }
+    //~ if(!home)
+    //~ {
+        //~ if(theme) set_default_theme();
+        //~ return;
+    //~ }
 
-    if(!theme)
-    {
-        veejay_msg(VEEJAY_MSG_INFO,"Not loading veejay themes");
-        return;
-    }
-    snprintf( path, sizeof(path),"%s/.veejay/theme/theme.config", home );
+    //~ if(!theme)
+    //~ {
+        //~ veejay_msg(VEEJAY_MSG_INFO,"Not loading veejay themes");
+        //~ return;
+    //~ }
+    //~ snprintf( path, sizeof(path),"%s/.veejay/theme/theme.config", home );
 
-    int sloppy = open( path,O_RDONLY );
-    if( sloppy < 0 )
-    {
-        veejay_msg(VEEJAY_MSG_WARNING, "Theme config '%s' not found, creating default.", path );
-        veejay_msg(VEEJAY_MSG_WARNING, "Please setup symbolic links from %s/theme/", RELOADED_DATADIR );
-        veejay_msg(VEEJAY_MSG_WARNING, "                            to %s/.veejay/theme/",home);
-        veejay_msg(VEEJAY_MSG_WARNING, "and set the name of the theme in theme.config" );
-        set_default_theme();
-        int wd= open( path, O_WRONLY );
-        if(wd)
-        {
-            char text[7] = "Default";
-            write(wd,text, sizeof(text));
-            close(wd);
-        }
-        return;
-    }
+    //~ int sloppy = open( path,O_RDONLY );
+    //~ if( sloppy < 0 )
+    //~ {
+        //~ veejay_msg(VEEJAY_MSG_WARNING, "Theme config '%s' not found, creating default.", path );
+        //~ veejay_msg(VEEJAY_MSG_WARNING, "Please setup symbolic links from %s/theme/", RELOADED_DATADIR );
+        //~ veejay_msg(VEEJAY_MSG_WARNING, "                            to %s/.veejay/theme/",home);
+        //~ veejay_msg(VEEJAY_MSG_WARNING, "and set the name of the theme in theme.config" );
+        //~ set_default_theme();
+        //~ int wd= open( path, O_WRONLY );
+        //~ if(wd)
+        //~ {
+            //~ char text[7] = "Default";
+            //~ write(wd,text, sizeof(text));
+            //~ close(wd);
+        //~ }
+        //~ return;
+    //~ }
 
-    veejay_memset(location,0,sizeof(location));
+    //~ veejay_memset(location,0,sizeof(location));
 
-    if( read( sloppy, location, sizeof(location) ) <= 0 )
-        strcat( location, "Default" );
+    //~ if( read( sloppy, location, sizeof(location) ) <= 0 )
+        //~ strcat( location, "Default" );
 
-    close( sloppy );
+    //~ close( sloppy );
 
-    if( strcmp( location, "Default" ) == 0 )
-    {
-        veejay_msg(VEEJAY_MSG_INFO, "Using default theme.");
-        set_default_theme();
-    }
-    else
-    {
-        snprintf(theme_path, sizeof(theme_path), "%s/.veejay/theme/%s", home, location );
-        snprintf(theme_file, sizeof(theme_file), "%s/gveejay.rc", theme_path );
-        use_default_theme_ = 0;
-        veejay_msg(VEEJAY_MSG_INFO, "RC-style '%s'", theme_file );
-        veejay_msg(VEEJAY_MSG_INFO, "Theme location: '%s'", theme_path);
-    }
+    //~ if( strcmp( location, "Default" ) == 0 )
+    //~ {
+        //~ veejay_msg(VEEJAY_MSG_INFO, "Using default theme.");
+        //~ set_default_theme();
+    //~ }
+    //~ else
+    //~ {
+        //~ snprintf(theme_path, sizeof(theme_path), "%s/.veejay/theme/%s", home, location );
+        //~ snprintf(theme_file, sizeof(theme_file), "%s/gveejay.rc", theme_path );
+        //~ use_default_theme_ = 0;
+        //~ veejay_msg(VEEJAY_MSG_INFO, "RC-style '%s'", theme_file );
+        //~ veejay_msg(VEEJAY_MSG_INFO, "Theme location: '%s'", theme_path);
+    //~ }
 
-    struct dirent **files = NULL;
-    struct stat sbuf;
-    snprintf(theme_dir,sizeof(theme_dir), "%s/.veejay/theme/", home );
+    //~ struct dirent **files = NULL;
+    //~ struct stat sbuf;
+    //~ snprintf(theme_dir,sizeof(theme_dir), "%s/.veejay/theme/", home );
 
-    veejay_memset( &sbuf,0,sizeof(struct stat));
+    //~ veejay_memset( &sbuf,0,sizeof(struct stat));
 
-    int n_files = scandir( theme_dir, &files, select_f, alphasort );
-    if( n_files <= 0 )
-    {
-        veejay_msg(VEEJAY_MSG_ERROR, "No themes found in %s", theme_dir );
-        return;
-    }
+    //~ int n_files = scandir( theme_dir, &files, select_f, alphasort );
+    //~ if( n_files <= 0 )
+    //~ {
+        //~ veejay_msg(VEEJAY_MSG_ERROR, "No themes found in %s", theme_dir );
+        //~ return;
+    //~ }
 
-    theme_list = (char**) vj_calloc(sizeof(char*) * (n_files+2) );
-    int i,k=0;
-    for( i = 0; i < n_files; i ++ )
-    {
-        char *name = files[i]->d_name;
-        if( name && strcmp(name, "Default" ) != 0)
-        {
-            snprintf(location, sizeof(location), "%s/%s", theme_dir, name );
-            veejay_memset( &sbuf,0, sizeof(struct stat ));
-            if( lstat( location, &sbuf ) == 0 )
-            {
-                if( S_ISLNK( sbuf.st_mode ))
-                {
-                    veejay_memset( &sbuf,0,sizeof(struct stat));
-                    stat(location, &sbuf);
-                }
-                if( S_ISDIR( sbuf.st_mode  ))
-                {
-                    //@ test for gveejay.rc
-                    struct stat inf;
-                    gchar *test_file = g_strdup_printf( "%s/%s/gveejay.rc",theme_dir,name );
-                    if( stat( test_file, &inf) == 0 && (S_ISREG(inf.st_mode) || S_ISLNK( inf.st_mode)))
-                    {
-                        theme_list[k] = strdup( name );
-                        k++;
-                    }
-                    else
-                    {
-                        veejay_msg(VEEJAY_MSG_WARNING, "Cannot read %s/%s/gveejay.rc", theme_dir,name);
-                    }
-                    g_free(test_file);
-                }
-            }
-        }
-    }
+    //~ theme_list = (char**) vj_calloc(sizeof(char*) * (n_files+2) );
+    //~ int i,k=0;
+    //~ for( i = 0; i < n_files; i ++ )
+    //~ {
+        //~ char *name = files[i]->d_name;
+        //~ if( name && strcmp(name, "Default" ) != 0)
+        //~ {
+            //~ snprintf(location, sizeof(location), "%s/%s", theme_dir, name );
+            //~ veejay_memset( &sbuf,0, sizeof(struct stat ));
+            //~ if( lstat( location, &sbuf ) == 0 )
+            //~ {
+                //~ if( S_ISLNK( sbuf.st_mode ))
+                //~ {
+                    //~ veejay_memset( &sbuf,0,sizeof(struct stat));
+                    //~ stat(location, &sbuf);
+                //~ }
+                //~ if( S_ISDIR( sbuf.st_mode  ))
+                //~ {
+                    //~ //@ test for gveejay.rc
+                    //~ struct stat inf;
+                    //~ gchar *test_file = g_strdup_printf( "%s/%s/gveejay.rc",theme_dir,name );
+                    //~ if( stat( test_file, &inf) == 0 && (S_ISREG(inf.st_mode) || S_ISLNK( inf.st_mode)))
+                    //~ {
+                        //~ theme_list[k] = strdup( name );
+                        //~ k++;
+                    //~ }
+                    //~ else
+                    //~ {
+                        //~ veejay_msg(VEEJAY_MSG_WARNING, "Cannot read %s/%s/gveejay.rc", theme_dir,name);
+                    //~ }
+                    //~ g_free(test_file);
+                //~ }
+            //~ }
+        //~ }
+    //~ }
 
-    if( k == 0 )
-    {
-        free(theme_list);
-        theme_list = NULL;
-        return;
-    }
+    //~ if( k == 0 )
+    //~ {
+        //~ free(theme_list);
+        //~ theme_list = NULL;
+        //~ return;
+    //~ }
 
-    theme_list[ k ] = strdup("Default");
-    for( k = 0; theme_list[k] != NULL ; k ++ )
-        veejay_msg(VEEJAY_MSG_DEBUG, "Added Theme #%d %s", k, theme_list[k]);
-}
+    //~ theme_list[ k ] = strdup("Default");
+    //~ for( k = 0; theme_list[k] != NULL ; k ++ )
+        //~ veejay_msg(VEEJAY_MSG_DEBUG, "Added Theme #%d %s", k, theme_list[k]);
+//~ }
 
+/* FIXME OLDRC
 void gui_load_theme()
 {
     gtk_rc_parse( theme_file );
 }
+*/
 
 char *get_glade_path()
 {
@@ -7496,10 +7499,11 @@ void vj_gui_style_setup()
     info->color_map = gdk_screen_get_system_visual (gdk_screen_get_default ());
 }
 
-void vj_gui_theme_setup(int default_theme)
-{
-    gtk_rc_parse(theme_file);
-}
+//~ FIXME OLDRC
+//~ void vj_gui_theme_setup(int default_theme)
+//~ {
+    //~ gtk_rc_parse(theme_file);
+//~ }
 
 //~ NOT USED FIXME
 //~ void send_refresh_signal(void)
