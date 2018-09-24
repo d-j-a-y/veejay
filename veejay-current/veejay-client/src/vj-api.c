@@ -8101,10 +8101,10 @@ void vj_gui_init(char *glade_file,
                              (void*) gui,
                              use_threads);
 
+    GtkWidget *curve_container = glade_xml_get_widget_( info->main_window,"curve_container" );
     gui->curve = gtk3_curve_new ();
-    gtk_container_add(GTK_CONTAINER(glade_xml_get_widget_( info->main_window,
-                                                          "curve_container" )),
-                      gui->curve);
+    gtk_container_add(GTK_CONTAINER(curve_container), gui->curve);
+    gtk_widget_show_all(curve_container);
 
     veejay_memset( &info->watch, 0, sizeof(watchdog_t));
     info->watch.state = STATE_WAIT_FOR_USER; //
