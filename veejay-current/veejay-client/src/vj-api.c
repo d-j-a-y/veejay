@@ -623,12 +623,14 @@ typedef struct
     gchar              *filter_string;
 } effectlist_data;
 
+static widget_name_t *slider_box_names_ = NULL;
 static widget_name_t *slider_names_ = NULL;
 static widget_name_t *param_names_ = NULL;
 static widget_name_t *param_incs_ = NULL;
 static widget_name_t *param_decs_ = NULL;
 static widget_name_t *param_kfs_ = NULL;
 static widget_name_t *gen_names_ = NULL;
+static widget_name_t *gen_box_names_ = NULL;
 static widget_name_t *gen_incs_ = NULL;
 static widget_name_t *gen_decs_ = NULL;
 static effectlist_data fxlist_data;
@@ -1402,6 +1404,11 @@ int _effect_get_rgb(int effect_id)
     return 0;
 }
 
+/*
+ * Return the number of parameters from an effect identifier
+ *
+ * FIXME return too much parameter for some generator
+ */
 int _effect_get_np(int effect_id)
 {
     int n = g_list_length(info->effect_info);
@@ -4162,9 +4169,7 @@ static void load_generator_info()
 
     for( i = 0; i < np ; i ++ )
     {
-        enable_widget( gen_names_[i].text );
-        enable_widget( gen_incs_[i].text );
-        enable_widget( gen_decs_[i].text );
+        enable_widget( gen_box_names_[i].text );
 
         gchar *tt1 = _utf8str(_effect_get_param_description( args[0],i));
         set_tooltip( gen_names_[i].text, tt1 );
@@ -4183,11 +4188,9 @@ static void load_generator_info()
     {
         gint min = 0, max = 1, value = 0;
         update_slider_range( gen_names_[i].text, min,max, value, 0 );
-        disable_widget( gen_names_[i].text );
-        disable_widget( gen_incs_[i].text );
-        disable_widget( gen_decs_[i].text );
+
+        disable_widget( gen_box_names_[i].text );
         set_tooltip( gen_names_[i].text, NULL );
-        update_slider_range( gen_names_[i].text, min,max, value, 0 );
     }
 
     free(fxtext);
@@ -7260,9 +7263,7 @@ static void process_reload_hints(int *history, int pm)
             np = _effect_get_np( entry_tokens[ENTRY_FXID] );
             for( i = 0; i < np ; i ++ )
             {
-                enable_widget( slider_names_[i].text );
-                enable_widget( param_incs_[i].text );
-                enable_widget( param_decs_[i].text );
+                enable_widget( slider_box_names_[i].text );
                 enable_widget( param_kfs_[i].text );
 
                 gchar *tt1 = _utf8str(_effect_get_param_description(entry_tokens[ENTRY_FXID],i));
@@ -7289,16 +7290,15 @@ static void process_reload_hints(int *history, int pm)
         {
             gint min = 0, max = 1, value = 0;
             update_slider_range( slider_names_[i].text, min,max, value, 0 );
-            disable_widget( slider_names_[i].text );
-            disable_widget( param_incs_[i].text );
-            disable_widget( param_decs_[i].text );
+
+            disable_widget( slider_box_names_[i].text );
             disable_widget( param_kfs_[i].text );
+
             set_tooltip( param_kfs_[i].text, NULL );
             set_tooltip( slider_names_[i].text, NULL );
             gtk_label_set_text(GTK_LABEL (glade_xml_get_widget_(info->main_window,
                                                                 param_names_[i].text)),
                                NULL);
-            update_slider_range( slider_names_[i].text, min,max, value, 0 );
         }
 
         GtkTreeView *view = GTK_TREE_VIEW(glade_xml_get_widget_(info->main_window, "tree_chain"));
@@ -7899,18 +7899,23 @@ void vj_gui_init(char *glade_file,
     }
 
     slider_names_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * MAX_UI_PARAMETERS );
+    slider_box_names_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * MAX_UI_PARAMETERS );
     param_names_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * MAX_UI_PARAMETERS );
     param_incs_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * MAX_UI_PARAMETERS );
     param_decs_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * MAX_UI_PARAMETERS );
     param_kfs_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * MAX_UI_PARAMETERS );
-    gen_decs_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * MAX_UI_PARAMETERS );
-    gen_incs_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * MAX_UI_PARAMETERS );
-    gen_names_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * MAX_UI_PARAMETERS );
+    gen_decs_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * GENERATOR_PARAMS );
+    gen_incs_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * GENERATOR_PARAMS );
+    gen_names_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * GENERATOR_PARAMS );
+    gen_box_names_ = (widget_name_t*) vj_calloc(sizeof(widget_name_t) * GENERATOR_PARAMS );
 
     for( i = 0; i < MAX_UI_PARAMETERS; i ++ )
     {
         snprintf(text,sizeof(text),"slider_p%d" , i );
         slider_names_[i].text = strdup( text );
+
+        snprintf(text,sizeof(text),"slider_box_p%d" , i );
+        slider_box_names_[i].text = strdup( text );
 
         snprintf(text,sizeof(text),"label_p%d" , i );
         param_names_[i].text = strdup( text );
@@ -7929,6 +7934,9 @@ void vj_gui_init(char *glade_file,
     {
         snprintf(text,sizeof(text), "slider_g%d",i);
         gen_names_[i].text = strdup( text );
+
+        snprintf(text,sizeof(text), "slider_box_g%d",i);
+        gen_box_names_[i].text = strdup( text );
 
         snprintf(text,sizeof(text), "dec_g%d", i);
         gen_decs_[i].text = strdup(text);
