@@ -312,6 +312,7 @@ int main (int argc, char *argv[])
 
 restart_me:
 
+	reloaded_show_launcher ();
 	if( launcher )
 	{
 		reloaded_launcher( hostname, port_num );
@@ -332,7 +333,6 @@ restart_me:
 	if( gveejay_relaunch() ) {
 		launcher = 1;
 		reloaded_restart();
-		reloaded_show_launcher();
 		goto restart_me;
 	}
 

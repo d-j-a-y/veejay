@@ -7979,6 +7979,8 @@ void vj_gui_init(char *glade_file,
     }
     g_clear_object(&css);
 
+    GtkWidget *mainw = glade_xml_get_widget_(info->main_window,"gveejay_window" );
+
     //set "connection" button has default in veejay connection dialog
     gtk_entry_set_activates_default(GTK_ENTRY(glade_xml_get_widget_( info->main_window,
                                                                     "entry_hostname" )),
@@ -7990,6 +7992,7 @@ void vj_gui_init(char *glade_file,
     gtk_widget_set_can_default(vj_button,TRUE);
     GtkWidget *connection_dial = glade_xml_get_widget_( info->main_window,
                                                        "veejay_connection");
+    gtk_window_set_transient_for (GTK_WINDOW(connection_dial),GTK_WINDOW (mainw));
     gtk_window_set_default(GTK_WINDOW(connection_dial), vj_button);
 
     gtk_builder_connect_signals( gui->main_window , NULL);
@@ -8013,8 +8016,6 @@ void vj_gui_init(char *glade_file,
 
     gtk_container_add( GTK_CONTAINER(frame), info->tl );
     gtk_widget_show_all(frame);
-
-    GtkWidget *mainw = glade_xml_get_widget_(info->main_window,"gveejay_window" );
 
 #ifdef STRICT_CHECKING
     debug_spinboxes();
@@ -8389,7 +8390,7 @@ void reloaded_launcher(char *hostname, int port_num)
     update_spin_value( "button_portnum", port_num );
 }
 
-void    reloaded_show_launcher()
+void reloaded_show_launcher()
 {
     info->watch.state = STATE_WAIT_FOR_USER;
     info->launch_sensitive = TRUE;
