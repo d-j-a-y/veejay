@@ -35,7 +35,7 @@ char *get_gveejay_dir();
 int get_total_frames();
 void get_gd(char *buf, char *suf, const char *filename);
 
-void set_disable_sample_image(int status);
+void set_disable_sample_image(gboolean status);
 void set_skin(int skin, int invert);
 
 void default_bank_values(int *col, int *row );
@@ -49,7 +49,7 @@ gchar *_utf8str( const char *c_str );
 //void gui_load_theme(); FIXME OLDRC
 
 void vj_gui_cb(int state, char *hostname, int port_num);
-void vj_gui_init(char *glade_file, int launcher, char *hostname, int port_num, int threads,int load_midi, char *midi_file, int beta, int auto_connect);
+void vj_gui_init(char *glade_file, int launcher, char *hostname, int port_num, int threads,int load_midi, char *midi_file, gboolean beta, gboolean autoconnect);
 int vj_gui_reconnect( char *host, char *group, int port);
 void vj_gui_free();
 void vj_gui_wipe();

@@ -1,5 +1,7 @@
-/* gveejay - Linux VeeJay - GVeejay GTK+-2/Glade User Interface
- *           (C) 2002-2011 Niels Elburg <nwelburg@gmail.com> 
+/* gveejay - Linux VeeJay - GVeejay GTK+-3/Glade User Interface
+ *           (C) 2002-2018 Niels Elburg <nwelburg@gmail.com>
+ *  with contributions by  Jerome Blanchi (2016-2018)
+ *                        (Gtk3 Migration and other stuff)
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,12 +36,12 @@
 #include <veejay/libvevo.h>
 #include <src/vj-api.h>
 
-static int selected_skin = 0;
+static int selected_skin = 0; //GTK3Migr : KEEP for now
 extern int mt_get_max_tracks();
 static int load_midi = 0;
 static int port_num	= DEFAULT_PORT_NUM;
 static char hostname[255];
-static int gveejay_theme = 0; // set to 1 to load with the default reloaded theme 
+static int gveejay_theme = 0; //GTK3Migr : KEEP for now // set to 1 to load with the default reloaded theme
 static int verbosity = 0;
 static int col = 0;
 static int row = 0;
@@ -48,15 +50,30 @@ static int launcher = 0;
 static int preview = 0; // off
 static int use_threads = 0;
 static char midi_file[1024];
-static int beta = 0;
-static int auto_connect = 0;
 static int geom_[2] = { -1 , -1};
+
+static gboolean arg_autoconnect = FALSE;
+static gboolean arg_beta = FALSE;
+static gchar *arg_geometry = NULL;
+static gchar *arg_host = NULL;
+//static gint arg_layout = 0;
+static gboolean arg_lowband = FALSE;
+static gchar *arg_midifile = NULL;
+static gboolean arg_notcolored = FALSE;
+static gint arg_port = 0;
+static gboolean arg_verbose = FALSE;
+static gint arg_preview = 0;
+//static gboolean arg_theme = FALSE;
+static gint arg_tracks = 0;
+static gchar *arg_size = NULL;
+static gboolean arg_version = FALSE;
+
 static struct
 {
 	char *file;
 } skins[] = {
  {	"gveejay.reloaded.glade" },
- {	"reloaded_classic.glade" },
+ {	"reloaded_classic.glade" }, //FIXME reloaded classic seriously outdated and not gtk3 compliant !
  {	NULL }
 };
 
@@ -68,13 +85,13 @@ static void usage(char *progname)
 	printf( "where options are:\n");
 	printf( "-h\t\tVeejay host to connect to (defaults to localhost) \n");
 	printf( "-p\t\tVeejay port to connect to (defaults to %d) \n", DEFAULT_PORT_NUM);
-	printf( "-t\t\tLoad gveejay's classic GTK theme\n");
+// printf( "-t\t\tLoad gveejay's classic GTK theme\n");
 	printf( "-n\t\tDont use colored text\n");
 	printf( "-v\t\tBe extra verbose (usefull for debugging)\n");
 	printf( "-s\t\tSet bank resolution (row X columns)\n");
 	printf( "-P\t\tStart with preview enabled (1=1/1,2=1/2,3=1/4,4=1/8)\n");
 	printf( "-X\t\tSet number of tracks\n");
-	printf( "-l\t\tChoose layout (0=large screen, 1=small screens)\n");
+// printf( "-l\t\tChoose layout (0=large screen, 1=small screens)\n");
 	printf( "-V\t\tShow version, data directory and exit.\n");
 	printf( "-m <file>\tMIDI configuration file.\n");
 	printf( "-g\t\t<X,Y>\tWindow position on screen.\n");
@@ -83,98 +100,6 @@ static void usage(char *progname)
 	printf( "-L\t\tLow-bandwith connection (disables image loading in samplebank)\n");
 
 	printf( "\n\n");
-	exit(-1);
-}
-
-static int set_option( const char *name, char *value )
-{
-	int err = 0;
-	if( strcmp(name, "h") == 0 || strcmp(name, "hostname") == 0 )
-	{
-		strcpy( hostname, optarg );
-		launcher ++;
-	}
-	else if( strcmp(name, "p") == 0 || strcmp(name ,"port") == 0 )
-	{
-		if(sscanf( optarg, "%d", &port_num ))
-		launcher++;
-	}
-	else if (strcmp(name, "l" ) == 0 ) {
-		selected_skin = atoi( optarg);
-	}
-	else if (strcmp(name, "n") == 0 )
-	{
-		veejay_set_colors(0);
-	}
-	else if (strcmp(name, "X") == 0 )
-	{
-		n_tracks = 1 + atoi(optarg); 
-		if( n_tracks < 1 || n_tracks > mt_get_max_tracks() )
-			n_tracks = 1;
-	}
-	else if( strcmp(name, "t") == 0 || strcmp(name, "no-theme") == 0)
-	{
-		gveejay_theme = 1;
-	}
-	else if( strcmp(name, "v") == 0 || strcmp(name, "verbose") == 0)
-	{
-		verbosity = 1;
-	}
-	else if (strcmp(name, "s") == 0 || strcmp(name, "size") == 0)
-	{
-		if(sscanf( (char*) optarg, "%dx%d",
-			&row, &col ) != 2 )
-		{
-			fprintf(stderr, "--size parameter requires NxN argument");
-			err++;
-		}
-	}
-	else if (strcmp(name, "V") == 0 )
-	{
-		fprintf(stdout, "version: %s\n", PACKAGE_VERSION);
-		fprintf(stdout, "data directory: %s\n", get_gveejay_dir());
-		exit(0);
-	}
-	else if (strcmp( name, "m" ) == 0 ) {
-		strcpy(midi_file, optarg);
-		load_midi = 1;
-	}
-	else if (strcmp(name,"g") == 0 ) {
-		if(sscanf( optarg, "%d,%d",&geom_[0],&geom_[1]) != 2 ) {
-			fprintf(stderr, "invalid screen coordinates:%s\n",optarg);
-		} else {
-			fprintf(stdout, "Place window at %d,%d", geom_[0],geom_[1]);
-			vj_gui_set_geom(geom_[0],geom_[1]);
-		}
-
-	}
-	else if (strcmp(name, "P" ) == 0 || strcmp(name, "preview" ) == 0 )
-	{
-		preview = atoi(optarg);
-		if(preview <= 0 ) {
-			preview = 2;
-		}
-		if(preview > 4 )
-		{
-			fprintf(stderr, "--preview [0-4]\n");
-			err++;
-		}
-	}
-	else if (strcmp(name,"b") == 0 || strcmp(name, "beta" ) == 0 )
-	{
-		beta = 1;
-	}
-	else if (strcmp(name,"a") == 0 )
-	{
-		auto_connect = 1;
-	}
-	else if( strcmp(name,"L") == 0 )
-	{
-		set_disable_sample_image(1);
-	}
-	else
-		err++;
-	return err;
 }
 
 static volatile gulong g_trap_free_size = 0;
@@ -224,119 +149,249 @@ static	void	clone_args( char *argv[], int argc )
 		cargv[i] = strdup( argv[i] );
 }
 
-/*
-static void
-activate (GtkApplication* app,
-          gpointer        user_data)
+void vj_gui_startup (GApplication *application, gpointer user_data)
 {
-  GtkWidget *window;
 
-  window = gtk_application_window_new (app);
-  gtk_window_set_title (GTK_WINDOW (window), "Window");
-  gtk_window_set_default_size (GTK_WINDOW (window), 200, 200);
-  gtk_widget_show_all (window);
+}
+
+/*
+ * GApplication "activate" handler
+ *
+ *
+ * FIXME  gtk_builder_new (); -ADD->   g_object_unref (info->main_window); (vj_gui_clean()?)
+ */
+static void vj_gui_activate (GtkApplication* app, gpointer        user_data)
+{
+// FIXME OLDRC
+//	find_user_themes(gveejay_theme);
+    vj_gui_set_debug_level( verbosity , n_tracks,0,0);
+    set_skin( selected_skin, gveejay_theme ); //KEEPIT
+    default_bank_values( &col, &row );
+//	gui_load_theme(); FIXME OLDRC
+
+    register_signals();
+
+    vj_gui_init( skins[selected_skin].file, launcher, hostname, port_num, use_threads, load_midi, midi_file,arg_beta, arg_autoconnect);
+    vj_gui_style_setup();
+
+    if( preview )
+    {
+      gveejay_preview(preview);
+    }
+
+restart_me:
+
+    reloaded_show_launcher ();
+    if( launcher )
+    {
+      reloaded_launcher( hostname, port_num );
+    }
+
+    memset( &time_last_, 0, sizeof(struct timeval));
+
+    while(gveejay_running())
+    {
+      if(gveejay_idle(NULL)==FALSE)
+        break;
+      while( gtk_events_pending()  )
+        gtk_main_iteration();
+    }
+
+    vj_event_list_free();
+
+    if( gveejay_relaunch() ) {
+      launcher = 1;
+      reloaded_restart();
+      goto restart_me;
+    }
+}
+
+/*
+ * GApplication "command-line" handler
+ *
+ * A nice place to check arguments validity and
+ * do some preleminary actions.
+ *
+ */
+gint vj_gui_command_line (GApplication            *app,
+                          GApplicationCommandLine *cmdline)
+{
+  int err = 0;
+  gint argc;
+  gchar **argv;
+  argv = g_application_command_line_get_arguments (cmdline, &argc);
+
+// check version first to quit if set
+    if ( arg_version )
+    {
+      fprintf(stdout, "version : %s\n", PACKAGE_VERSION);
+      fprintf(stdout, "data directory : %s\n", get_gveejay_dir());
+      return EXIT_FAILURE;
+    }
+
+    if (arg_verbose )
+    {
+      verbosity = 1;
+    }
+
+    if ( arg_geometry )
+    { //FIXME NxN format
+        if(sscanf( (char*) arg_geometry, "%d,%d",&geom_[0],&geom_[1]) != 2 )
+        {
+          veejay_msg(VEEJAY_MSG_WARNING, "--geometry parameter invalid \"X,Y\" screen coordinates : \"%s\"", arg_geometry);
+        }else
+        {
+          if(verbosity) veejay_msg(VEEJAY_MSG_INFO, "Place window at %d,%d.", geom_[0],geom_[1]);
+          vj_gui_set_geom(geom_[0],geom_[1]);
+        }
+        g_free(arg_geometry);
+    }
+
+    if ( arg_host )
+    {
+        strcpy( hostname, arg_host );
+        g_free(arg_host);
+        if(verbosity) veejay_msg(VEEJAY_MSG_INFO, "Selected host is %s.", hostname);
+        launcher ++;
+    }
+
+    //~ if ( arg_layout )
+    //~ {
+        //~ selected_skin =  arg_layout ;
+    //~ }
+
+    if ( arg_lowband )
+    {
+        set_disable_sample_image(TRUE);
+    }
+
+    if ( arg_midifile )
+    {
+        strcpy(midi_file, arg_midifile);
+        g_free(arg_midifile);
+        load_midi = 1;
+    }
+
+    if ( arg_notcolored )
+    {
+        veejay_set_colors(0);
+    }
+
+    if ( arg_port )
+    {
+        port_num=arg_port;
+        if(verbosity) veejay_msg(VEEJAY_MSG_INFO, "We will have fun on port %d !", port_num);
+        launcher++;
+    }
+
+    if ( arg_preview )
+    {
+        preview = arg_preview;
+        if(preview <= 0 || preview > 4 )
+        {
+          veejay_msg(VEEJAY_MSG_ERROR, "--preview parameter invalid [0-4] : %d", preview);
+          err++;
+        }
+        else if(verbosity) veejay_msg(VEEJAY_MSG_INFO, "Preview at quality %d", preview);
+    }
+
+    if ( arg_size )
+    {
+        if(sscanf( (char*) arg_size, "%dx%d", &row, &col ) != 2 )
+        {
+          veejay_msg(VEEJAY_MSG_ERROR, "--size parameter requires \"NxN\" argument : \"%s\"", arg_size);
+          err++;
+        }
+        g_free(arg_size);
+    }
+
+    //~ if ( arg_theme ) ;
+
+    if ( arg_tracks )
+    {
+        n_tracks = 1 + arg_tracks;
+        if( n_tracks < 1 || n_tracks > mt_get_max_tracks() )
+            n_tracks = 1;
+        if(verbosity) veejay_msg(VEEJAY_MSG_INFO, "TracXs parameted at %d", n_tracks);
+    }
+
+    if( err )
+    {
+        usage(argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    g_application_activate(app);
+
+    veejay_msg(VEEJAY_MSG_INFO, "See you!");
+
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char **argv)
 {
-	char option[2];
-	int n;
-	int err=0;
+    if(!argc) { usage(argv[0]); exit(-1);}// ??? FIXME
+    clone_args( argv, argc );
 
-	if(!argc) usage(argv[0]);
-	clone_args( argv, argc );
+//~ #if !GLIB_CHECK_VERSION(2,36,0)
+	//~ g_type_init();
+//~ #endif
 
-  GtkApplication *app;
-  int status;
+    // default host to connect to
+    snprintf(hostname,sizeof(hostname), "127.0.0.1");
+    char port_description [255];
+    snprintf (port_description, sizeof (port_description),
+              "Veejay port to connect to (defaults to %d).", DEFAULT_PORT_NUM);
 
-  app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-  g_object_unref (app);
+    GtkApplication *app;
+    int status;
 
-  return status;
-}
-*/
+    app = gtk_application_new ("org.veejay.reloaded", G_APPLICATION_HANDLES_COMMAND_LINE|G_APPLICATION_NON_UNIQUE);
+    g_signal_connect (app, "activate", G_CALLBACK (vj_gui_activate), NULL);
+    g_signal_connect (app, "startup", G_CALLBACK (vj_gui_startup), NULL);
+    g_signal_connect (app, "command-line", G_CALLBACK (vj_gui_command_line), NULL);
 
-int main (int argc, char *argv[])
-{
-	char option[2];
-	int n;
-	int err=0;
+    GError *error = NULL;
+    GOptionContext *context;
 
-	if(!argc) usage(argv[0]);
-	clone_args( argv, argc );
+/* in alphabetical order of short options */
+    const GOptionEntry options[] = {
+    {"autoconnect", 'a', 0, G_OPTION_ARG_NONE, &arg_autoconnect, "Auto-connect to local running veejays.", NULL},
+    {"beta",        'b', 0, G_OPTION_ARG_NONE, &arg_beta, "Enable beta features.", NULL},
+    {"geometry",    'g', 0, G_OPTION_ARG_STRING, &arg_geometry, "Window position on screen \"X,Y\".", NULL},
+    {"host",        'h', 0, G_OPTION_ARG_STRING, &arg_host, "Veejay host to connect to (defaults to localhost).", NULL},
+//    {"layout",      'l', 0, G_OPTION_ARG_INT, &arg_layout, "Choose layout (0=large screen, 1=small screens)", NULL},
+    {"lowband",     'L', 0, G_OPTION_ARG_NONE, &arg_lowband, "Low-bandwith connection (disables image loading in samplebank)", NULL},
+    {"midi",        'm', 0, G_OPTION_ARG_FILENAME, &arg_midifile, "MIDI configuration file.", NULL},
+    {"notcolored",  'n', 0, G_OPTION_ARG_NONE, &arg_notcolored, "Dont use colored text.", NULL},
+    {"port",        'p', 0, G_OPTION_ARG_INT, &arg_port, port_description, NULL},
+    {"preview",     'P', 0, G_OPTION_ARG_INT, &arg_preview, "Start with preview enabled (1=1/1,2=1/2,3=1/4,4=1/8)", NULL},
+    {"size",        's', 0, G_OPTION_ARG_STRING, &arg_size, "Set bank row and columns resolution \"RxC\".", NULL},
+    {"verbose",     'v', 0, G_OPTION_ARG_NONE, &arg_verbose,"Be extra verbose (usefull for debugging)", NULL},
+    {"version",     'V', 0, G_OPTION_ARG_NONE, &arg_version,"Show version, data directory and exit.", NULL},
+//    {"theme-no",    't', 0, G_OPTION_ARG_NONE, &arg_theme,"Load gveejay's classic GTK theme.", NULL},
+    {"tracXs",      'X', 0, G_OPTION_ARG_INT, &arg_tracks,"Set number of tracks.", NULL},
+    {NULL}};
 
-#if !GLIB_CHECK_VERSION(2,36,0)
-	g_type_init();
-#endif
+    context = g_option_context_new (NULL);
+    g_option_context_set_help_enabled(context, TRUE);
+    g_option_context_add_main_entries (context, options, NULL);
+    g_option_context_add_group (context, gtk_get_option_group (TRUE));
+    if (!g_option_context_parse (context, &argc, &argv, &error))
+    {
+        veejay_msg(VEEJAY_MSG_ERROR, "Option parsing failed: %s\n", error->message);
+        usage(argv[0]);
+        g_error_free (error);
+        g_option_context_free(context);
+        return -1;
+    }
+    g_option_context_free(context);
 
-  gtk_init( &argc, &argv );
-	// default host to connect to
-	snprintf(hostname,sizeof(hostname), "127.0.0.1");
+    vj_mem_init();
+    vevo_strict_init();
 
-	while( ( n = getopt( argc, argv, "s:h:p:tabnvLHfX:P:Vl:T:m:g:")) != EOF )
-	{
-		sprintf(option, "%c", n );
-		err += set_option( option, optarg);
-		if(err) usage(argv[0]);
-	}
-	if( optind > argc )
-		err ++;
+    status = g_application_run (G_APPLICATION (app), argc, argv);
+    g_object_unref (app);
 
-	if( err ) usage(argv[0]);
-
-	vj_mem_init();
-
-	vevo_strict_init();
-
-// FIXME OLDRC
-	//~ find_user_themes(gveejay_theme);
-
-	vj_gui_set_debug_level( verbosity , n_tracks,0,0);
-	set_skin( selected_skin, gveejay_theme );
-
-	default_bank_values( &col, &row );
-//	gui_load_theme(); FIXME OLDRC
-
-	register_signals();
-
-	vj_gui_init( skins[selected_skin].file, launcher, hostname, port_num, use_threads, load_midi, midi_file,beta,auto_connect);
-	vj_gui_style_setup();
-
-	if( preview )
-	{
-		veejay_msg(VEEJAY_MSG_INFO, "Starting with preview enabled");
-		gveejay_preview(preview);
-	}
-
-restart_me:
-
-	reloaded_show_launcher ();
-	if( launcher )
-	{
-		reloaded_launcher( hostname, port_num );
-	}
-
-	memset( &time_last_, 0, sizeof(struct timeval));
-
-	while(gveejay_running())
-	{
-		if(gveejay_idle(NULL)==FALSE)
-			break;
-		while( gtk_events_pending()  )
-			gtk_main_iteration();
-	}
-
-	vj_event_list_free();
-
-	if( gveejay_relaunch() ) {
-		launcher = 1;
-		reloaded_restart();
-		goto restart_me;
-	}
-
-	veejay_msg(VEEJAY_MSG_INFO, "See you!");
-
-	return 0;
+    return status;
 }

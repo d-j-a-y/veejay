@@ -2,7 +2,8 @@
  *          (C) 2002-2004 Niels Elburg <nwelburg@gmail.com>
  *  with contributions by  Thomas Rheinhold (2005)
  *                        (initial sampledeck representation in GTK)
- *
+ *  with contributions by  Jerome Blanchi (2016-2018)
+ *                        (Gtk3 Migration and other stuff)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +73,7 @@
 #include <veejay/libvevo.h>
 #include <src/vmidi.h>
 //if gtk2_6 is not defined, 2.4 is assumed.
-#ifdef GTK_CHECK_VERSION
+#ifdef GTK_CHECK_VERSION   //FIXME FIXME !
 #if GTK_MINOR_VERSION >= 6
   #define HAVE_GTK2_6 1
 #endif
@@ -765,9 +766,9 @@ void reload_macros();
 
 void reset_cali_images( int type, char *wid_name );
 
-int disable_sample_image = 0;
+gboolean disable_sample_image = FALSE;
 
-void set_disable_sample_image(int status)
+void set_disable_sample_image(gboolean status)
 {
     disable_sample_image = status;
 }
@@ -7869,8 +7870,8 @@ void vj_gui_init(char *glade_file,
                  int use_threads,
                  int load_midi,
                  char *midi_file,
-                 int beta,
-                 int auto_connect)
+                 gboolean beta,
+                 gboolean auto_connect)
 {
     int i;
     char text[100];
@@ -8132,7 +8133,7 @@ void vj_gui_init(char *glade_file,
             {
                 update_spin_value( "button_portnum", i );
                 info->watch.state = STATE_CONNECT;
-                auto_connect = 0;
+                auto_connect = FALSE;
             }
         }
     }
