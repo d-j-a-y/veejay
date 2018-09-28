@@ -38,7 +38,7 @@
 
 extern int mt_get_max_tracks();
 static int load_midi = 0;
-static int port_num	= DEFAULT_PORT_NUM;
+static int port_num = DEFAULT_PORT_NUM;
 static char hostname[255];
 static int gveejay_theme = 0; //GTK3Migr : KEEP for now // set to 1 to load with the default reloaded theme
 static int verbosity = 0;
@@ -71,23 +71,23 @@ extern void reloaded_launcher( char *h, int p );
 
 static void usage(char *progname)
 {
-	printf( "Usage: %s <options>\n",progname);
-	printf( "where options are:\n");
-	printf( "-h\t\tVeejay host to connect to (defaults to localhost) \n");
-	printf( "-p\t\tVeejay port to connect to (defaults to %d) \n", DEFAULT_PORT_NUM);
-	printf( "-n\t\tDont use colored text\n");
-	printf( "-v\t\tBe extra verbose (usefull for debugging)\n");
-	printf( "-s\t\tSet bank resolution (row X columns)\n");
-	printf( "-P\t\tStart with preview enabled (1=1/1,2=1/2,3=1/4,4=1/8)\n");
-	printf( "-X\t\tSet number of tracks\n");
-	printf( "-V\t\tShow version, data directory and exit.\n");
-	printf( "-m <file>\tMIDI configuration file.\n");
-	printf( "-g\t\t<X,Y>\tWindow position on screen.\n");
-	printf( "-b\t\tEnable beta features.\n");
-	printf( "-a\t\tAuto-connect to local running veejays.\n");
-	printf( "-L\t\tLow-bandwith connection (disables image loading in samplebank)\n");
+    printf( "Usage: %s <options>\n",progname);
+    printf( "where options are:\n");
+    printf( "-h\t\tVeejay host to connect to (defaults to localhost) \n");
+    printf( "-p\t\tVeejay port to connect to (defaults to %d) \n", DEFAULT_PORT_NUM);
+    printf( "-n\t\tDont use colored text\n");
+    printf( "-v\t\tBe extra verbose (usefull for debugging)\n");
+    printf( "-s\t\tSet bank resolution (row X columns)\n");
+    printf( "-P\t\tStart with preview enabled (1=1/1,2=1/2,3=1/4,4=1/8)\n");
+    printf( "-X\t\tSet number of tracks\n");
+    printf( "-V\t\tShow version, data directory and exit.\n");
+    printf( "-m <file>\tMIDI configuration file.\n");
+    printf( "-g\t\t<X,Y>\tWindow position on screen.\n");
+    printf( "-b\t\tEnable beta features.\n");
+    printf( "-a\t\tAuto-connect to local running veejays.\n");
+    printf( "-L\t\tLow-bandwith connection (disables image loading in samplebank)\n");
 
-	printf( "\n\n");
+    printf( "\n\n");
 }
 
 static volatile gulong g_trap_free_size = 0;
@@ -97,44 +97,43 @@ static char **cargv = NULL;
 
 gboolean gveejay_idle(gpointer data)
 {
-	if(gveejay_running())
-	{
-		int sync = 0;
-		if( is_alive(&sync) == FALSE )
-		{
-			return FALSE;
-		} 
-		if( sync )
-		{
-			if( gveejay_time_to_sync( get_ui_info() ) )
-			{
-				veejay_update_multitrack( get_ui_info() );
-			}
-		} 
+    if(gveejay_running())
+    {
+        int sync = 0;
+        if( is_alive(&sync) == FALSE )
+        {
+          return FALSE;
+        } 
+        if( sync )
+        {
+          if( gveejay_time_to_sync( get_ui_info() ) )
+          {
+            veejay_update_multitrack( get_ui_info() );
+          }
+        }
+        update_gveejay();
+    }
 
-		update_gveejay();
+    if( gveejay_restart() )
+    {
+        //@ reinvoke
+        if( execvp( cargv[0], cargv ) == -1 )
+            veejay_msg(VEEJAY_MSG_ERROR, "Unable to restart");
+    }
 
-	}
-	if( gveejay_restart() )
-	{
-		//@ reinvoke 
-		if( execvp( cargv[0], cargv ) == -1 )
-			veejay_msg(VEEJAY_MSG_ERROR, "Unable to restart");
-	}
-
-	return TRUE;
+    return TRUE;
 }
 
-static	void	clone_args( char *argv[], int argc )
+static  void  clone_args( char *argv[], int argc )
 {
-	int i = 0;
-	if( argc <= 0 )
-		return;
+    int i = 0;
+    if( argc <= 0 )
+        return;
 
-	cargv = (char**) malloc(sizeof(char*) * (argc+1) );
-	memset( cargv, 0, sizeof(char*) * (argc+1));
-	for( i = 0; i < argc ; i ++ )
-		cargv[i] = strdup( argv[i] );
+    cargv = (char**) malloc(sizeof(char*) * (argc+1) );
+    memset( cargv, 0, sizeof(char*) * (argc+1));
+    for( i = 0; i < argc ; i ++ )
+        cargv[i] = strdup( argv[i] );
 }
 
 void vj_gui_startup (GApplication *application, gpointer user_data)
@@ -160,7 +159,7 @@ static void vj_gui_activate (GtkApplication* app, gpointer        user_data)
 
     if( preview )
     {
-      gveejay_preview(preview);
+        gveejay_preview(preview);
     }
 
 restart_me:
@@ -168,17 +167,17 @@ restart_me:
     reloaded_show_launcher ();
     if( launcher )
     {
-      reloaded_launcher( hostname, port_num );
+        reloaded_launcher( hostname, port_num );
     }
 
     memset( &time_last_, 0, sizeof(struct timeval));
 
     while(gveejay_running())
     {
-      if(gveejay_idle(NULL)==FALSE)
-        break;
-      while( gtk_events_pending()  )
-        gtk_main_iteration();
+        if(gveejay_idle(NULL)==FALSE)
+            break;
+        while( gtk_events_pending()  )
+            gtk_main_iteration();
     }
 
     vj_event_list_free();
@@ -208,14 +207,14 @@ gint vj_gui_command_line (GApplication            *app,
 /* First check version and quit */
     if ( arg_version )
     {
-      fprintf(stdout, "version : %s\n", PACKAGE_VERSION);
-      fprintf(stdout, "data directory : %s\n", get_gveejay_dir());
-      return EXIT_FAILURE;
+        fprintf(stdout, "version : %s\n", PACKAGE_VERSION);
+        fprintf(stdout, "data directory : %s\n", get_gveejay_dir());
+        return EXIT_FAILURE;
     }
 
     if (arg_verbose )
     {
-      verbosity = 1;
+        verbosity = 1;
     }
 
     if ( arg_geometry )
@@ -268,8 +267,8 @@ gint vj_gui_command_line (GApplication            *app,
         preview = arg_preview;
         if(preview <= 0 || preview > 4 )
         {
-          veejay_msg(VEEJAY_MSG_ERROR, "--preview parameter invalid [0-4] : %d", preview);
-          err++;
+            veejay_msg(VEEJAY_MSG_ERROR, "--preview parameter invalid [0-4] : %d", preview);
+            err++;
         }
         else if(verbosity) veejay_msg(VEEJAY_MSG_INFO, "Preview at quality %d", preview);
     }
@@ -278,8 +277,8 @@ gint vj_gui_command_line (GApplication            *app,
     {
         if(sscanf( (char*) arg_size, "%dx%d", &row, &col ) != 2 )
         {
-          veejay_msg(VEEJAY_MSG_ERROR, "--size parameter requires \"NxN\" argument : \"%s\"", arg_size);
-          err++;
+            veejay_msg(VEEJAY_MSG_ERROR, "--size parameter requires \"NxN\" argument : \"%s\"", arg_size);
+            err++;
         }
         g_free(arg_size);
     }
