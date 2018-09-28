@@ -36,7 +36,6 @@
 #include <veejay/libvevo.h>
 #include <src/vj-api.h>
 
-static int selected_skin = 0; //GTK3Migr : KEEP for now
 extern int mt_get_max_tracks();
 static int load_midi = 0;
 static int port_num	= DEFAULT_PORT_NUM;
@@ -56,26 +55,17 @@ static gboolean arg_autoconnect = FALSE;
 static gboolean arg_beta = FALSE;
 static gchar *arg_geometry = NULL;
 static gchar *arg_host = NULL;
-//static gint arg_layout = 0;
 static gboolean arg_lowband = FALSE;
 static gchar *arg_midifile = NULL;
 static gboolean arg_notcolored = FALSE;
 static gint arg_port = 0;
 static gboolean arg_verbose = FALSE;
 static gint arg_preview = 0;
-//static gboolean arg_theme = FALSE;
 static gint arg_tracks = 0;
 static gchar *arg_size = NULL;
 static gboolean arg_version = FALSE;
 
-static struct
-{
-	char *file;
-} skins[] = {
- {	"gveejay.reloaded.glade" },
- {	"reloaded_classic.glade" }, //FIXME reloaded classic seriously outdated and not gtk3 compliant !
- {	NULL }
-};
+static const char skinfile[] = "gveejay.reloaded.glade"; //FIXME Has binary ressource ?
 
 extern void reloaded_launcher( char *h, int p );
 
@@ -85,13 +75,11 @@ static void usage(char *progname)
 	printf( "where options are:\n");
 	printf( "-h\t\tVeejay host to connect to (defaults to localhost) \n");
 	printf( "-p\t\tVeejay port to connect to (defaults to %d) \n", DEFAULT_PORT_NUM);
-// printf( "-t\t\tLoad gveejay's classic GTK theme\n");
 	printf( "-n\t\tDont use colored text\n");
 	printf( "-v\t\tBe extra verbose (usefull for debugging)\n");
 	printf( "-s\t\tSet bank resolution (row X columns)\n");
 	printf( "-P\t\tStart with preview enabled (1=1/1,2=1/2,3=1/4,4=1/8)\n");
 	printf( "-X\t\tSet number of tracks\n");
-// printf( "-l\t\tChoose layout (0=large screen, 1=small screens)\n");
 	printf( "-V\t\tShow version, data directory and exit.\n");
 	printf( "-m <file>\tMIDI configuration file.\n");
 	printf( "-g\t\t<X,Y>\tWindow position on screen.\n");
@@ -162,16 +150,12 @@ void vj_gui_startup (GApplication *application, gpointer user_data)
  */
 static void vj_gui_activate (GtkApplication* app, gpointer        user_data)
 {
-// FIXME OLDRC
-//	find_user_themes(gveejay_theme);
     vj_gui_set_debug_level( verbosity , n_tracks,0,0);
-    set_skin( selected_skin, gveejay_theme ); //KEEPIT
     default_bank_values( &col, &row );
-//	gui_load_theme(); FIXME OLDRC
 
     register_signals();
 
-    vj_gui_init( skins[selected_skin].file, launcher, hostname, port_num, use_threads, load_midi, midi_file,arg_beta, arg_autoconnect);
+    vj_gui_init( skinfile, launcher, hostname, port_num, use_threads, load_midi, midi_file,arg_beta, arg_autoconnect);
     vj_gui_style_setup();
 
     if( preview )
@@ -221,7 +205,7 @@ gint vj_gui_command_line (GApplication            *app,
   gchar **argv;
   argv = g_application_command_line_get_arguments (cmdline, &argc);
 
-// check version first to quit if set
+/* First check version and quit */
     if ( arg_version )
     {
       fprintf(stdout, "version : %s\n", PACKAGE_VERSION);
@@ -254,11 +238,6 @@ gint vj_gui_command_line (GApplication            *app,
         if(verbosity) veejay_msg(VEEJAY_MSG_INFO, "Selected host is %s.", hostname);
         launcher ++;
     }
-
-    //~ if ( arg_layout )
-    //~ {
-        //~ selected_skin =  arg_layout ;
-    //~ }
 
     if ( arg_lowband )
     {
@@ -305,8 +284,6 @@ gint vj_gui_command_line (GApplication            *app,
         g_free(arg_size);
     }
 
-    //~ if ( arg_theme ) ;
-
     if ( arg_tracks )
     {
         n_tracks = 1 + arg_tracks;
@@ -333,11 +310,7 @@ int main(int argc, char **argv)
     if(!argc) { usage(argv[0]); exit(-1);}// ??? FIXME
     clone_args( argv, argc );
 
-//~ #if !GLIB_CHECK_VERSION(2,36,0)
-	//~ g_type_init();
-//~ #endif
-
-    // default host to connect to
+/* default host to connect to */
     snprintf(hostname,sizeof(hostname), "127.0.0.1");
     char port_description [255];
     snprintf (port_description, sizeof (port_description),
@@ -360,7 +333,6 @@ int main(int argc, char **argv)
     {"beta",        'b', 0, G_OPTION_ARG_NONE, &arg_beta, "Enable beta features.", NULL},
     {"geometry",    'g', 0, G_OPTION_ARG_STRING, &arg_geometry, "Window position on screen \"X,Y\".", NULL},
     {"host",        'h', 0, G_OPTION_ARG_STRING, &arg_host, "Veejay host to connect to (defaults to localhost).", NULL},
-//    {"layout",      'l', 0, G_OPTION_ARG_INT, &arg_layout, "Choose layout (0=large screen, 1=small screens)", NULL},
     {"lowband",     'L', 0, G_OPTION_ARG_NONE, &arg_lowband, "Low-bandwith connection (disables image loading in samplebank)", NULL},
     {"midi",        'm', 0, G_OPTION_ARG_FILENAME, &arg_midifile, "MIDI configuration file.", NULL},
     {"notcolored",  'n', 0, G_OPTION_ARG_NONE, &arg_notcolored, "Dont use colored text.", NULL},
@@ -369,7 +341,6 @@ int main(int argc, char **argv)
     {"size",        's', 0, G_OPTION_ARG_STRING, &arg_size, "Set bank row and columns resolution \"RxC\".", NULL},
     {"verbose",     'v', 0, G_OPTION_ARG_NONE, &arg_verbose,"Be extra verbose (usefull for debugging)", NULL},
     {"version",     'V', 0, G_OPTION_ARG_NONE, &arg_version,"Show version, data directory and exit.", NULL},
-//    {"theme-no",    't', 0, G_OPTION_ARG_NONE, &arg_theme,"Load gveejay's classic GTK theme.", NULL},
     {"tracXs",      'X', 0, G_OPTION_ARG_INT, &arg_tracks,"Set number of tracks.", NULL},
     {NULL}};
 

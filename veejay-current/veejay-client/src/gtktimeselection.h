@@ -59,7 +59,6 @@ void		timeline_set_bind	(GtkWidget *widget, gboolean active);
 void		timeline_clear_points( GtkWidget *widget );
 
 void 		timeline_set_selection( GtkWidget *widget, gboolean active);
-void 		timeline_theme_colors( int inverse );
 
 
 #ifdef __cplusplus

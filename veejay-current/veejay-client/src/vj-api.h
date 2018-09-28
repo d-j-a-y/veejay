@@ -36,20 +36,17 @@ int get_total_frames();
 void get_gd(char *buf, char *suf, const char *filename);
 
 void set_disable_sample_image(gboolean status);
-void set_skin(int skin, int invert);
 
 void default_bank_values(int *col, int *row );
 gboolean is_alive( int *sync );
 
 int _effect_get_minmax( int effect_id, int *min, int *max, int index );
-//void find_user_themes(); FIXME OLDRC
 void register_signals();
 int is_button_toggled(const char *name);
 gchar *_utf8str( const char *c_str );
-//void gui_load_theme(); FIXME OLDRC
 
 void vj_gui_cb(int state, char *hostname, int port_num);
-void vj_gui_init(char *glade_file, int launcher, char *hostname, int port_num, int threads,int load_midi, char *midi_file, gboolean beta, gboolean autoconnect);
+void vj_gui_init(const char *glade_file, int launcher, char *hostname, int port_num, int threads,int load_midi, char *midi_file, gboolean beta, gboolean autoconnect);
 int vj_gui_reconnect( char *host, char *group, int port);
 void vj_gui_free();
 void vj_gui_wipe();
@@ -63,7 +60,6 @@ void vj_gui_set_debug_level(int level, int preview_p, int pw, int ph);
 void vj_gui_set_timeout(int timer);
 int vj_gui_sleep_time( void );
 void vj_gui_style_setup();
-//void vj_gui_theme_setup(int default_theme); FIXME OLDRC
 
 int vj_img_cb(GdkPixbuf *img );
 void vj_fork_or_connect_veejay();

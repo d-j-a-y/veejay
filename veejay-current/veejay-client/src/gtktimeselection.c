@@ -368,13 +368,6 @@ static  void  timeline_class_init( TimelineSelectionClass *class )
 
 }
 
-static int default_theme_ = 1;
-
-void timeline_theme_colors( int inverse )
-{
-  default_theme_ = inverse;
-}
-
 static void timeline_init( TimelineSelection *te )
 {
   te->min      = 0.0;
@@ -753,10 +746,14 @@ static gboolean timeline_draw (GtkWidget *widget, cairo_t *cr )
 
   te->frame_width = marker_width;
 
+  GtkStyleContext *sc = gtk_widget_get_style_context(widget);
+  GdkRGBA color;
+  gtk_style_context_get_color ( sc, gtk_style_context_get_state (sc), &color );
+
 /* Draw stepper */
   if( te->has_stepper )
   {
-    cairo_set_source_rgba( cr, 1.0,0.0,0.0,1.0);
+    cairo_set_source_rgba( cr, 1.0,0.0,0.0,1.0); //FIXME use context state color ?
     double x1 = marker_width * te->frame_num;
     te->stepper.x = x1 - 8;
     te->stepper.y = 0;
@@ -781,8 +778,8 @@ static gboolean timeline_draw (GtkWidget *widget, cairo_t *cr )
       sprintf(text, "%d",  (gint)te->frame_num );
       cairo_text_path( cr, text );
       cairo_set_font_size( cr, 0.2 );
-      double v = ( default_theme_  ? 1.0 : 0.0 );
-      cairo_set_source_rgba( cr, v,v,v,0.7 );
+      cairo_set_source_rgba( cr, color.red,color.green,color.blue,0.7 );
+
       cairo_fill(cr);
     }
   }
@@ -791,13 +788,13 @@ static gboolean timeline_draw (GtkWidget *widget, cairo_t *cr )
   {
     gdouble in = te->in * width;
     gdouble out = te->out * width;
-    gdouble v = (default_theme_ ? 1.0: 0.0);
 
     /* If user is editing in_point */
     if( te->grab_button == 1 && te->current_location != MOUSE_STEPPER )
     {
       gdouble f = te->in * te->num_video_frames;
-      cairo_set_source_rgba( cr, 0.0, v,v,0.3 );
+
+      cairo_set_source_rgba( cr, 0.0, color.green, color.blue,0.3 );
       cairo_move_to( cr, in, 0.0 );
       cairo_rel_line_to( cr, 0.0 , te->stepper_length );
       cairo_stroke(cr);
@@ -810,14 +807,14 @@ static gboolean timeline_draw (GtkWidget *widget, cairo_t *cr )
       sprintf(text, "%d",(gint) f );
       cairo_text_path( cr, text );
       cairo_set_font_size( cr, 0.2 );
-      cairo_set_source_rgba( cr, v,v,v,0.7 );
+      cairo_set_source_rgba( cr, color.red,color.green,color.blue,0.7 );
       cairo_fill(cr);
 
     }
     if( te->grab_button == 3 && te->current_location != MOUSE_STEPPER )
     {
       gdouble f = te->out * te->num_video_frames;
-      cairo_set_source_rgba( cr, 0.0, v,v,0.3 );
+      cairo_set_source_rgba( cr, 0.0,color.green,color.blue,0.3 );
       cairo_move_to( cr, out , 0.0 );
       cairo_rel_line_to( cr, 0.0 , te->stepper_length );
       cairo_stroke(cr);
@@ -830,11 +827,11 @@ static gboolean timeline_draw (GtkWidget *widget, cairo_t *cr )
       sprintf(text, "%d", (gint) f );
       cairo_text_path( cr, text );
       cairo_set_font_size( cr, 0.2 );
-      cairo_set_source_rgba( cr, v,v,v,0.7 );
+      cairo_set_source_rgba( cr,color.red,color.green,color.blue,0.7 );
       cairo_fill(cr);
     }
 
-    cairo_set_source_rgba( cr, v, v, v, 0.3 );
+    cairo_set_source_rgba( cr, color.red,color.green,color.blue, 0.3 );
     cairo_rectangle_round(cr, in,
       0.095 * height,
       (out - in),
