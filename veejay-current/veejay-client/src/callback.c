@@ -49,13 +49,6 @@ void	on_no_caching_clicked( GtkWidget *widget, gpointer user_data)
 	single_vims( VIMS_NO_CACHING );
 }
 
-void	on_report_a_bug1_activate(GtkWidget *w, gpointer user_data )
-{
-	reportbug();
-}
-void	on_donate_activate( GtkWidget *w, gpointer user_data ) {
-	donatenow();
-}
 void	on_button_085_clicked(GtkWidget *widget, gpointer user_data)
 {
 	single_vims(VIMS_VIDEO_SKIP_SECOND);
@@ -2304,54 +2297,60 @@ void	on_samplerand_toggled(GtkWidget *widget, gpointer user_data)
 /* 
  * Handler to open the veejay_connection-dialog via menu
  */
-void on_openConnection_activate             (GtkMenuItem     *menuitem,
-					     gpointer         user_data)
+void on_openConnection_activate (GtkMenuItem     *menuitem,
+                                 gpointer         user_data)
 {
-	if(!info->status_lock)
-	{
-		GtkWidget *veejay_conncection_window = glade_xml_get_widget_(info->main_window, "veejay_connection");
-		gtk_widget_show(veejay_conncection_window);	
-	} 
+  if(!info->status_lock)
+  {
+    GtkWidget *veejay_conncection_window = glade_xml_get_widget_(info->main_window, "veejay_connection");
+    gtk_widget_show(veejay_conncection_window);
+  }
 }
 
 
-/* 
+/*
  * Handler to close the veejay_connection-dialog
  */
-void on_veejay_connection_close             (GtkDialog       *dialog,
-						     gpointer         user_data)
+void on_veejay_connection_close (GtkDialog       *dialog,
+                                 gpointer         user_data)
 {
-	if( info->watch.state == STATE_PLAYING)
-	{	
-		info->watch.state = STATE_DISCONNECT;
+  if( info->watch.state == STATE_PLAYING)
+  {
+    info->watch.state = STATE_DISCONNECT;
 
-		GtkWidget *w = glade_xml_get_widget_(info->main_window, "veejay_connection" );
-		gtk_widget_show( w );
-	}
-	else 
-		gveejay_quit(NULL,NULL);
+    GtkWidget *w = glade_xml_get_widget_(info->main_window, "veejay_connection" );
+    gtk_widget_show( w );
+  }
+  else
+    gveejay_quit(NULL,NULL);
 }
 
 
-/* 
+/*
  * Handler to show the video_settings-dialog via menu
+ *
+ * TODO : if info locked, output message
  */
-void on_VideoSettings_activate              (GtkMenuItem     *menuitem,
-					     gpointer         user_data)
+void on_video_settings_activate (GtkMenuItem     *menuitem,
+                                 gpointer         user_data)
 {
-	if(!info->status_lock)
-	{
-		GtkWidget *veejay_settings_window = glade_xml_get_widget_(info->main_window, "video_options");
-		gtk_widget_show(veejay_settings_window);	
-	} 
+  if(!info->status_lock)
+  {
+    GtkWidget *veejay_settings_window = glade_xml_get_widget_(info->main_window, "video_options");
+    gtk_widget_show(veejay_settings_window);
+  }
 }
 
 
-void	on_image_calibration1_activate	(GtkMenuItem	*menuitem, gpointer data)
+/*
+ * Handler to show the image calibration dialog via menu
+ */
+void on_image_calibration_activate (GtkMenuItem    *menuitem,
+                                    gpointer        data)
 {
-	GtkWidget *win = glade_xml_get_widget_(info->main_window,"calibration_window" );
-	gtk_widget_show(win);
-	cali_onoff = 1;
+  GtkWidget *win = glade_xml_get_widget_(info->main_window,"calibration_window" );
+  gtk_widget_show(win);
+  cali_onoff = 1;
 }
 
 /* 
@@ -2395,7 +2394,7 @@ void	on_cali_save_button_clicked( GtkButton *button, gpointer user_data)
 	}
 }
 
-void	on_load_calibration1_activate( GtkMenuItem     *menuitem,
+void	on_load_calibration_activate( GtkMenuItem     *menuitem,
 					     gpointer         user_data)
 {
 	gchar	*filename = dialog_open_file("Select calibration file to load",0);
@@ -2527,10 +2526,11 @@ void on_vims_bundles_close                  (GtkDialog       *dialog,
 }
 
 /* Menu entries */
-void	on_quit1_activate( GtkWidget *w, gpointer user_data )
+void on_quit_activate( GtkWidget *w, gpointer user_data )
 {
-	gveejay_quit(NULL,NULL);
+  gveejay_quit(NULL,NULL);
 }
+
 /* depending on the state, we either load an action file or a sample list !*/
 void	on_open2_activate( GtkWidget *w, gpointer user_data)
 {
@@ -2563,6 +2563,7 @@ void	on_open2_activate( GtkWidget *w, gpointer user_data)
 			break;
 	}
 }
+
 void	on_save1_activate( GtkWidget *w, gpointer user_data )
 {
 	if(info->watch.state == STATE_PLAYING)
@@ -2570,10 +2571,24 @@ void	on_save1_activate( GtkWidget *w, gpointer user_data )
 	else
 		vj_msg(VEEJAY_MSG_ERROR, "Nothing to save (start or connect to veejay first)");
 }
-void	on_about1_activate(GtkWidget *widget, gpointer user_data)
+
+/*
+ * Help menu handlers
+ */
+void on_about_activate(GtkWidget *widget, gpointer user_data)
 {
-	about_dialog();	
+  about_dialog();
 }
+
+void on_report_a_bug_activate(GtkWidget *w, gpointer user_data )
+{
+  reportbug();
+}
+
+void on_donate_activate( GtkWidget *w, gpointer user_data ) {
+  donatenow();
+}
+
 void	on_new_input_stream1_activate(GtkWidget *widget, gpointer user_data)
 {
 	GtkWidget *dialog = glade_xml_get_widget_( info->main_window, "inputdialog" );
@@ -4777,7 +4792,7 @@ void	on_midievent_toggled( GtkWidget *w, gpointer data )
 	vj_midi_play( info->midi );
 }
 
-void	on_load_midi_layout1_activate( GtkWidget *w , gpointer data )
+void	on_load_midi_layout_activate( GtkWidget *w , gpointer data )
 {
 	gchar *filename = dialog_open_file( "Select MIDI configuration file to load",0);
 	if( filename ) {
@@ -4785,14 +4800,14 @@ void	on_load_midi_layout1_activate( GtkWidget *w , gpointer data )
 		g_free(filename);
 	}
 }
-void	on_save_midi_layout1_activate( GtkWidget *w, gpointer data )
+void	on_save_midi_layout_activate( GtkWidget *w, gpointer data )
 {
 	gchar *filename = dialog_save_file( "Save MIDI configuration to file");
 	if(filename)
 		vj_midi_save( info->midi, filename );
 }
 
-void on_clear_midi_layout1_activate( GtkWidget *w, gpointer data )
+void on_clear_midi_layout_activate( GtkWidget *w, gpointer data )
 {
 	vj_midi_reset(info->midi);
 }
