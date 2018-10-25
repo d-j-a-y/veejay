@@ -2506,12 +2506,14 @@ void	on_cali_reset_button_clicked( 	GtkButton *button, gpointer data )
 
 /*
  * Handler to show the VIMS_Bundles-dialog
- */ 
-void on_vims_bundles_activate               (GtkMenuItem     *menuitem,
-					     gpointer         user_data)
+ */
+void on_vims_bundles_activate (GtkMenuItem     *menuitem,
+                               gpointer         user_data)
 {
-	GtkWidget *vims_bundles_window = glade_xml_get_widget_(info->main_window, "vims_bundles");
-	gtk_widget_show(vims_bundles_window);	
+  GtkWidget *vims_bundles_window = glade_xml_get_widget_(info->main_window, "vims_bundles");
+  GtkWidget *mainw = glade_xml_get_widget_(info->main_window,"gveejay_window" );
+  gtk_window_set_transient_for (GTK_WINDOW(vims_bundles_window),GTK_WINDOW (mainw));
+  gtk_widget_show(vims_bundles_window);
 }
 
 
@@ -3145,9 +3147,9 @@ void	on_streamnew_clicked(GtkWidget *widget, gpointer user_data)
 
 void	on_generatornew_clicked(GtkWidget *widget, gpointer user_data)
 {
-	GtkWidget *w = glade_xml_get_widget_(info->main_window, "generator_window");
-	scan_generators( "generators" );
-	gtk_widget_show(w);
+  GtkWidget *w = glade_xml_get_widget_(info->main_window, "generator_window");
+  scan_generators( "generators" );
+  gtk_widget_show(w);
 }
 
 void	on_inputstream_close_clicked(GtkWidget *w,  gpointer user_data)
