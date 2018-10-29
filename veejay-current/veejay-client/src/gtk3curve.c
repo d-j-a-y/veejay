@@ -558,6 +558,8 @@ gtk3_curve_draw (GtkWidget *widget,
 
   DEBUG_INFO("draw [S]\n");
 
+//FIXME Should not be drawn is not visible ... only widget visible test ? or draw called too often?
+
   if (!cr)
     {
       DEBUG_ERROR("cairo == null\n");
