@@ -66,13 +66,14 @@ static void       gui_cell_renderer_spin_finalize (GObject *gobject);
 static gpointer   parent_class;
 
 
-static GtkCellEditable *gui_cell_renderer_spin_start_editing (GtkCellRenderer      *cell,
-                                                              GdkEvent             *event,
-                                                              GtkWidget            *widget,
-                                                              const gchar          *path,
-                                                              GdkRectangle         *background_area,
-                                                              GdkRectangle         *cell_area,
-                                                              GtkCellRendererState  flags);
+static GtkCellEditable
+*gui_cell_renderer_spin_start_editing (GtkCellRenderer      *cell,
+                                       GdkEvent             *event,
+                                       GtkWidget            *widget,
+                                       const gchar          *path,
+                                       const GdkRectangle   *background_area,
+                                       const GdkRectangle   *cell_area,
+                                       GtkCellRendererState  flags);
 
 struct _GCRSpinInfo
 {
@@ -302,8 +303,8 @@ gui_cell_renderer_spin_start_editing (GtkCellRenderer      *cell,
                                       GdkEvent             *event,
                                       GtkWidget            *widget,
                                       const gchar          *path,
-                                      GdkRectangle         *background_area,
-                                      GdkRectangle         *cell_area,
+                                      const GdkRectangle   *background_area,
+                                      const GdkRectangle   *cell_area,
                                       GtkCellRendererState  flags)
 {
   GtkCellRendererText *celltext;
