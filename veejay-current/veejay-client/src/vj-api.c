@@ -9011,7 +9011,7 @@ static void set_activation_of_slot_in_samplebank( gboolean activate)
 {
     if(!info->selected_gui_slot || !info->selected_slot )
         return;
-    GdkColor color;
+    GdkRGBA color;
     color.red = info->normal->red;
     color.green = info->normal->green;
     color.blue = info->normal->blue;
@@ -9039,7 +9039,9 @@ static void set_activation_of_slot_in_samplebank( gboolean activate)
         }
     }
 
-    gtk_widget_modify_fg ( GTK_WIDGET(info->selected_gui_slot->timecode),GTK_STATE_NORMAL, &color );
+    gtk_widget_override_color ( GTK_WIDGET(info->selected_gui_slot->timecode),
+                                GTK_STATE_FLAG_NORMAL,
+                                &color );
 }
 
 static void set_selection_of_slot_in_samplebank(gboolean active)
@@ -9047,7 +9049,7 @@ static void set_selection_of_slot_in_samplebank(gboolean active)
     if(!info->selection_slot || info->selection_slot->sample_id <= 0)
         return;
 
-    GdkColor color;
+    GdkRGBA color;
     color.red = info->normal->red;
     color.green = info->normal->green;
     color.blue = info->normal->blue;
@@ -9065,11 +9067,12 @@ static void set_selection_of_slot_in_samplebank(gboolean active)
         color.red =0;
     }
 
-//  gtk_widget_modify_fg ( GTK_WIDGET(info->selection_gui_slot->title),
+//  gtk_widget_override_color ( GTK_WIDGET(info->selection_gui_slot->title),
 //      GTK_STATE_NORMAL, &color );
-    gtk_widget_modify_fg ( GTK_WIDGET(info->selection_gui_slot->timecode),
-        GTK_STATE_NORMAL, &color );
-//  gtk_widget_modify_fg ( gtk_frame_get_label_widget( info->selection_gui_slot->frame ),
+    gtk_widget_override_color ( GTK_WIDGET(info->selected_gui_slot->timecode),
+                                GTK_STATE_FLAG_NORMAL,
+                                &color );
+//  gtk_widget_override_color ( gtk_frame_get_label_widget( info->selection_gui_slot->frame ),
 //      GTK_STATE_NORMAL, &color );
 }
 
