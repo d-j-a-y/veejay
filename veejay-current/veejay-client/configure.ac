@@ -38,13 +38,20 @@ AC_ARG_ENABLE([strict],
 AC_ARG_ENABLE([debug],
 		AC_HELP_STRING([--enable-debug],
 			     [Compile in debugging information]))
-AC_ARG_ENABLE([profile],
-		AC_HELP_STRING([--enable-profiling],
-			     [Compile in profiling information]))
-AC_ARG_ENABLE([compile-warnings],     
+AC_ARG_ENABLE([profiling],
+              [AS_HELP_STRING([--enable-profiling=gprof|gcov],
+                              [Compile in profiling information, when no value given, gprof is selected. default: no])],
+              [case "${enableval}" in
+                yes | gprof)    profiling=gprof ;;
+                gcov )          profiling=gcov ;;
+                no)             profiling=false ;;
+                *)              AC_MSG_ERROR([bad value ${enableval} for --enable-profiling]) ;;
+               esac],
+              [profiling=false])
+AC_ARG_ENABLE([compile-warnings],
               AC_HELP_STRING([--enable-compile-warnings],
                              [Turn on compiler warnings.]))
-AC_ARG_ENABLE([warnings_as_errors],   
+AC_ARG_ENABLE([warnings_as_errors],
               AC_HELP_STRING([--enable-warnings_as_errors],
                              [Compiler warnings are errors.]))
 AC_ARG_ENABLE([simd-accel],
@@ -228,12 +235,20 @@ AC_PATH_XTRA
 AM_CONDITIONAL(HAVE_X, test x$have_x = xyes)
 
 debugCFLAGS=""
+debug_or_profiling=""
 
 AC_MSG_CHECKING(whether to compile in profiling information)
-if test "x$enable_profiling" = "xyes" ; then
+if test "x$profiling" = "xgprof" ; then
+ debugCFLAGS="$debugCFLAGS -g -no-pie -pg"
+ DEBUGLIBS="-pg"
+ AC_SUBST(DEBUGLIBS)
+ debug_or_profiling="profiling"
+ AC_MSG_RESULT([yes])
+elif test "x$profiling" = "xgcov" ; then
  debugCFLAGS="$debugCFLAGS -fprofile-arcs -ftest-coverage"
  DEBUGLIBS="-lgcov"
  AC_SUBST(DEBUGLIBS)
+ debug_or_profiling="profiling"
  AC_MSG_RESULT([yes])
 else
  AC_MSG_RESULT([no])
@@ -242,6 +257,7 @@ fi
 AC_MSG_CHECKING(whether to compile in debug symbols)
 if test "x$enable_debug" = "xyes" ; then
  debugCFLAGS="$debugCFLAGS -g"
+ debug_or_profiling="debug"
  AC_MSG_RESULT([yes])
 else
  AC_MSG_RESULT([no])
@@ -281,7 +297,7 @@ case $host_cpu in
 
 	PROGRAM_NOPIC="-fno-PIC"
 
-	if test "x$enable_debug" != "xyes" ; then
+	if test -z $debug_or_profiling ; then
 		OP_CFLAGS="-O2"
  	fi
 
@@ -300,7 +316,7 @@ case $host_cpu in
     	AC_DEFINE(ARCH_X86_64,1, [Compiling for x86-64 architecture CPU])
     	have_x86cpu=true
     	have_x86_64cpu=true
-	if test "x$enable_debug" != "xyes" ; then
+	if test -z $debug_or_profiling ; then
 		OP_CFLAGS="-O2"
  	fi
 
@@ -559,7 +575,7 @@ fi
 
 if test x$have_x86cpu = xtrue;
 then
-	if test "x$enable_debug" != "xyes" ;
+	if test -z $debug_or_profiling ;
 	then
 		if test x$ac_cv_flag_sse = xyes; then
 			CFLAGS="$CFLAGS -msse -mfpmath=sse"
@@ -656,7 +672,7 @@ if test "x$enable_compile_warnings" != "xno" ; then
 fi
 
 if test "x$cflags_set" != "xyes" ; then
-  if test "x$enable_debug" = "xyes" ; then
+  if test -n $debug_or_profiling ; then
   	CFLAGS="$debugCFLAGS $warnCFLAGS $CFLAGS"
   else
  	CFLAGS="$CFLAGS $warnCFLAGS"
@@ -665,7 +681,7 @@ if test "x$cflags_set" != "xyes" ; then
   cflags_set=yes
 fi
 
-if test "x$enable_debug" != "xyes" ; then
+if test -z $debug_or_profiling ; then
 	CFLAGS="$CFLAGS -fno-stack-protector"
 fi
 

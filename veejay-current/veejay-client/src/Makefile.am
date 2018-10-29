@@ -13,4 +13,4 @@ reloaded_SOURCES = cellrendererspin.c gtktimeselection.c vj-midi.c curve.c utils
 bin_PROGRAMS = $(RELOADED_BIN)
 
 reloaded_LDFLAGS =  $(VEEJAY_LIBS) $(GTK_LIBS) \
-$(ALSA_LIBS) $(LIBM_LIBS) -export-dynamic -lgmodule-2.0 -lgthread-2.0 
+$(ALSA_LIBS) $(LIBM_LIBS) $(DEBUGLIBS) -export-dynamic -lgmodule-2.0 -lgthread-2.0
