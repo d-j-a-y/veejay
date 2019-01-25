@@ -854,7 +854,7 @@ static	int	*int_dup( int *status )
 		res[i] = status[i];
 	return res;
 }
-
+// TODO related profil_no_2
 static int	**gvr_grab_stati( void *preview )
 {
 	veejay_preview_t *vp = (veejay_preview_t*) preview;

@@ -601,9 +601,12 @@ then
 	AC_MSG_ERROR([libx11 not found.])
 fi
 
+#PKG_CHECK_MODULES(DEPS, [glib-2.0 >= 2.42?]) //jessie oldstable
+#AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_30?, [Ignore post 2.42? deprecations])
+
 dnl Check for Gtk3
 have_gtk3=false
-gtk_modules="gtk+-3.0 >= 3"
+gtk_modules="gtk+-3.0 >= 3" # 3.14 jessie oldstable
 PKG_CHECK_MODULES( GTK, [$gtk_modules],
 	[
 		AC_SUBST(GTK_CFLAGS)
@@ -682,7 +685,7 @@ if test "x$cflags_set" != "xyes" ; then
 fi
 
 if test -z $debug_or_profiling ; then
-	CFLAGS="$CFLAGS -fno-stack-protector"
+	CFLAGS="$CFLAGS -fno-stack-protector -Wno-deprecated-declarations"
 fi
 
 if test x"$with_extra_cflags" != "x"; then

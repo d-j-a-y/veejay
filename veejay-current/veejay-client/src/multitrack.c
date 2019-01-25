@@ -819,7 +819,7 @@ void		*multitrack_new(
 		GtkWidget *preview_toggle,
 		gint max_w,
 		gint max_h,
-		GtkWidget *main_preview_area,
+		GtkWidget *main_preview_area, //FIXME Not used
 		void *infog,
 		int threads)
 {
