@@ -2714,7 +2714,7 @@ static void update_curve_widget(GtkWidget *curve)
                     set_toggle_button( "curve_typespline", 1 );
                     break;
                 case GTK3_CURVE_TYPE_FREE:
-                    set_toggle_button( "curve_typefree",1 );
+                    set_toggle_button( "curve_typefreehand",1 );
                     break;
                 default: set_toggle_button( "curve_typelinear", 1 );
                     break;
@@ -4136,7 +4136,7 @@ static gint load_parameter_info()
             set_toggle_button( "curve_typespline", 1 );
             break;
         case GTK3_CURVE_TYPE_FREE:
-            set_toggle_button( "curve_typefree",1 );
+            set_toggle_button( "curve_typefreehand",1 );
             break;
         default:
         case GTK3_CURVE_TYPE_LINEAR:
