@@ -330,7 +330,7 @@ static vj_encoder	*vj_avcodec_new_encoder( int id, VJFrame *frame, char *filenam
 		e->context->flags = CODEC_FLAG_QSCALE;
 		e->context->gop_size = 0;
 		e->context->workaround_bugs = FF_BUG_AUTODETECT;
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#if (0 && LIBAVCODEC_VERSION_MAJOR < 60)
 		e->context->prediction_method = 0;
 #endif
 		e->context->dct_algo = FF_DCT_AUTO; 
@@ -608,7 +608,8 @@ int		vj_avcodec_init( int pixel_format, int verbose)
 	avcodec_register_all();
 	
 #else
-#if LIBAVCODEC_VERSION_MAJOR < 60
+//~ 2018-02-06 - 0694d87024 - lavf 58.9.100 - avformat.h
+#if (LIBAVCODEC_VERSION_MAJOR < 58 || (LIBAVCODEC_VERSION_MAJOR == 58 && LIBAVCODEC_VERSION_MINOR <=9 ))
 	av_register_all();
 #endif
 #endif

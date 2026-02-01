@@ -100,11 +100,27 @@ static struct
 
 #define MAX_PACKETS 5
 
+
+//~ define VJ_LAVC_DECODE_METHOD 
+
+//~ from ffmeg doc/apichanges - 2009-04-07 - 7a00bba - lavc 52.23.0 avcodec_decode_video deprecated
+#if ((LIBAVCODEC_VERSION_MAJOR == 52 && LIBAVCODEC_VERSION_MINOR >= 23) || LIBAVCODEC_VERSION_MAJOR > 52 )
+    #define VJ_LAVC_HAVE_DECODE_VIDEO2
+#endif
+//~ from ffmeg doc/apichanges - 2017-09-26 - b1cf151c4d - lavc 57.106.102 - avcodec.h
+#if ((LIBAVCODEC_VERSION_MAJOR == 57 && LIBAVCODEC_VERSION_MINOR >= 106) || LIBAVCODEC_VERSION_MAJOR > 57 )
+    #undef  VJ_LAVC_HAVE_DECODE_VIDEO2
+    #define VJ_LAVC_HAVE_SEND_PACKET
+#else
+    #pragma error ("Ffmpeg not supported!" LIBAVCODEC_VERSION)
+#endif
+
 typedef struct
 {
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
 	AVPacket packets[MAX_PACKETS];
-#else
+#endif
+#ifdef VJ_LAVC_HAVE_SEND_PACKET
 	AVPacket *packets[MAX_PACKETS];
 #endif
     AVFrame *frames[2];
@@ -255,10 +271,8 @@ void	avhelper_codec_close( AVCodecContext *ctx ) {
 #endif
 }
 
-
-#if LIBAVCODEC_VERSION_MAJOR > 54 && LIBAVCODEC_VERSION_MAJOR < 60
-
 static int avcodec_decode_video(
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
     AVCodecContext *avctx,
     AVFrame *picture,
     int *got_picture,
@@ -270,11 +284,9 @@ static int avcodec_decode_video(
     pkt.data = data;
     pkt.size = pktsize;
     return avcodec_decode_video2(avctx, picture, got_picture, &pkt);
-}
+#endif
 
-#else
-
-static int avcodec_decode_video(
+#ifdef VJ_LAVC_HAVE_SEND_PACKET
     AVPacket *pkt,
     AVCodecContext *avctx,
     AVFrame *picture,
@@ -309,14 +321,15 @@ static int avcodec_decode_video(
 
     *got_picture = 1;
     return 1;
+#endif
 }
 
+int avhelper_decode_video3( AVCodecContext *avctx, AVFrame *frame, int *got_picture, AVPacket *pkt ) {
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
+	return avcodec_decode_video(avctx,frame,got_picture,pkt->data,pkt->size);
 #endif
 
-int avhelper_decode_video3( AVCodecContext *avctx, AVFrame *frame, int *got_picture, AVPacket *pkt ) {
-#if LIBAVCODEC_VERSION_MAJOR < 60
-	return avcodec_decode_video(avctx,frame,got_picture,pkt->data,pkt->size);
-#else
+#ifdef VJ_LAVC_HAVE_SEND_PACKET
 	return avcodec_decode_video(pkt, avctx,frame,got_picture,pkt->data,pkt->size);
 #endif
 }
@@ -355,7 +368,8 @@ static void avhelper_close_input_file( AVFormatContext *s ) {
 }
 
 void avhelper_free_packet(AVPacket *pkt) {
-#if LIBAVCODEC_VERSION_MAJOR < 60
+//~ from ffmeg doc/apichanges - 2015-10-29 - lavc 57.12.100 / 57.8.0 - avcodec.h
+#if (LIBAVCODEC_VERSION_MAJOR < 57 || (LIBAVCODEC_VERSION_MAJOR == 57 && LIBAVCODEC_VERSION_MAJOR <= 12))
 	av_free_packet( pkt );
 #else
 	av_packet_unref( pkt );
@@ -448,20 +462,20 @@ double avhelper_get_spvf( void *decoder ) {
 int avhelper_recv_frame_packet( void *decoder )
 {
     el_decoder_t *x = (el_decoder_t*) decoder;
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
     veejay_memset( &(x->packets[x->write_index]), 0 , sizeof(AVPacket));
 #else
 
 #endif
 
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
     int ret = av_read_frame(x->avformat_ctx, &(x->packets[x->write_index]) );
 #else
 	int ret = av_read_frame(x->avformat_ctx, x->packets[x->write_index] );
 #endif
 
     if( ret == OK ) {
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
         if( x->packets[ x->write_index ].stream_index != x->video_stream_id ) {
 			avhelper_free_packet( &(x->packets[x->write_index]) );
 #else
@@ -482,9 +496,11 @@ int	avhelper_decode_video_buffer( void *ptr, uint8_t *data, int len )
 {
 	int got_picture = 0;
 	el_decoder_t * e = (el_decoder_t*) ptr;
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
 	avcodec_decode_video( e->codec_ctx, e->frames[e->frame_index], &got_picture, data, len );
-#else
+#endif
+
+#ifdef VJ_LAVC_HAVE_SEND_PACKET
 	avcodec_decode_video( e->packets[e->frame_index], e->codec_ctx, e->frames[e->frame_index], &got_picture, data, len );
 #endif
 
@@ -507,7 +523,7 @@ int avhelper_recv_decode( void *decoder, int *got_picture )
 
     while(1) {
 
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
         if( x->packets[ x->read_index ].stream_index != x->video_stream_id )
             break;
 	// poor man 'double buffering'; when the decode is successful, decode next frame into its own buffer and increment frame_index.
@@ -577,7 +593,9 @@ static void	*avhelper_get_decoder_intra( const char *filename, int dst_pixfmt, i
 		return NULL;
 	}
 
-#if LIBAVCODEC_VERSION_MAJOR < 60
+//~ 2023-10-06 - 5432d2aacad - lavc 60.15.100 - avformat.h
+//~ 2016-06-30 - c1c7e0ab - lavf 57.41.100 - avformat.h
+#if LIBAVCODEC_VERSION_MAJOR < 57 || ( LIBAVCODEC_VERSION_MAJOR == 57 && LIBAVCODEC_VERSION_MINOR < 33 )
 	unsigned int i,j;
 	unsigned int n = x->avformat_ctx->nb_streams;
 	
@@ -686,7 +704,7 @@ further:
 	int wid = dst_width;
 	int hei = dst_height;
 
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2 //not sure...
 	if( wid == -1 && hei == -1 ) {
 		wid = x->codec_ctx->width;
 		hei = x->codec_ctx->height;
@@ -724,7 +742,7 @@ further:
 	}
 #endif
 
-#if LIBAVCODECBUILD > 5400
+#if LIBAVCODECBUILD > 5400 // FIXME LIBAVCODECBUILD is undef
 	int n_threads = avhelper_set_num_decoders();
 	if( n_threads <= 0 ) {
 		veejay_msg(VEEJAY_MSG_WARNING, "Fallback to 1 decoding thread");
@@ -781,7 +799,7 @@ further:
 
 	int got_picture = 0;
 
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
 	veejay_memset( &(x->packets[0]), 0, sizeof(AVPacket));
 	AVFrame *f = avhelper_alloc_frame();
 	x->output = yuv_yuv_template( NULL,NULL,NULL, wid, hei, dst_pixfmt );
@@ -824,7 +842,7 @@ further:
 		x->spvf = 0.04f; // 0.04 seconds per video frame = 25 fps
 	}
 
-#if LIBAVCODEC_VERSION_MAJOR >= 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
     AVPacket *hunt_pkt = av_packet_alloc();
 #else
     AVPacket hunt_pkt_stack;
@@ -863,7 +881,8 @@ further:
 
 	if(!got_picture) {
 		veejay_msg(VEEJAY_MSG_ERROR, "FFmpeg: Unable to get whole picture from %s", filename );
-#if LIBAVCODEC_VERSION_MAJOR >= 60
+//~ 2014-05-18 - 68c0518 / fd05602 - lavc 55.63.100 / 55.52.0 - avcodec.h
+#if (LIBAVCODEC_VERSION_MAJOR > 55 || ( LIBAVCODEC_VERSION_MAJOR == 55 && LIBAVCODEC_VERSION_MINOR >= 63))
 		avcodec_free_context(&(x->codec_ctx));
 #else
 		avcodec_close( x->codec_ctx );
@@ -903,7 +922,7 @@ void	avhelper_close_decoder( void *ptr )
 	el_decoder_t *e = (el_decoder_t*) ptr;
 	avhelper_codec_close( e->codec_ctx );
 
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
 	for( int i = 0; i < MAX_PACKETS ; i ++ ) {
 		avhelper_free_packet( &(e->packets[i]) );
 	}
@@ -1010,7 +1029,7 @@ int avhelper_decode_video(void *ptr, uint8_t *data, int len)
     el_decoder_t *e = (el_decoder_t*)ptr;
     int got_picture = 0;
 
-#if LIBAVCODEC_VERSION_MAJOR < 60
+#ifdef VJ_LAVC_HAVE_DECODE_VIDEO2
     avcodec_decode_video(
         e->codec_ctx,
         e->frames[e->frame_index],
